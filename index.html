@@ -2602,10 +2602,10 @@
 
   <!-- TABS with Drag & Drop -->
   <div class="tabs-container">
-    <div class="tabs-wrapper" id="tabsWrapper"><button class="tab-btn active" data-tab="richad" data-index="0" draggable="true">
+    <div class="tabs-wrapper" id="tabsWrapper"><button class="tab-btn active" data-tab="onglet" data-index="0" draggable="true">
           <span class="drag-handle">⋮⋮</span>
           <span class="tab-dot" style="background:#3b82f6"></span>
-          <span class="tab-name">Richad</span>
+          <span class="tab-name">onglet</span>
           
           <span class="tab-count">0</span>
           <span class="tab-actions">
@@ -5949,7 +5949,7 @@
       const cloudTabs = await loadTabsConfig();
       if (cloudTabs && Array.isArray(cloudTabs) && cloudTabs.length > 0) {
         tabs = cloudTabs;
-        currentTab = tabs[0]?.id || 'richad';
+        currentTab = tabs[0]?.id || 'onglet';
       }
 
       // Load data for each tab
