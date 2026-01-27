@@ -1662,6 +1662,98 @@
       color: var(--dark);
     }
 
+    /* Forecast Rate Setting */
+    .forecast-rate-setting {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .forecast-rate-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+    }
+
+    .forecast-rate-value {
+      font-weight: 700;
+      color: var(--theme-color);
+      background: var(--theme-color-light);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .forecast-rate-slider-container {
+      margin-bottom: 8px;
+    }
+
+    .forecast-rate-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--gray-200);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .forecast-rate-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--theme-color);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+
+    .forecast-rate-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .forecast-rate-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--theme-color);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .forecast-rate-marks {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+
+    .forecast-rate-mode {
+      margin-top: 8px;
+    }
+
+    .forecast-rate-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--gray-600);
+      cursor: pointer;
+    }
+
+    .forecast-rate-checkbox input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--theme-color);
+      cursor: pointer;
+    }
+
     /* Comparison (Comparaison) */
     .comparison-container {
       display: flex;
@@ -1969,6 +2061,104 @@
       border-radius: 6px;
       font-size: 11px;
       cursor: pointer;
+    }
+
+    /* Person Stats (Chiffreur/Métreur) */
+    .person-filter-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      padding: 4px;
+      background: var(--gray-100);
+      border-radius: 8px;
+    }
+
+    .person-filter-btn {
+      flex: 1;
+      padding: 6px 8px;
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .person-filter-btn:hover {
+      color: var(--gray-700);
+      background: var(--gray-200);
+    }
+
+    .person-filter-btn.active {
+      background: white;
+      color: var(--theme-color);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .person-stats-list {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .person-stat-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .person-stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .person-stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .person-stat-name {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--dark);
+    }
+
+    .person-stat-values {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+
+    .person-stat-bar {
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .person-stat-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+      background: linear-gradient(90deg, var(--theme-color), var(--theme-color-dark));
+    }
+
+    .person-stat-fill.success {
+      background: linear-gradient(90deg, var(--green), #16a34a);
+    }
+
+    .person-stat-details {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+
+    .person-stat-count {
+      font-size: 11px;
+      color: var(--gray-400);
+      margin-left: 8px;
     }
 
     /* Map Popup */
@@ -2525,6 +2715,9 @@
       <button class="map-control-btn" id="toggleItineraryBtn" title="Calculer un itinéraire">
         🚗
       </button>
+      <button class="map-control-btn active" id="clusterToggleBtn" title="Activer/Désactiver le regroupement">
+        🔵
+      </button>
     </div>
     
     <!-- Itinerary Panel -->
@@ -2593,6 +2786,14 @@
         <div class="stats-config-item">
           <span class="stats-config-label">🎯 Objectifs CA</span>
           <div class="stats-toggle active" data-section="objectivesSection"></div>
+        </div>
+        <div class="stats-config-item">
+          <span class="stats-config-label">🧮 Chiffreurs</span>
+          <div class="stats-toggle active" data-section="chiffreurSection"></div>
+        </div>
+        <div class="stats-config-item">
+          <span class="stats-config-label">📐 Métreurs</span>
+          <div class="stats-toggle active" data-section="metreurSection"></div>
         </div>
       </div>
       
@@ -2672,6 +2873,28 @@
               <div class="forecast-detail">
                 <span class="forecast-detail-label">CA potentiel (avec taux)</span>
                 <span class="forecast-detail-value" id="forecastPotential">0 €</span>
+              </div>
+            </div>
+            <div class="forecast-rate-setting">
+              <label class="forecast-rate-label">
+                <span>⚙️ Taux de conversion</span>
+                <span class="forecast-rate-value" id="forecastRateValue">50%</span>
+              </label>
+              <div class="forecast-rate-slider-container">
+                <input type="range" id="forecastRateSlider" class="forecast-rate-slider" min="0" max="100" value="50">
+                <div class="forecast-rate-marks">
+                  <span>0%</span>
+                  <span>25%</span>
+                  <span>50%</span>
+                  <span>75%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+              <div class="forecast-rate-mode">
+                <label class="forecast-rate-checkbox">
+                  <input type="checkbox" id="forecastAutoRate">
+                  <span>Auto (basé sur historique)</span>
+                </label>
               </div>
             </div>
           </div>
@@ -2795,6 +3018,46 @@
                 <button class="objective-save-btn" data-period="year">OK</button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Objectifs par Chiffreur -->
+      <div class="stats-section" id="chiffreurSection">
+        <div class="stats-section-title">
+          🧮 Chiffreurs
+          <button class="objective-config-btn" id="chiffreurConfigBtn" title="Configurer l'objectif" style="margin-left:8px;background:none;border:none;cursor:pointer;font-size:14px;">⚙️</button>
+          <span style="font-size:11px;color:var(--gray-500);margin-left:8px;">Obj: <span id="chiffreurObjLabel">Non défini</span></span>
+        </div>
+        <div class="stats-chart-container">
+          <div class="person-filter-tabs">
+            <button class="person-filter-btn active" data-filter="tous" data-target="chiffreur">Tous</button>
+            <button class="person-filter-btn" data-filter="gagne" data-target="chiffreur">Gagnés</button>
+            <button class="person-filter-btn" data-filter="encours" data-target="chiffreur">En cours</button>
+            <button class="person-filter-btn" data-filter="perdu" data-target="chiffreur">Perdus</button>
+          </div>
+          <div id="chiffreurObjectivesList" class="objectives-container person-stats-list">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Objectifs par Métreur -->
+      <div class="stats-section" id="metreurSection">
+        <div class="stats-section-title">
+          📐 Métreurs
+          <button class="objective-config-btn" id="metreurConfigBtn" title="Configurer l'objectif" style="margin-left:8px;background:none;border:none;cursor:pointer;font-size:14px;">⚙️</button>
+          <span style="font-size:11px;color:var(--gray-500);margin-left:8px;">Obj: <span id="metreurObjLabel">Non défini</span></span>
+        </div>
+        <div class="stats-chart-container">
+          <div class="person-filter-tabs">
+            <button class="person-filter-btn active" data-filter="tous" data-target="metreur">Tous</button>
+            <button class="person-filter-btn" data-filter="gagne" data-target="metreur">Gagnés</button>
+            <button class="person-filter-btn" data-filter="encours" data-target="metreur">En cours</button>
+            <button class="person-filter-btn" data-filter="perdu" data-target="metreur">Perdus</button>
+          </div>
+          <div id="metreurObjectivesList" class="objectives-container person-stats-list">
+            <!-- Generated by JS -->
           </div>
         </div>
       </div>
@@ -3796,11 +4059,17 @@
           </div>
           <div class="form-group">
             <label class="form-label">EG</label>
-            <input type="text" class="form-input" id="mEG" placeholder="BY, VINCI...">
+            <select class="form-select" id="mEG">
+              <option value="">-- Sélectionner --</option>
+            </select>
+            <input type="text" class="form-input" id="mEGNew" placeholder="Ou saisir nouveau..." style="margin-top:4px;font-size:12px;">
           </div>
           <div class="form-group">
             <label class="form-label">MOE</label>
-            <input type="text" class="form-input" id="mArchitect">
+            <select class="form-select" id="mArchitect">
+              <option value="">-- Sélectionner --</option>
+            </select>
+            <input type="text" class="form-input" id="mMOENew" placeholder="Ou saisir nouveau..." style="margin-top:4px;font-size:12px;">
           </div>
           <div class="form-group full">
             <label class="form-label">Adresse</label>
@@ -3840,8 +4109,18 @@
             <input type="text" class="form-input" id="mResponsable" placeholder="Jean Dupont">
           </div>
           <div class="form-group">
+            <label class="form-label">Chiffreur</label>
+            <select class="form-select" id="mChiffreur">
+              <option value="">-- Sélectionner --</option>
+            </select>
+            <input type="text" class="form-input" id="mChiffreurNew" placeholder="Ou saisir nouveau..." style="margin-top:4px;font-size:12px;">
+          </div>
+          <div class="form-group">
             <label class="form-label">Métreur</label>
-            <input type="text" class="form-input" id="mMetreur" placeholder="Pierre Martin">
+            <select class="form-select" id="mMetreur">
+              <option value="">-- Sélectionner --</option>
+            </select>
+            <input type="text" class="form-input" id="mMetreurNew" placeholder="Ou saisir nouveau..." style="margin-top:4px;font-size:12px;">
           </div>
           <div class="form-group">
             <label class="form-label">Latitude *</label>
@@ -4073,6 +4352,12 @@
   </div>
 
   <script>
+    /* ========================================== */
+    /* STORAGE PREFIX - Unique pour ce site       */
+    /* ========================================== */
+    const STORAGE_PREFIX = 'smac_A_';
+    const SITE_ID = 'site_A';
+
     /* Supabase Configuration */
     const SUPABASE_URL = 'https://kaawdguztacoagfhhcgz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthYXdkZ3V6dGFjb2FnZmhoY2d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NzgwNDYsImV4cCI6MjA4MzM1NDA0Nn0.XBNbYTrJkolGF6rZpoMZD5EwH068PCMqd_eiq7OCypA';
@@ -4176,6 +4461,263 @@
       
       // Re-render to update the view
       applyFilters();
+    }
+
+    function toggleCluster() {
+      clusterEnabled = !clusterEnabled;
+      
+      const btn = document.getElementById('clusterToggleBtn');
+      
+      if (clusterEnabled) {
+        btn.innerHTML = '🔵';
+        btn.classList.add('active');
+        btn.title = 'Désactiver le regroupement';
+        showToast('Regroupement activé', 'success');
+      } else {
+        btn.innerHTML = '📍';
+        btn.classList.remove('active');
+        btn.title = 'Activer le regroupement';
+        showToast('Regroupement désactivé - Points individuels', 'info');
+      }
+      
+      // Clear all markers and re-render
+      if (map && markerCluster) {
+        markerCluster.clearLayers();
+        // Remove individual markers from map
+        markerByIndex.forEach(marker => {
+          if (map.hasLayer(marker)) {
+            map.removeLayer(marker);
+          }
+        });
+        markerByIndex.clear();
+      }
+      
+      // Re-render map
+      renderMap(currentList);
+    }
+
+    /* Dynamic Lists Functions */
+    function getAllEG() {
+      return [...new Set([...defaultEGList, ...customEGList])].sort();
+    }
+
+    function getAllMOE() {
+      const fromData = [];
+      Object.values(dataByTab).forEach(data => {
+        data.forEach(item => { if (item.architect) fromData.push(item.architect); });
+      });
+      return [...new Set([...fromData, ...customMOEList])].filter(Boolean).sort();
+    }
+
+    function getAllChiffreurs() {
+      const fromData = [];
+      Object.values(dataByTab).forEach(data => {
+        data.forEach(item => { if (item.chiffreur) fromData.push(item.chiffreur); });
+      });
+      return [...new Set([...fromData, ...customChiffreurList])].filter(Boolean).sort();
+    }
+
+    function getAllMetreurs() {
+      const fromData = [];
+      Object.values(dataByTab).forEach(data => {
+        data.forEach(item => { if (item.metreur) fromData.push(item.metreur); });
+      });
+      return [...new Set([...fromData, ...customMetreurList])].filter(Boolean).sort();
+    }
+
+    function addToEGList(eg) {
+      if (eg && !defaultEGList.includes(eg) && !customEGList.includes(eg)) {
+        customEGList.push(eg);
+        localStorage.setItem(STORAGE_PREFIX + 'eg_list', JSON.stringify(customEGList));
+        updateEGDropdown();
+      }
+    }
+
+    function addToMOEList(moe) {
+      if (moe && !customMOEList.includes(moe)) {
+        customMOEList.push(moe);
+        localStorage.setItem(STORAGE_PREFIX + 'moe_list', JSON.stringify(customMOEList));
+        updateMOEDropdown();
+      }
+    }
+
+    function addToChiffreurList(chiffreur) {
+      if (chiffreur && !customChiffreurList.includes(chiffreur)) {
+        customChiffreurList.push(chiffreur);
+        localStorage.setItem(STORAGE_PREFIX + 'chiffreur_list', JSON.stringify(customChiffreurList));
+        updateChiffreurDropdown();
+      }
+    }
+
+    function addToMetreurList(metreur) {
+      if (metreur && !customMetreurList.includes(metreur)) {
+        customMetreurList.push(metreur);
+        localStorage.setItem(STORAGE_PREFIX + 'metreur_list', JSON.stringify(customMetreurList));
+        updateMetreurDropdown();
+      }
+    }
+
+    function updateEGDropdown() {
+      const select = document.getElementById('mEG');
+      if (!select) return;
+      const currentVal = select.value;
+      select.innerHTML = '<option value="">-- Sélectionner --</option>';
+      getAllEG().forEach(eg => {
+        const opt = document.createElement('option');
+        opt.value = eg;
+        opt.textContent = eg;
+        select.appendChild(opt);
+      });
+      select.value = currentVal;
+    }
+
+    function updateMOEDropdown() {
+      const select = document.getElementById('mArchitect');
+      if (!select) return;
+      const currentVal = select.value;
+      select.innerHTML = '<option value="">-- Sélectionner --</option>';
+      getAllMOE().forEach(moe => {
+        const opt = document.createElement('option');
+        opt.value = moe;
+        opt.textContent = moe;
+        select.appendChild(opt);
+      });
+      select.value = currentVal;
+    }
+
+    function updateChiffreurDropdown() {
+      const select = document.getElementById('mChiffreur');
+      if (!select) return;
+      const currentVal = select.value;
+      select.innerHTML = '<option value="">-- Sélectionner --</option>';
+      getAllChiffreurs().forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        select.appendChild(opt);
+      });
+      select.value = currentVal;
+    }
+
+    function updateMetreurDropdown() {
+      const select = document.getElementById('mMetreur');
+      if (!select) return;
+      const currentVal = select.value;
+      select.innerHTML = '<option value="">-- Sélectionner --</option>';
+      getAllMetreurs().forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        select.appendChild(opt);
+      });
+      select.value = currentVal;
+    }
+
+    function updateAllDropdowns() {
+      updateEGDropdown();
+      updateMOEDropdown();
+      updateChiffreurDropdown();
+      updateMetreurDropdown();
+    }
+
+    /* Chiffreur/Métreur Stats */
+    function updatePersonStats() {
+      const allData = Object.values(dataByTab).flat();
+      
+      // Calculate stats by chiffreur
+      const chiffreurStats = {};
+      const metreurStats = {};
+      
+      allData.forEach(item => {
+        const amount = parseMontant(item.montant);
+        if (!Number.isFinite(amount)) return;
+        
+        if (item.chiffreur) {
+          if (!chiffreurStats[item.chiffreur]) {
+            chiffreurStats[item.chiffreur] = { total: 0, count: 0, gagne: 0, encours: 0, perdu: 0, gagneCount: 0, encoursCount: 0, perduCount: 0 };
+          }
+          chiffreurStats[item.chiffreur].total += amount;
+          chiffreurStats[item.chiffreur].count++;
+          if (item.statut === 'Gagné') { chiffreurStats[item.chiffreur].gagne += amount; chiffreurStats[item.chiffreur].gagneCount++; }
+          else if (item.statut === 'En cours') { chiffreurStats[item.chiffreur].encours += amount; chiffreurStats[item.chiffreur].encoursCount++; }
+          else if (item.statut === 'Perdu') { chiffreurStats[item.chiffreur].perdu += amount; chiffreurStats[item.chiffreur].perduCount++; }
+        }
+        
+        if (item.metreur) {
+          if (!metreurStats[item.metreur]) {
+            metreurStats[item.metreur] = { total: 0, count: 0, gagne: 0, encours: 0, perdu: 0, gagneCount: 0, encoursCount: 0, perduCount: 0 };
+          }
+          metreurStats[item.metreur].total += amount;
+          metreurStats[item.metreur].count++;
+          if (item.statut === 'Gagné') { metreurStats[item.metreur].gagne += amount; metreurStats[item.metreur].gagneCount++; }
+          else if (item.statut === 'En cours') { metreurStats[item.metreur].encours += amount; metreurStats[item.metreur].encoursCount++; }
+          else if (item.statut === 'Perdu') { metreurStats[item.metreur].perdu += amount; metreurStats[item.metreur].perduCount++; }
+        }
+      });
+      
+      // Update objective labels
+      document.getElementById('chiffreurObjLabel').textContent = chiffreurObjectif > 0 ? formatMontantShort(chiffreurObjectif) : 'Non défini';
+      document.getElementById('metreurObjLabel').textContent = metreurObjectif > 0 ? formatMontantShort(metreurObjectif) : 'Non défini';
+      
+      // Render chiffreur list
+      renderPersonStatsList('chiffreurObjectivesList', chiffreurStats, chiffreurObjectif, chiffreurFilter);
+      renderPersonStatsList('metreurObjectivesList', metreurStats, metreurObjectif, metreurFilter);
+    }
+
+    function renderPersonStatsList(containerId, stats, objectif, filter) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      
+      const entries = Object.entries(stats).sort((a, b) => b[1].total - a[1].total);
+      
+      if (entries.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-500);font-size:12px;">Aucune donnée</div>';
+        return;
+      }
+      
+      container.innerHTML = entries.map(([name, data]) => {
+        let amount, count;
+        if (filter === 'gagne') { amount = data.gagne; count = data.gagneCount; }
+        else if (filter === 'encours') { amount = data.encours; count = data.encoursCount; }
+        else if (filter === 'perdu') { amount = data.perdu; count = data.perduCount; }
+        else { amount = data.total; count = data.count; }
+        
+        const percent = objectif > 0 ? Math.min((amount / objectif) * 100, 100) : 0;
+        const isSuccess = percent >= 100;
+        
+        return `
+          <div class="person-stat-item">
+            <div class="person-stat-header">
+              <span class="person-stat-name">${escapeHTML(name)} <span class="person-stat-count">(${count})</span></span>
+              <span class="person-stat-values">${formatMontantShort(amount)}${objectif > 0 ? ' / ' + formatMontantShort(objectif) : ''}</span>
+            </div>
+            <div class="person-stat-bar">
+              <div class="person-stat-fill ${isSuccess ? 'success' : ''}" style="width: ${percent}%"></div>
+            </div>
+            ${objectif > 0 ? `<div class="person-stat-details"><span>${Math.round(percent)}%</span></div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChiffreurConfig() {
+      const val = prompt('Objectif par chiffreur (en €):', chiffreurObjectif || '');
+      if (val !== null) {
+        chiffreurObjectif = parseMontant(val) || 0;
+        localStorage.setItem(STORAGE_PREFIX + 'chiffreur_obj', chiffreurObjectif);
+        updatePersonStats();
+        showToast('Objectif chiffreur mis à jour !', 'success');
+      }
+    }
+
+    function openMetreurConfig() {
+      const val = prompt('Objectif par métreur (en €):', metreurObjectif || '');
+      if (val !== null) {
+        metreurObjectif = parseMontant(val) || 0;
+        localStorage.setItem(STORAGE_PREFIX + 'metreur_obj', metreurObjectif);
+        updatePersonStats();
+        showToast('Objectif métreur mis à jour !', 'success');
+      }
     }
 
     /* Password Hashing (Simple hash that works everywhere) */
@@ -4373,11 +4915,10 @@
     /* State */
     const MASTER_CODE = 'Villepinte'; // Code maître pour protéger/supprimer des onglets
     let tabs = [
-      { id: 'datacenter', name: 'Data-Centers', color: '#3b82f6' },
-      { id: 'projets', name: 'Projets Chiffrés 2026', color: '#8b5cf6' }
+      { id: 'richad', name: 'Richad', color: '#8b5cf6' }
     ];
     let dataByTab = {};
-    let currentTab = 'datacenter';
+    let currentTab = 'richad';
     let currentList = [];
     let currentFilter = 'Tous';
     let currentSort = 'name';
@@ -4396,6 +4937,20 @@
     let unlockingTabId = null;
     let removingProtectionTabId = null;
     const unlockedTabs = new Set(); // Onglets déverrouillés pendant cette session
+    let clusterEnabled = true; // Toggle cluster on/off
+
+    /* Dynamic Lists for EG, MOE, Chiffreur, Métreur */
+    const defaultEGList = ['BY', 'VINCI', 'EIFFAGE', 'COLAS', 'DEMATHIEU&BARD', 'FAYAT', 'GCC', 'FAYOLLES', 'SPIE BATIGNOLLES', 'LEON GROSSE', 'BOUYGUES', 'GA SMART BUILDING'];
+    let customEGList = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'eg_list') || '[]');
+    let customMOEList = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'moe_list') || '[]');
+    let customChiffreurList = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'chiffreur_list') || '[]');
+    let customMetreurList = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'metreur_list') || '[]');
+    
+    // Objectifs par chiffreur/métreur
+    let chiffreurObjectif = parseInt(localStorage.getItem(STORAGE_PREFIX + 'chiffreur_obj') || '0');
+    let metreurObjectif = parseInt(localStorage.getItem(STORAGE_PREFIX + 'metreur_obj') || '0');
+    let chiffreurFilter = 'tous';
+    let metreurFilter = 'tous';
 
     /* Drag & Drop State */
     let draggedTab = null;
@@ -4431,7 +4986,7 @@
 
     async function loadFromCloud(tabName) {
       try {
-        const res = await supabaseFetch(`affaires?tab=eq.${tabName}&select=data`);
+        const res = await supabaseFetch(`affaires?tab=eq.${tabName}&site_id=eq.${SITE_ID}&select=data`);
         if (!res.ok) return null;
         const json = await res.json();
         if (json && json.length > 0 && json[0].data) {
@@ -4452,18 +5007,18 @@
       const data = dataByTab[tabName];
       
       try {
-        const checkRes = await supabaseFetch(`affaires?tab=eq.${tabName}&select=id`);
+        const checkRes = await supabaseFetch(`affaires?tab=eq.${tabName}&site_id=eq.${SITE_ID}&select=id`);
         const existing = await checkRes.json();
         
         if (existing && existing.length > 0) {
-          await supabaseFetch(`affaires?tab=eq.${tabName}`, {
+          await supabaseFetch(`affaires?tab=eq.${tabName}&site_id=eq.${SITE_ID}`, {
             method: 'PATCH',
             body: JSON.stringify({ data: data })
           });
         } else {
           await supabaseFetch('affaires', {
             method: 'POST',
-            body: JSON.stringify({ tab: tabName, data: data })
+            body: JSON.stringify({ tab: tabName, data: data, site_id: SITE_ID })
           });
         }
         showSyncStatus('saved');
@@ -4476,7 +5031,7 @@
 
     async function loadTabsConfig() {
       try {
-        const res = await supabaseFetch(`affaires?tab=eq._tabs_config&select=data`);
+        const res = await supabaseFetch(`affaires?tab=eq._tabs_config&site_id=eq.${SITE_ID}&select=data`);
         if (!res.ok) return null;
         const json = await res.json();
         if (json && json.length > 0 && json[0].data) {
@@ -4491,18 +5046,18 @@
 
     async function saveTabsConfig() {
       try {
-        const checkRes = await supabaseFetch(`affaires?tab=eq._tabs_config&select=id`);
+        const checkRes = await supabaseFetch(`affaires?tab=eq._tabs_config&site_id=eq.${SITE_ID}&select=id`);
         const existing = await checkRes.json();
         
         if (existing && existing.length > 0) {
-          await supabaseFetch(`affaires?tab=eq._tabs_config`, {
+          await supabaseFetch(`affaires?tab=eq._tabs_config&site_id=eq.${SITE_ID}`, {
             method: 'PATCH',
             body: JSON.stringify({ data: tabs })
           });
         } else {
           await supabaseFetch('affaires', {
             method: 'POST',
-            body: JSON.stringify({ tab: '_tabs_config', data: tabs })
+            body: JSON.stringify({ tab: '_tabs_config', data: tabs, site_id: SITE_ID })
           });
         }
       } catch (e) {
@@ -4512,7 +5067,7 @@
 
     async function deleteTabData(tabId) {
       try {
-        await supabaseFetch(`affaires?tab=eq.${tabId}`, { method: 'DELETE' });
+        await supabaseFetch(`affaires?tab=eq.${tabId}&site_id=eq.${SITE_ID}`, { method: 'DELETE' });
       } catch (e) {
         console.error('Erreur suppression tab data:', e);
       }
@@ -4747,6 +5302,9 @@
       
       // Update objectives
       updateObjectives();
+      
+      // Update person stats (chiffreur/métreur)
+      updatePersonStats();
     }
 
     function formatMontantShort(value) {
@@ -4887,9 +5445,26 @@
       // Calculate average
       const encoursAvg = encours > 0 ? encoursTotal / encours : 0;
       
-      // Calculate conversion rate for potential forecast
+      // Get conversion rate - either from slider or auto-calculated
+      const autoRateCheckbox = document.getElementById('forecastAutoRate');
+      const rateSlider = document.getElementById('forecastRateSlider');
       const decided = gagne + perdu;
-      const conversionRate = decided > 0 ? gagne / decided : 0.5; // Default to 50% if no data
+      const autoRate = decided > 0 ? gagne / decided : 0.5;
+      
+      let conversionRate;
+      if (autoRateCheckbox && autoRateCheckbox.checked) {
+        // Auto mode - use calculated rate
+        conversionRate = autoRate;
+        if (rateSlider) {
+          rateSlider.value = Math.round(conversionRate * 100);
+          rateSlider.disabled = true;
+        }
+      } else {
+        // Manual mode - use slider value
+        conversionRate = rateSlider ? parseInt(rateSlider.value) / 100 : 0.5;
+        if (rateSlider) rateSlider.disabled = false;
+      }
+      
       const potentialCA = encoursTotal * conversionRate;
       
       // Update UI
@@ -4897,6 +5472,10 @@
       document.getElementById('forecastCount').textContent = encours;
       document.getElementById('forecastAvg').textContent = formatMontantShort(encoursAvg);
       document.getElementById('forecastPotential').textContent = formatMontantShort(potentialCA) + ` (${Math.round(conversionRate * 100)}%)`;
+      
+      // Update rate display
+      const rateValueEl = document.getElementById('forecastRateValue');
+      if (rateValueEl) rateValueEl.textContent = Math.round(conversionRate * 100) + '%';
     }
 
     /* Comparison (Comparaison périodes) */
@@ -5034,7 +5613,7 @@
       const currentQuarter = Math.floor(currentMonth / 3);
       
       // Get saved objectives
-      const savedObjectives = JSON.parse(localStorage.getItem('smac_objectives') || '{}');
+      const savedObjectives = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'objectives') || '{}');
       
       // Calculate amounts for each period (based on "Gagné" deals)
       let monthTotal = 0;
@@ -5343,6 +5922,23 @@
       const container = document.getElementById('listContainer');
       const mobileContainer = document.getElementById('mobileListContainer');
       
+      // Check if current tab is locked
+      const currentTabObj = tabs.find(t => t.id === currentTab);
+      const isLocked = currentTabObj?.passwordHash && !unlockedTabs.has(currentTab);
+      
+      if (isLocked) {
+        const lockedHtml = `
+          <div style="padding:60px 40px;text-align:center;color:var(--gray-500)">
+            <div style="font-size:48px;margin-bottom:16px">🔒</div>
+            <div style="font-size:16px;font-weight:600;margin-bottom:8px">Onglet verrouillé</div>
+            <div style="font-size:13px">Cliquez sur l'onglet pour entrer le mot de passe</div>
+          </div>
+        `;
+        container.innerHTML = lockedHtml;
+        mobileContainer.innerHTML = lockedHtml;
+        return;
+      }
+      
       if (!items.length) {
         const empty = '<div style="padding:40px;text-align:center;color:var(--gray-500)">Aucune affaire trouvée</div>';
         container.innerHTML = empty;
@@ -5413,6 +6009,11 @@
       markerCluster.clearLayers();
       markerByIndex.clear();
 
+      // Check if current tab is locked - don't show markers
+      const currentTabObj = tabs.find(t => t.id === currentTab);
+      const isLocked = currentTabObj?.passwordHash && !unlockedTabs.has(currentTab);
+      if (isLocked) return;
+
       items.forEach(item => {
         const lat = parseCoord(item.coords?.[0]);
         const lng = parseCoord(item.coords?.[1]);
@@ -5442,7 +6043,11 @@
           </div>
         `);
         
-        markerCluster.addLayer(marker);
+        if (clusterEnabled) {
+          markerCluster.addLayer(marker);
+        } else {
+          marker.addTo(map);
+        }
         markerByIndex.set(item.id, marker);
       });
     }
@@ -5461,7 +6066,7 @@
     function clearModalForm() {
       editingId = null;
       document.getElementById('modalTitle').textContent = 'Nouvelle affaire';
-      ['mAffaires', 'mClient', 'mDescription', 'mEG', 'mArchitect', 'mAdresse', 'mDate', 'mMontant', 'mResponsable', 'mMetreur', 'mLat', 'mLng', 'mLink', 'mNotes'].forEach(id => {
+      ['mAffaires', 'mClient', 'mDescription', 'mEG', 'mArchitect', 'mAdresse', 'mDate', 'mMontant', 'mResponsable', 'mChiffreur', 'mMetreur', 'mLat', 'mLng', 'mLink', 'mNotes', 'mEGNew', 'mMOENew', 'mChiffreurNew', 'mMetreurNew'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
@@ -5469,6 +6074,7 @@
       document.querySelectorAll('#mSmacChips .chip').forEach(c => c.classList.remove('active'));
       currentTags = [];
       renderTagsInput();
+      updateAllDropdowns();
     }
 
     function editItem(id) {
@@ -5476,6 +6082,8 @@
       if (!item) return;
       
       editingId = id;
+      updateAllDropdowns();
+      
       document.getElementById('modalTitle').textContent = 'Modifier l\'affaire';
       document.getElementById('mAffaires').value = item.affaires || '';
       document.getElementById('mClient').value = item.client || '';
@@ -5487,11 +6095,18 @@
       document.getElementById('mStatut').value = item.statut || 'En cours';
       document.getElementById('mMontant').value = item.montant || '';
       document.getElementById('mResponsable').value = item.responsable || '';
+      document.getElementById('mChiffreur').value = item.chiffreur || '';
       document.getElementById('mMetreur').value = item.metreur || '';
       document.getElementById('mLat').value = item.coords?.[0] || '';
       document.getElementById('mLng').value = item.coords?.[1] || '';
       document.getElementById('mLink').value = item.link || '';
       document.getElementById('mNotes').value = item.notes || '';
+      
+      // Clear "new" inputs
+      ['mEGNew', 'mMOENew', 'mChiffreurNew', 'mMetreurNew'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
       
       document.querySelectorAll('#mSmacChips .chip').forEach(c => {
         c.classList.toggle('active', c.dataset.value === item.smac);
@@ -5627,20 +6242,53 @@
 
       const smacChip = document.querySelector('#mSmacChips .chip.active');
       
+      // Handle EG - use dropdown value or new input
+      let egValue = document.getElementById('mEG').value.trim();
+      const egNew = document.getElementById('mEGNew')?.value.trim();
+      if (egNew) {
+        egValue = egNew;
+        addToEGList(egNew);
+      }
+      
+      // Handle MOE - use dropdown value or new input
+      let moeValue = document.getElementById('mArchitect').value.trim();
+      const moeNew = document.getElementById('mMOENew')?.value.trim();
+      if (moeNew) {
+        moeValue = moeNew;
+        addToMOEList(moeNew);
+      }
+      
+      // Handle Chiffreur - use dropdown value or new input
+      let chiffreurValue = document.getElementById('mChiffreur').value.trim();
+      const chiffreurNew = document.getElementById('mChiffreurNew')?.value.trim();
+      if (chiffreurNew) {
+        chiffreurValue = chiffreurNew;
+        addToChiffreurList(chiffreurNew);
+      }
+      
+      // Handle Métreur - use dropdown value or new input
+      let metreurValue = document.getElementById('mMetreur').value.trim();
+      const metreurNew = document.getElementById('mMetreurNew')?.value.trim();
+      if (metreurNew) {
+        metreurValue = metreurNew;
+        addToMetreurList(metreurNew);
+      }
+      
       const itemData = {
         id: editingId || makeId(),
         affaires,
         client,
         description: document.getElementById('mDescription').value.trim(),
-        eg: document.getElementById('mEG').value.trim(),
-        architect: document.getElementById('mArchitect').value.trim(),
+        eg: egValue,
+        architect: moeValue,
         adresse: document.getElementById('mAdresse').value.trim(),
         smac: smacChip?.dataset.value || '',
         datePrevisionnelle: document.getElementById('mDate').value,
         statut: document.getElementById('mStatut').value,
         montant: document.getElementById('mMontant').value.trim() || '-',
         responsable: document.getElementById('mResponsable').value.trim(),
-        metreur: document.getElementById('mMetreur').value.trim(),
+        chiffreur: chiffreurValue,
+        metreur: metreurValue,
         coords: [lat, lng],
         tags: currentTags,
         link: document.getElementById('mLink').value.trim(),
@@ -6327,6 +6975,9 @@
       // Client Mode Toggle
       document.getElementById('clientModeBtn')?.addEventListener('click', toggleClientMode);
 
+      // Cluster Toggle
+      document.getElementById('clusterToggleBtn')?.addEventListener('click', toggleCluster);
+
       // Mobile
       document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
         document.getElementById('mobileSidebar').classList.add('open');
@@ -6417,13 +7068,41 @@
         document.getElementById('statsPanel').classList.remove('open');
       });
 
+      // Forecast rate slider and checkbox
+      const forecastRateSlider = document.getElementById('forecastRateSlider');
+      const forecastAutoRate = document.getElementById('forecastAutoRate');
+      
+      // Load saved forecast rate settings
+      const savedForecastRate = localStorage.getItem(STORAGE_PREFIX + 'forecast_rate');
+      const savedAutoRate = localStorage.getItem(STORAGE_PREFIX + 'forecast_auto_rate');
+      
+      if (savedForecastRate && forecastRateSlider) {
+        forecastRateSlider.value = savedForecastRate;
+        document.getElementById('forecastRateValue').textContent = savedForecastRate + '%';
+      }
+      if (savedAutoRate === 'true' && forecastAutoRate) {
+        forecastAutoRate.checked = true;
+      }
+      
+      forecastRateSlider?.addEventListener('input', () => {
+        const value = forecastRateSlider.value;
+        document.getElementById('forecastRateValue').textContent = value + '%';
+        localStorage.setItem(STORAGE_PREFIX + 'forecast_rate', value);
+        updateAdvancedStats();
+      });
+      
+      forecastAutoRate?.addEventListener('change', () => {
+        localStorage.setItem(STORAGE_PREFIX + 'forecast_auto_rate', forecastAutoRate.checked);
+        updateAdvancedStats();
+      });
+
       // Stats configuration
       document.getElementById('statsConfigBtn')?.addEventListener('click', () => {
         document.getElementById('statsConfigPanel').classList.toggle('open');
       });
 
       // Load saved stats preferences
-      const savedStatsPrefs = JSON.parse(localStorage.getItem('smac_stats_prefs') || '{}');
+      const savedStatsPrefs = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'stats_prefs') || '{}');
       document.querySelectorAll('.stats-toggle').forEach(toggle => {
         const sectionId = toggle.dataset.section;
         const section = document.getElementById(sectionId);
@@ -6444,9 +7123,9 @@
           }
           
           // Save preference
-          const prefs = JSON.parse(localStorage.getItem('smac_stats_prefs') || '{}');
+          const prefs = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'stats_prefs') || '{}');
           prefs[sectionId] = isActive;
-          localStorage.setItem('smac_stats_prefs', JSON.stringify(prefs));
+          localStorage.setItem(STORAGE_PREFIX + 'stats_prefs', JSON.stringify(prefs));
         });
       });
 
@@ -6467,9 +7146,9 @@
           const value = parseMontant(inputEl.value);
           
           if (Number.isFinite(value) && value > 0) {
-            const objectives = JSON.parse(localStorage.getItem('smac_objectives') || '{}');
+            const objectives = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'objectives') || '{}');
             objectives[period] = value;
-            localStorage.setItem('smac_objectives', JSON.stringify(objectives));
+            localStorage.setItem(STORAGE_PREFIX + 'objectives', JSON.stringify(objectives));
             
             // Close input and update
             const inputGroup = document.getElementById(`obj${period.charAt(0).toUpperCase() + period.slice(1)}Input`);
@@ -6518,9 +7197,37 @@
       // Tags input
       document.getElementById('mTagsInput')?.addEventListener('keydown', handleTagInput);
 
+      // Initialize dropdowns
+      updateAllDropdowns();
+
+      // Person filter tabs (Chiffreur/Métreur)
+      document.querySelectorAll('.person-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.target;
+          const filter = btn.dataset.filter;
+          
+          // Update active state for this group
+          document.querySelectorAll(`.person-filter-btn[data-target="${target}"]`).forEach(b => {
+            b.classList.toggle('active', b === btn);
+          });
+          
+          // Update filter and re-render
+          if (target === 'chiffreur') {
+            chiffreurFilter = filter;
+          } else if (target === 'metreur') {
+            metreurFilter = filter;
+          }
+          
+          updatePersonStats();
+        });
+      });
+
+      // Chiffreur/Métreur config buttons
+      document.getElementById('chiffreurConfigBtn')?.addEventListener('click', openChiffreurConfig);
+      document.getElementById('metreurConfigBtn')?.addEventListener('click', openMetreurConfig);
+
       // Preload export libs
       injectJS(CDN.sheetJS);
       injectJS(CDN.jsPDF).then(() => injectJS(CDN.autoTable));
     });
   </script>
-
