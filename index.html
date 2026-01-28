@@ -1711,6 +1711,12 @@
       flex-shrink: 0;
     }
 
+    .pie-percent {
+      font-weight: 700;
+      color: var(--theme-color);
+      margin-left: 2px;
+    }
+
     .bar-chart {
       display: flex;
       flex-direction: column;
@@ -3397,10 +3403,10 @@
               </div>
             </div>
             <div class="pie-legend">
-              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#22c55e"></span> Gagné (<span id="legendGagne">0</span>)</div>
-              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#f43f5e"></span> Perdu (<span id="legendPerdu">0</span>)</div>
-              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#f59e0b"></span> En cours (<span id="legendEncours">0</span>)</div>
-              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#3b82f6"></span> Faste (<span id="legendFaste">0</span>)</div>
+              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#22c55e"></span> Gagné: <span id="legendGagne">0</span> <span class="pie-percent" id="percentGagne">(0%)</span></div>
+              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#f43f5e"></span> Perdu: <span id="legendPerdu">0</span> <span class="pie-percent" id="percentPerdu">(0%)</span></div>
+              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#f59e0b"></span> En cours: <span id="legendEncours">0</span> <span class="pie-percent" id="percentEncours">(0%)</span></div>
+              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#3b82f6"></span> Faste: <span id="legendFaste">0</span> <span class="pie-percent" id="percentFaste">(0%)</span></div>
             </div>
           </div>
         </div>
@@ -3462,35 +3468,6 @@
                   <span>Calcul auto basé sur l'historique</span>
                   <span id="forecastAutoValue" style="color:var(--gray-400);"></span>
                 </label>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="stats-section" id="conversionSection">
-          <div class="stats-section-title">🎯 Taux de conversion</div>
-          <div class="stats-chart-container">
-            <div class="conversion-container">
-              <div class="conversion-gauge">
-                <svg viewBox="0 0 100 60" class="conversion-svg">
-                  <path d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="#e5e5e5" stroke-width="8" stroke-linecap="round"></path>
-                  <path id="conversionArc" d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 126"></path>
-                </svg>
-                <div class="conversion-value" id="conversionRate">0%</div>
-              </div>
-              <div class="conversion-details">
-                <div class="conversion-detail">
-                  <span class="conversion-dot" style="background:#22c55e"></span>
-                  <span>Gagné: <strong id="convGagne">0</strong></span>
-                </div>
-                <div class="conversion-detail">
-                  <span class="conversion-dot" style="background:#f43f5e"></span>
-                  <span>Perdu: <strong id="convPerdu">0</strong></span>
-                </div>
-                <div class="conversion-detail">
-                  <span class="conversion-dot" style="background:#f59e0b"></span>
-                  <span>En cours: <strong id="convEncours">0</strong></span>
-                </div>
               </div>
             </div>
           </div>
@@ -5152,12 +5129,23 @@
     function updatePieChart(gagne, perdu, encours, faste, total) {
       const circumference = 2 * Math.PI * 40; // ~251.2
       
-      // Update legend
+      // Update legend counts
       document.getElementById('legendGagne').textContent = gagne;
       document.getElementById('legendPerdu').textContent = perdu;
       document.getElementById('legendEncours').textContent = encours;
       document.getElementById('legendFaste').textContent = faste;
       document.getElementById('pieCenterValue').textContent = total;
+      
+      // Update percentages in legend
+      const pctGagne = total > 0 ? Math.round((gagne / total) * 100) : 0;
+      const pctPerdu = total > 0 ? Math.round((perdu / total) * 100) : 0;
+      const pctEncours = total > 0 ? Math.round((encours / total) * 100) : 0;
+      const pctFaste = total > 0 ? Math.round((faste / total) * 100) : 0;
+      
+      document.getElementById('percentGagne').textContent = `(${pctGagne}%)`;
+      document.getElementById('percentPerdu').textContent = `(${pctPerdu}%)`;
+      document.getElementById('percentEncours').textContent = `(${pctEncours}%)`;
+      document.getElementById('percentFaste').textContent = `(${pctFaste}%)`;
       
       if (total === 0) {
         document.getElementById('pieGagne').setAttribute('stroke-dasharray', '0 251.2');
@@ -5167,7 +5155,7 @@
         return;
       }
       
-      // Calculate percentages
+      // Calculate percentages for chart
       const pGagne = (gagne / total) * circumference;
       const pPerdu = (perdu / total) * circumference;
       const pEncours = (encours / total) * circumference;
