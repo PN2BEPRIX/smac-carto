@@ -5448,15 +5448,17 @@
       percent.textContent = (isUp ? '+' : '') + Math.round(percentChange) + '%';
     }
 
-    /* Conversion Rate (Taux de conversion) */
+    /* Conversion Rate (Taux de conversion) - Section supprimée */
     function updateConversion(gagne, perdu, encours) {
+      const conversionArc = document.getElementById('conversionArc');
+      if (!conversionArc) return; // Section supprimée, ne rien faire
+      
       const decided = gagne + perdu;
       const rate = decided > 0 ? (gagne / decided) * 100 : 0;
       
       // Update gauge (arc length based on rate)
       // Full arc is about 126 units (half circle)
       const arcLength = (rate / 100) * 126;
-      const conversionArc = document.getElementById('conversionArc');
       conversionArc.setAttribute('stroke-dasharray', `${arcLength} 126`);
       
       // Color based on rate
@@ -6978,6 +6980,7 @@
     
     function toggleProductsPanel() {
       const panel = document.getElementById('productsPanel');
+      if (!panel) return; // Panel supprimé, ne rien faire
       if (panel.classList.contains('open')) {
         panel.classList.remove('open');
       } else {
