@@ -1344,28 +1344,36 @@
 
     /* Statistics Panel - ENHANCED */
     .stats-panel {
-      position: absolute;
-      top: 124px;
+      position: fixed;
+      top: 70px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 1000;
+      z-index: 1001;
       background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 20px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-      padding: 24px;
-      width: calc(100% - 480px);
-      max-width: 1200px;
-      min-width: 700px;
-      max-height: calc(100vh - 150px);
-      overflow-y: auto;
+      border-radius: 24px;
+      box-shadow: 0 12px 60px rgba(0,0,0,0.2);
+      padding: 0;
+      width: calc(100% - 460px);
+      max-width: 1400px;
+      min-width: 800px;
+      max-height: calc(100vh - 90px);
       display: none;
+      overflow: hidden;
     }
 
     .stats-panel.open {
-      display: block;
+      display: flex;
+      flex-direction: column;
       animation: statsSlideIn 0.3s ease;
+    }
+
+    .stats-panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      padding-top: 0;
     }
 
     @keyframes statsSlideIn {
@@ -1373,9 +1381,16 @@
       to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
-    @media (max-width: 1400px) {
+    @media (max-width: 1600px) {
       .stats-panel {
-        width: calc(100% - 460px);
+        width: calc(100% - 440px);
+        min-width: 600px;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .stats-panel {
+        width: calc(100% - 420px);
         min-width: 500px;
       }
     }
@@ -1388,6 +1403,8 @@
         min-width: auto;
         max-width: none;
         transform: none;
+        top: 60px;
+        max-height: calc(100vh - 70px);
       }
     }
 
@@ -1395,52 +1412,80 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid var(--gray-100);
+      padding: 20px 24px;
+      background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-color-dark) 100%);
+      border-radius: 24px 24px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .stats-title {
       font-weight: 800;
-      font-size: 20px;
-      color: var(--dark);
+      font-size: 22px;
+      color: white;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .stats-close {
-      background: var(--gray-100);
+      background: rgba(255,255,255,0.2);
       border: none;
       font-size: 18px;
       cursor: pointer;
-      color: var(--gray-500);
-      padding: 8px 12px;
-      border-radius: 8px;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
       transition: all 0.2s;
     }
 
     .stats-close:hover {
-      background: var(--rose-light);
-      color: var(--rose);
+      background: rgba(255,255,255,0.4);
+      transform: rotate(90deg);
     }
 
     .stats-config-btn {
-      background: var(--gray-100);
+      background: rgba(255,255,255,0.2);
       border: none;
       font-size: 14px;
       cursor: pointer;
-      color: var(--gray-500);
-      padding: 8px 12px;
-      border-radius: 8px;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
       margin-right: 8px;
       transition: all 0.2s;
     }
 
     .stats-config-btn:hover {
-      background: var(--gray-200);
-      color: var(--dark);
+      background: rgba(255,255,255,0.4);
       transform: rotate(45deg);
+    }
+
+    .stats-panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      padding-top: 20px;
+    }
+
+    .stats-panel-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .stats-panel-content::-webkit-scrollbar-track {
+      background: var(--gray-100);
+      border-radius: 4px;
+    }
+
+    .stats-panel-content::-webkit-scrollbar-thumb {
+      background: var(--theme-color);
+      border-radius: 4px;
+    }
+
+    .stats-panel-content::-webkit-scrollbar-thumb:hover {
+      background: var(--theme-color-dark);
     }
 
     .stats-config-panel {
@@ -2179,9 +2224,10 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow-md);
     }
-    .popup-content { font-family: 'DM Sans', sans-serif; }
+    .popup-content { font-family: 'DM Sans', sans-serif; min-width: 180px; }
     .popup-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
     .popup-client { font-size: 12px; color: var(--gray-500); }
+    .popup-ville { font-size: 11px; color: var(--blue); margin-top: 4px; font-weight: 500; }
     .popup-amount { font-weight: 600; color: var(--theme-color); margin-top: 4px; }
 
     /* House markers (Agences SMAC) */
@@ -3241,27 +3287,6 @@
       <button class="map-control-btn cluster-toggle active" id="toggleClusterBtn" title="Activer/Désactiver le regroupement">
         🔘
       </button>
-      <button class="map-control-btn" id="toggleProductsBtn" title="Analyse produits / Prix m²">
-        📦
-      </button>
-    </div>
-    
-    <!-- Products Analysis Panel -->
-    <div class="products-panel" id="productsPanel">
-      <div class="products-panel-header">
-        <span class="products-panel-title">📦 Analyse Produits</span>
-        <button class="stats-close" id="productsPanelClose">✕</button>
-      </div>
-      <div class="products-search">
-        <input type="text" id="productSearchInput" placeholder="🔍 Rechercher un produit...">
-      </div>
-      <div class="products-filters" id="productsFilters">
-        <button class="products-filter-btn active" data-category="">Toutes</button>
-        <!-- Dynamic category buttons will be added by JS -->
-      </div>
-      <div id="productsAnalysisList">
-        <!-- Generated by JS -->
-      </div>
     </div>
     
     <!-- Itinerary Panel -->
@@ -3289,13 +3314,14 @@
     <!-- Statistics Panel -->
     <div class="stats-panel" id="statsPanel">
       <div class="stats-header">
-        <span class="stats-title">📊 Tableau de Bord Statistiques</span>
+        <span class="stats-title">📊 Statistiques Data-Centers</span>
         <div>
           <button class="stats-config-btn" id="statsConfigBtn" title="Configurer l'affichage">⚙️</button>
           <button class="stats-close" id="statsClose">✕</button>
         </div>
       </div>
       
+      <div class="stats-panel-content">
       <!-- Configuration Panel -->
       <div class="stats-config-panel" id="statsConfigPanel">
         <div class="stats-config-title">Afficher / Masquer</div>
@@ -3320,10 +3346,6 @@
           <div class="stats-toggle active" data-section="comparisonSection"></div>
         </div>
         <div class="stats-config-item">
-          <span class="stats-config-label">🎯 Taux de conversion</span>
-          <div class="stats-toggle active" data-section="conversionSection"></div>
-        </div>
-        <div class="stats-config-item">
           <span class="stats-config-label">🏆 Classement EG</span>
           <div class="stats-toggle active" data-section="rankingSection"></div>
         </div>
@@ -3343,20 +3365,16 @@
       
       <div class="stats-summary">
         <div class="stats-card">
-          <div class="stats-card-value" id="statsTotalAffaires">🔒</div>
+          <div class="stats-card-value" id="statsTotalAffaires">0</div>
           <div class="stats-card-label">Affaires</div>
         </div>
         <div class="stats-card">
-          <div class="stats-card-value" id="statsTotalMontant">🔒</div>
+          <div class="stats-card-value" id="statsTotalMontant">0 €</div>
           <div class="stats-card-label">Montant total</div>
         </div>
         <div class="stats-card">
-          <div class="stats-card-value" id="statsTotalGagne">🔒</div>
+          <div class="stats-card-value" id="statsTotalGagne">0 €</div>
           <div class="stats-card-label">CA Gagné</div>
-        </div>
-        <div class="stats-card">
-          <div class="stats-card-value" id="statsConversionKPI">🔒</div>
-          <div class="stats-card-label">Taux conv.</div>
         </div>
       </div>
       
@@ -3627,6 +3645,7 @@
           </div>
         </div>
       </div>
+      </div><!-- /stats-panel-content -->
     </div>
     
     <div class="sidebar">
@@ -3879,94 +3898,6 @@
             <div class="tags-input-container" id="tagsContainer">
               <input type="text" class="tags-input" id="mTagsInput" placeholder="Ajouter un tag...">
             </div>
-            <div class="product-add-section" style="margin-top:8px;padding:12px;background:var(--gray-50);border-radius:8px;">
-              <!-- Tabs pour basculer entre Produit simple et Complexe -->
-              <div class="product-tabs" style="display:flex;gap:4px;margin-bottom:12px;">
-                <button type="button" class="product-tab-btn active" id="tabProduitSimple" onclick="switchProductTab('simple')">📦 Produit simple</button>
-                <button type="button" class="product-tab-btn" id="tabProduitComplexe" onclick="switchProductTab('complexe')">🔧 Complexe</button>
-              </div>
-              
-              <!-- Produit Simple -->
-              <div id="produitSimpleForm">
-                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-                  <select class="form-select" id="mProductCategory" style="flex:1;min-width:100px;">
-                    <option value="">-- Catégorie --</option>
-                    <option value="Bardage">Bardage</option>
-                    <option value="Étanchéité">Étanchéité</option>
-                    <option value="Couverture">Couverture</option>
-                    <option value="Façade">Façade</option>
-                    <option value="Isolation">Isolation</option>
-                    <option value="Autre">Autre</option>
-                  </select>
-                  <input type="text" class="form-input" id="mProductName" placeholder="Nom produit" style="flex:2;min-width:100px;">
-                </div>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-                  <input type="number" class="form-input" id="mProductPrice" placeholder="Prix €/m²" style="flex:1;min-width:70px;">
-                  <input type="number" class="form-input" id="mProductSurface" placeholder="Surface m²" style="flex:1;min-width:70px;">
-                </div>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-                  <select class="form-select" id="mProductFinition" style="flex:1;min-width:100px;">
-                    <option value="">-- Finition --</option>
-                    <option value="Brut">Brut</option>
-                    <option value="Apprêté">Apprêté</option>
-                    <option value="Laqué">Laqué</option>
-                    <option value="Anodisé">Anodisé</option>
-                    <option value="Thermolaqué">Thermolaqué</option>
-                    <option value="Galvanisé">Galvanisé</option>
-                    <option value="Inox">Inox</option>
-                    <option value="RAL">RAL</option>
-                    <option value="Naturel">Naturel</option>
-                    <option value="Pré-patiné">Pré-patiné</option>
-                  </select>
-                  <input type="text" class="form-input" id="mProductFinitionCustom" placeholder="Ou autre finition..." style="flex:1;min-width:80px;">
-                  <button type="button" class="btn-add-product" id="addProductBtn" title="Ajouter produit">+ Ajouter</button>
-                </div>
-              </div>
-              
-              <!-- Complexe (assemblage) -->
-              <div id="produitComplexeForm" style="display:none;">
-                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-                  <select class="form-select" id="mComplexeCategory" style="flex:1;min-width:100px;">
-                    <option value="">-- Catégorie --</option>
-                    <option value="Bardage">Bardage</option>
-                    <option value="Étanchéité">Étanchéité</option>
-                    <option value="Couverture">Couverture</option>
-                    <option value="Façade">Façade</option>
-                    <option value="Isolation">Isolation</option>
-                    <option value="Autre">Autre</option>
-                  </select>
-                  <input type="text" class="form-input" id="mComplexeName" placeholder="Nom du complexe" style="flex:2;min-width:120px;">
-                </div>
-                <div style="display:flex;gap:6px;margin-bottom:8px;">
-                  <input type="number" class="form-input" id="mComplexeSurface" placeholder="Surface totale m²" style="flex:1;">
-                </div>
-                
-                <!-- Liste des composants du complexe -->
-                <div class="complexe-components-section" style="background:white;border:1px solid var(--gray-200);border-radius:8px;padding:10px;margin-bottom:10px;">
-                  <div style="font-size:11px;font-weight:600;color:var(--gray-600);margin-bottom:8px;">📋 Composants du complexe</div>
-                  <div id="complexeComponentsList" class="complexe-components-list"></div>
-                  
-                  <!-- Ajouter un composant -->
-                  <div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--gray-200);">
-                    <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
-                      <input type="text" class="form-input" id="mComponentName" placeholder="Nom composant" style="flex:2;min-width:90px;font-size:11px;padding:6px;">
-                      <input type="number" class="form-input" id="mComponentPrice" placeholder="€/m²" style="width:60px;font-size:11px;padding:6px;">
-                      <input type="text" class="form-input" id="mComponentFinition" placeholder="Finition" style="width:70px;font-size:11px;padding:6px;">
-                      <button type="button" class="btn-add-component" id="addComponentBtn" title="Ajouter ce composant">+ Ajouter</button>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Total du complexe -->
-                <div class="complexe-total" style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:linear-gradient(135deg, var(--theme-color-light), white);border-radius:8px;margin-bottom:10px;">
-                  <span style="font-size:12px;font-weight:600;color:var(--gray-700);">💰 Prix total du complexe :</span>
-                  <span id="complexeTotalPrice" style="font-size:16px;font-weight:800;color:var(--theme-color);">0 €/m²</span>
-                </div>
-                
-                <button type="button" class="btn-add-product" id="addComplexeBtn" style="width:100%;" title="Ajouter le complexe">+ Ajouter le complexe</button>
-              </div>
-            </div>
-            <div class="products-list" id="productsList" style="margin-top:8px;"></div>
           </div>
           <div class="form-group full">
             <label class="form-label">Lien document</label>
@@ -6272,14 +6203,27 @@
           <div class="popup-content">
             <div class="popup-title">${escapeHTML(item.affaires)}</div>
             <div class="popup-client">${escapeHTML(item.client)}${clientModeActive ? '' : ' · ' + escapeHTML(item.eg)}</div>
+            ${item.adresse ? `<div class="popup-ville">📍 ${escapeHTML(item.adresse)}</div>` : ''}
             ${clientModeActive ? '' : `<div class="popup-amount">${displayMontant(item.montant)}</div>`}
             ${item.metreur && !clientModeActive ? `<div style="font-size:11px;color:var(--cyan);margin-top:4px;">📐 ${escapeHTML(item.metreur)}</div>` : ''}
+            <button onclick="scrollToAffaire('${item.id}')" 
+                    style="margin-top:8px;padding:6px 10px;background:var(--blue);color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;width:100%;">
+              📋 Voir dans la liste
+            </button>
             <button onclick="if(window.itineraryMode && window.itineraryMode()){window.addItineraryStop(${JSON.stringify(item).replace(/"/g, '&quot;')})}" 
-                    style="margin-top:8px;padding:6px 10px;background:#e10600;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;width:100%;">
+                    style="margin-top:4px;padding:6px 10px;background:#e10600;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;width:100%;">
               🚗 Ajouter à l'itinéraire
             </button>
           </div>
         `);
+        
+        // Click handler pour ouvrir la sidebar sur mobile et scroller vers l'affaire
+        marker.on('click', function() {
+          // Sur mobile, ouvrir la sidebar
+          if (window.innerWidth <= 768) {
+            document.getElementById('mobilePanel')?.classList.add('open');
+          }
+        });
         
         markers.push(marker);
         markerByIndex.set(item.id, marker);
@@ -6355,6 +6299,47 @@
       switchProductTab('simple');
       updateAllDropdowns();
     }
+
+    // Fonction pour scroller vers une affaire dans la liste
+    function scrollToAffaire(itemId) {
+      // Fermer le popup de la carte
+      map.closePopup();
+      
+      // Trouver l'élément dans la liste
+      const listItem = document.querySelector(`.list-item[data-id="${itemId}"]`);
+      const mobileListItem = document.querySelector(`#mobileList .list-item[data-id="${itemId}"]`);
+      
+      if (listItem) {
+        // Desktop: scroll dans la sidebar
+        listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Highlight temporaire
+        listItem.style.transition = 'all 0.3s';
+        listItem.style.boxShadow = '0 0 0 3px var(--theme-color), 0 4px 20px rgba(225,6,0,0.3)';
+        listItem.style.transform = 'scale(1.02)';
+        
+        setTimeout(() => {
+          listItem.style.boxShadow = '';
+          listItem.style.transform = '';
+        }, 2000);
+      }
+      
+      // Mobile: ouvrir le panel et scroller
+      if (window.innerWidth <= 768 && mobileListItem) {
+        document.getElementById('mobilePanel')?.classList.add('open');
+        setTimeout(() => {
+          mobileListItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          mobileListItem.style.transition = 'all 0.3s';
+          mobileListItem.style.boxShadow = '0 0 0 3px var(--theme-color)';
+          setTimeout(() => {
+            mobileListItem.style.boxShadow = '';
+          }, 2000);
+        }, 300);
+      }
+    }
+    
+    // Rendre la fonction accessible globalement pour le popup
+    window.scrollToAffaire = scrollToAffaire;
 
     function editItem(id) {
       const item = dataByTab[currentTab].find(i => i.id === id);
