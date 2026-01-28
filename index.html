@@ -1412,8 +1412,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 24px;
-      background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-color-dark) 100%);
+      padding: 12px 20px;
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
       border-radius: 24px 24px 0 0;
       position: sticky;
       top: 0;
@@ -1421,45 +1422,45 @@
     }
 
     .stats-title {
-      font-weight: 800;
-      font-size: 22px;
-      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--dark);
       display: flex;
       align-items: center;
-      gap: 12px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      gap: 10px;
     }
 
     .stats-close {
-      background: rgba(255,255,255,0.2);
+      background: var(--gray-100);
       border: none;
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 10px;
+      color: var(--gray-600);
+      padding: 6px 10px;
+      border-radius: 6px;
       transition: all 0.2s;
     }
 
     .stats-close:hover {
-      background: rgba(255,255,255,0.4);
-      transform: rotate(90deg);
+      background: var(--rose-light);
+      color: var(--rose);
     }
 
     .stats-config-btn {
-      background: rgba(255,255,255,0.2);
+      background: var(--gray-100);
       border: none;
       font-size: 14px;
       cursor: pointer;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 10px;
-      margin-right: 8px;
+      color: var(--gray-600);
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-right: 6px;
       transition: all 0.2s;
     }
 
     .stats-config-btn:hover {
-      background: rgba(255,255,255,0.4);
+      background: var(--gray-200);
+      color: var(--dark);
       transform: rotate(45deg);
     }
 
@@ -6206,23 +6207,16 @@
             ${item.adresse ? `<div class="popup-ville">📍 ${escapeHTML(item.adresse)}</div>` : ''}
             ${clientModeActive ? '' : `<div class="popup-amount">${displayMontant(item.montant)}</div>`}
             ${item.metreur && !clientModeActive ? `<div style="font-size:11px;color:var(--cyan);margin-top:4px;">📐 ${escapeHTML(item.metreur)}</div>` : ''}
-            <button onclick="scrollToAffaire('${item.id}')" 
-                    style="margin-top:8px;padding:6px 10px;background:var(--blue);color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;width:100%;">
-              📋 Voir dans la liste
-            </button>
             <button onclick="if(window.itineraryMode && window.itineraryMode()){window.addItineraryStop(${JSON.stringify(item).replace(/"/g, '&quot;')})}" 
-                    style="margin-top:4px;padding:6px 10px;background:#e10600;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;width:100%;">
+                    style="margin-top:8px;padding:6px 10px;background:#e10600;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;width:100%;">
               🚗 Ajouter à l'itinéraire
             </button>
           </div>
         `);
         
-        // Click handler pour ouvrir la sidebar sur mobile et scroller vers l'affaire
+        // Click handler : scroll direct vers l'affaire dans la liste
         marker.on('click', function() {
-          // Sur mobile, ouvrir la sidebar
-          if (window.innerWidth <= 768) {
-            document.getElementById('mobilePanel')?.classList.add('open');
-          }
+          scrollToAffaire(item.id);
         });
         
         markers.push(marker);
@@ -6302,9 +6296,6 @@
 
     // Fonction pour scroller vers une affaire dans la liste
     function scrollToAffaire(itemId) {
-      // Fermer le popup de la carte
-      map.closePopup();
-      
       // Trouver l'élément dans la liste
       const listItem = document.querySelector(`.list-item[data-id="${itemId}"]`);
       const mobileListItem = document.querySelector(`#mobileList .list-item[data-id="${itemId}"]`);
@@ -6338,7 +6329,7 @@
       }
     }
     
-    // Rendre la fonction accessible globalement pour le popup
+    // Rendre la fonction accessible globalement
     window.scrollToAffaire = scrollToAffaire;
 
     function editItem(id) {
