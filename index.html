@@ -1344,36 +1344,28 @@
 
     /* Statistics Panel - ENHANCED */
     .stats-panel {
-      position: fixed;
-      top: 115px;
+      position: absolute;
+      top: 124px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 1001;
+      z-index: 1000;
       background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 16px;
-      box-shadow: 0 12px 60px rgba(0,0,0,0.2);
-      padding: 0;
-      width: calc(100% - 460px);
-      max-width: 1400px;
-      min-width: 800px;
-      max-height: calc(100vh - 140px);
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      padding: 24px;
+      width: calc(100% - 480px);
+      max-width: 1200px;
+      min-width: 700px;
+      max-height: calc(100vh - 150px);
+      overflow-y: auto;
       display: none;
-      overflow: hidden;
     }
 
     .stats-panel.open {
-      display: flex;
-      flex-direction: column;
+      display: block;
       animation: statsSlideIn 0.3s ease;
-    }
-
-    .stats-panel-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      padding-top: 16px;
     }
 
     @keyframes statsSlideIn {
@@ -1381,16 +1373,9 @@
       to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
-    @media (max-width: 1600px) {
+    @media (max-width: 1400px) {
       .stats-panel {
-        width: calc(100% - 440px);
-        min-width: 600px;
-      }
-    }
-
-    @media (max-width: 1200px) {
-      .stats-panel {
-        width: calc(100% - 420px);
+        width: calc(100% - 460px);
         min-width: 500px;
       }
     }
@@ -1403,8 +1388,6 @@
         min-width: auto;
         max-width: none;
         transform: none;
-        top: 100px;
-        max-height: calc(100vh - 120px);
       }
     }
 
@@ -1412,18 +1395,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 20px;
-      background: white;
-      border-bottom: 1px solid var(--gray-200);
-      border-radius: 24px 24px 0 0;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--gray-100);
     }
 
     .stats-title {
-      font-weight: 700;
-      font-size: 16px;
+      font-weight: 800;
+      font-size: 20px;
       color: var(--dark);
       display: flex;
       align-items: center;
@@ -1433,11 +1412,11 @@
     .stats-close {
       background: var(--gray-100);
       border: none;
-      font-size: 16px;
+      font-size: 18px;
       cursor: pointer;
-      color: var(--gray-600);
-      padding: 6px 10px;
-      border-radius: 6px;
+      color: var(--gray-500);
+      padding: 8px 12px;
+      border-radius: 8px;
       transition: all 0.2s;
     }
 
@@ -1451,10 +1430,10 @@
       border: none;
       font-size: 14px;
       cursor: pointer;
-      color: var(--gray-600);
-      padding: 6px 10px;
-      border-radius: 6px;
-      margin-right: 6px;
+      color: var(--gray-500);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-right: 8px;
       transition: all 0.2s;
     }
 
@@ -1462,31 +1441,6 @@
       background: var(--gray-200);
       color: var(--dark);
       transform: rotate(45deg);
-    }
-
-    .stats-panel-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px;
-      padding-top: 20px;
-    }
-
-    .stats-panel-content::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .stats-panel-content::-webkit-scrollbar-track {
-      background: var(--gray-100);
-      border-radius: 4px;
-    }
-
-    .stats-panel-content::-webkit-scrollbar-thumb {
-      background: var(--theme-color);
-      border-radius: 4px;
-    }
-
-    .stats-panel-content::-webkit-scrollbar-thumb:hover {
-      background: var(--theme-color-dark);
     }
 
     .stats-config-panel {
@@ -1709,12 +1663,6 @@
       height: 10px;
       border-radius: 3px;
       flex-shrink: 0;
-    }
-
-    .pie-percent {
-      font-weight: 700;
-      color: var(--theme-color);
-      margin-left: 2px;
     }
 
     .bar-chart {
@@ -2231,10 +2179,9 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow-md);
     }
-    .popup-content { font-family: 'DM Sans', sans-serif; min-width: 180px; }
+    .popup-content { font-family: 'DM Sans', sans-serif; }
     .popup-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
     .popup-client { font-size: 12px; color: var(--gray-500); }
-    .popup-ville { font-size: 11px; color: var(--blue); margin-top: 4px; font-weight: 500; }
     .popup-amount { font-weight: 600; color: var(--theme-color); margin-top: 4px; }
 
     /* House markers (Agences SMAC) */
@@ -3260,10 +3207,10 @@
 
   <!-- TABS with Drag & Drop -->
   <div class="tabs-container">
-    <div class="tabs-wrapper" id="tabsWrapper"><button class="tab-btn active" data-tab="dc" data-index="0" draggable="true">
+    <div class="tabs-wrapper" id="tabsWrapper"><button class="tab-btn active" data-tab="richad" data-index="0" draggable="true">
           <span class="drag-handle">⋮⋮</span>
-          <span class="tab-dot" style="background:#3b82f6"></span>
-          <span class="tab-name">Data-Centers</span>
+          <span class="tab-dot" style="background:#8b5cf6"></span>
+          <span class="tab-name">Richad</span>
           
           <span class="tab-count">19</span>
           <span class="tab-actions">
@@ -3294,6 +3241,27 @@
       <button class="map-control-btn cluster-toggle active" id="toggleClusterBtn" title="Activer/Désactiver le regroupement">
         🔘
       </button>
+      <button class="map-control-btn" id="toggleProductsBtn" title="Analyse produits / Prix m²">
+        📦
+      </button>
+    </div>
+    
+    <!-- Products Analysis Panel -->
+    <div class="products-panel" id="productsPanel">
+      <div class="products-panel-header">
+        <span class="products-panel-title">📦 Analyse Produits</span>
+        <button class="stats-close" id="productsPanelClose">✕</button>
+      </div>
+      <div class="products-search">
+        <input type="text" id="productSearchInput" placeholder="🔍 Rechercher un produit...">
+      </div>
+      <div class="products-filters" id="productsFilters">
+        <button class="products-filter-btn active" data-category="">Toutes</button>
+        <!-- Dynamic category buttons will be added by JS -->
+      </div>
+      <div id="productsAnalysisList">
+        <!-- Generated by JS -->
+      </div>
     </div>
     
     <!-- Itinerary Panel -->
@@ -3321,14 +3289,13 @@
     <!-- Statistics Panel -->
     <div class="stats-panel" id="statsPanel">
       <div class="stats-header">
-        <span class="stats-title">📊 Statistiques Data-Centers</span>
+        <span class="stats-title">📊 Tableau de Bord Statistiques</span>
         <div>
           <button class="stats-config-btn" id="statsConfigBtn" title="Configurer l'affichage">⚙️</button>
           <button class="stats-close" id="statsClose">✕</button>
         </div>
       </div>
       
-      <div class="stats-panel-content">
       <!-- Configuration Panel -->
       <div class="stats-config-panel" id="statsConfigPanel">
         <div class="stats-config-title">Afficher / Masquer</div>
@@ -3353,6 +3320,10 @@
           <div class="stats-toggle active" data-section="comparisonSection"></div>
         </div>
         <div class="stats-config-item">
+          <span class="stats-config-label">🎯 Taux de conversion</span>
+          <div class="stats-toggle active" data-section="conversionSection"></div>
+        </div>
+        <div class="stats-config-item">
           <span class="stats-config-label">🏆 Classement EG</span>
           <div class="stats-toggle active" data-section="rankingSection"></div>
         </div>
@@ -3372,16 +3343,20 @@
       
       <div class="stats-summary">
         <div class="stats-card">
-          <div class="stats-card-value" id="statsTotalAffaires">0</div>
+          <div class="stats-card-value" id="statsTotalAffaires">🔒</div>
           <div class="stats-card-label">Affaires</div>
         </div>
         <div class="stats-card">
-          <div class="stats-card-value" id="statsTotalMontant">0 €</div>
+          <div class="stats-card-value" id="statsTotalMontant">🔒</div>
           <div class="stats-card-label">Montant total</div>
         </div>
         <div class="stats-card">
-          <div class="stats-card-value" id="statsTotalGagne">0 €</div>
+          <div class="stats-card-value" id="statsTotalGagne">🔒</div>
           <div class="stats-card-label">CA Gagné</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-value" id="statsConversionKPI">🔒</div>
+          <div class="stats-card-label">Taux conv.</div>
         </div>
       </div>
       
@@ -3403,10 +3378,10 @@
               </div>
             </div>
             <div class="pie-legend">
-              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#22c55e"></span> Gagné: <span id="legendGagne">0</span> <span class="pie-percent" id="percentGagne">(0%)</span></div>
-              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#f43f5e"></span> Perdu: <span id="legendPerdu">0</span> <span class="pie-percent" id="percentPerdu">(0%)</span></div>
-              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#f59e0b"></span> En cours: <span id="legendEncours">0</span> <span class="pie-percent" id="percentEncours">(0%)</span></div>
-              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#3b82f6"></span> Faste: <span id="legendFaste">0</span> <span class="pie-percent" id="percentFaste">(0%)</span></div>
+              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#22c55e"></span> Gagné (<span id="legendGagne">0</span>)</div>
+              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#f43f5e"></span> Perdu (<span id="legendPerdu">0</span>)</div>
+              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#f59e0b"></span> En cours (<span id="legendEncours">0</span>)</div>
+              <div class="pie-legend-item"><span class="pie-legend-dot" style="background:#8b5cf6"></span> Faste (<span id="legendFaste">0</span>)</div>
             </div>
           </div>
         </div>
@@ -3468,6 +3443,35 @@
                   <span>Calcul auto basé sur l'historique</span>
                   <span id="forecastAutoValue" style="color:var(--gray-400);"></span>
                 </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stats-section" id="conversionSection">
+          <div class="stats-section-title">🎯 Taux de conversion</div>
+          <div class="stats-chart-container">
+            <div class="conversion-container">
+              <div class="conversion-gauge">
+                <svg viewBox="0 0 100 60" class="conversion-svg">
+                  <path d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="#e5e5e5" stroke-width="8" stroke-linecap="round"></path>
+                  <path id="conversionArc" d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 126"></path>
+                </svg>
+                <div class="conversion-value" id="conversionRate">0%</div>
+              </div>
+              <div class="conversion-details">
+                <div class="conversion-detail">
+                  <span class="conversion-dot" style="background:#22c55e"></span>
+                  <span>Gagné: <strong id="convGagne">0</strong></span>
+                </div>
+                <div class="conversion-detail">
+                  <span class="conversion-dot" style="background:#f43f5e"></span>
+                  <span>Perdu: <strong id="convPerdu">0</strong></span>
+                </div>
+                <div class="conversion-detail">
+                  <span class="conversion-dot" style="background:#f59e0b"></span>
+                  <span>En cours: <strong id="convEncours">0</strong></span>
+                </div>
               </div>
             </div>
           </div>
@@ -3623,7 +3627,6 @@
           </div>
         </div>
       </div>
-      </div><!-- /stats-panel-content -->
     </div>
     
     <div class="sidebar">
@@ -3876,6 +3879,94 @@
             <div class="tags-input-container" id="tagsContainer">
               <input type="text" class="tags-input" id="mTagsInput" placeholder="Ajouter un tag...">
             </div>
+            <div class="product-add-section" style="margin-top:8px;padding:12px;background:var(--gray-50);border-radius:8px;">
+              <!-- Tabs pour basculer entre Produit simple et Complexe -->
+              <div class="product-tabs" style="display:flex;gap:4px;margin-bottom:12px;">
+                <button type="button" class="product-tab-btn active" id="tabProduitSimple" onclick="switchProductTab('simple')">📦 Produit simple</button>
+                <button type="button" class="product-tab-btn" id="tabProduitComplexe" onclick="switchProductTab('complexe')">🔧 Complexe</button>
+              </div>
+              
+              <!-- Produit Simple -->
+              <div id="produitSimpleForm">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                  <select class="form-select" id="mProductCategory" style="flex:1;min-width:100px;">
+                    <option value="">-- Catégorie --</option>
+                    <option value="Bardage">Bardage</option>
+                    <option value="Étanchéité">Étanchéité</option>
+                    <option value="Couverture">Couverture</option>
+                    <option value="Façade">Façade</option>
+                    <option value="Isolation">Isolation</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                  <input type="text" class="form-input" id="mProductName" placeholder="Nom produit" style="flex:2;min-width:100px;">
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                  <input type="number" class="form-input" id="mProductPrice" placeholder="Prix €/m²" style="flex:1;min-width:70px;">
+                  <input type="number" class="form-input" id="mProductSurface" placeholder="Surface m²" style="flex:1;min-width:70px;">
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                  <select class="form-select" id="mProductFinition" style="flex:1;min-width:100px;">
+                    <option value="">-- Finition --</option>
+                    <option value="Brut">Brut</option>
+                    <option value="Apprêté">Apprêté</option>
+                    <option value="Laqué">Laqué</option>
+                    <option value="Anodisé">Anodisé</option>
+                    <option value="Thermolaqué">Thermolaqué</option>
+                    <option value="Galvanisé">Galvanisé</option>
+                    <option value="Inox">Inox</option>
+                    <option value="RAL">RAL</option>
+                    <option value="Naturel">Naturel</option>
+                    <option value="Pré-patiné">Pré-patiné</option>
+                  </select>
+                  <input type="text" class="form-input" id="mProductFinitionCustom" placeholder="Ou autre finition..." style="flex:1;min-width:80px;">
+                  <button type="button" class="btn-add-product" id="addProductBtn" title="Ajouter produit">+ Ajouter</button>
+                </div>
+              </div>
+              
+              <!-- Complexe (assemblage) -->
+              <div id="produitComplexeForm" style="display:none;">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                  <select class="form-select" id="mComplexeCategory" style="flex:1;min-width:100px;">
+                    <option value="">-- Catégorie --</option>
+                    <option value="Bardage">Bardage</option>
+                    <option value="Étanchéité">Étanchéité</option>
+                    <option value="Couverture">Couverture</option>
+                    <option value="Façade">Façade</option>
+                    <option value="Isolation">Isolation</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                  <input type="text" class="form-input" id="mComplexeName" placeholder="Nom du complexe" style="flex:2;min-width:120px;">
+                </div>
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                  <input type="number" class="form-input" id="mComplexeSurface" placeholder="Surface totale m²" style="flex:1;">
+                </div>
+                
+                <!-- Liste des composants du complexe -->
+                <div class="complexe-components-section" style="background:white;border:1px solid var(--gray-200);border-radius:8px;padding:10px;margin-bottom:10px;">
+                  <div style="font-size:11px;font-weight:600;color:var(--gray-600);margin-bottom:8px;">📋 Composants du complexe</div>
+                  <div id="complexeComponentsList" class="complexe-components-list"></div>
+                  
+                  <!-- Ajouter un composant -->
+                  <div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--gray-200);">
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
+                      <input type="text" class="form-input" id="mComponentName" placeholder="Nom composant" style="flex:2;min-width:90px;font-size:11px;padding:6px;">
+                      <input type="number" class="form-input" id="mComponentPrice" placeholder="€/m²" style="width:60px;font-size:11px;padding:6px;">
+                      <input type="text" class="form-input" id="mComponentFinition" placeholder="Finition" style="width:70px;font-size:11px;padding:6px;">
+                      <button type="button" class="btn-add-component" id="addComponentBtn" title="Ajouter ce composant">+ Ajouter</button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Total du complexe -->
+                <div class="complexe-total" style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:linear-gradient(135deg, var(--theme-color-light), white);border-radius:8px;margin-bottom:10px;">
+                  <span style="font-size:12px;font-weight:600;color:var(--gray-700);">💰 Prix total du complexe :</span>
+                  <span id="complexeTotalPrice" style="font-size:16px;font-weight:800;color:var(--theme-color);">0 €/m²</span>
+                </div>
+                
+                <button type="button" class="btn-add-product" id="addComplexeBtn" style="width:100%;" title="Ajouter le complexe">+ Ajouter le complexe</button>
+              </div>
+            </div>
+            <div class="products-list" id="productsList" style="margin-top:8px;"></div>
           </div>
           <div class="form-group full">
             <label class="form-label">Lien document</label>
@@ -4168,7 +4259,7 @@
     /* ============================================
        SITE ISOLATION - CRITICAL FOR MULTI-SITE
        ============================================ */
-    const SITE_ID = 'SITE_A';  // SITE_A = Data-Centers (pn2beprix), SITE_B = Richad (smac-suivico)
+    const SITE_ID = 'SITE_B';  // SITE_A = Data-Centers (pn2beprix), SITE_B = Richad (smac-suivico)
     
     // Prefixed localStorage keys for complete site isolation
     const LS_OBJECTIVES = `${SITE_ID}_objectives`;
@@ -4489,10 +4580,10 @@
     /* State */
     const MASTER_CODE = 'Villepinte'; // Code maître pour protéger/supprimer des onglets
     let tabs = [
-      { id: 'dc', name: 'Data-Centers', color: '#3b82f6' }
+      { id: 'richad', name: 'Richad', color: '#8b5cf6' }
     ];
     let dataByTab = {};
-    let currentTab = 'dc';
+    let currentTab = 'richad';
     let currentList = [];
     let currentFilter = 'Tous';
     let currentSort = 'name';
@@ -5129,23 +5220,12 @@
     function updatePieChart(gagne, perdu, encours, faste, total) {
       const circumference = 2 * Math.PI * 40; // ~251.2
       
-      // Update legend counts
+      // Update legend
       document.getElementById('legendGagne').textContent = gagne;
       document.getElementById('legendPerdu').textContent = perdu;
       document.getElementById('legendEncours').textContent = encours;
       document.getElementById('legendFaste').textContent = faste;
       document.getElementById('pieCenterValue').textContent = total;
-      
-      // Update percentages in legend
-      const pctGagne = total > 0 ? Math.round((gagne / total) * 100) : 0;
-      const pctPerdu = total > 0 ? Math.round((perdu / total) * 100) : 0;
-      const pctEncours = total > 0 ? Math.round((encours / total) * 100) : 0;
-      const pctFaste = total > 0 ? Math.round((faste / total) * 100) : 0;
-      
-      document.getElementById('percentGagne').textContent = `(${pctGagne}%)`;
-      document.getElementById('percentPerdu').textContent = `(${pctPerdu}%)`;
-      document.getElementById('percentEncours').textContent = `(${pctEncours}%)`;
-      document.getElementById('percentFaste').textContent = `(${pctFaste}%)`;
       
       if (total === 0) {
         document.getElementById('pieGagne').setAttribute('stroke-dasharray', '0 251.2');
@@ -5155,7 +5235,7 @@
         return;
       }
       
-      // Calculate percentages for chart
+      // Calculate percentages
       const pGagne = (gagne / total) * circumference;
       const pPerdu = (perdu / total) * circumference;
       const pEncours = (encours / total) * circumference;
@@ -6192,7 +6272,6 @@
           <div class="popup-content">
             <div class="popup-title">${escapeHTML(item.affaires)}</div>
             <div class="popup-client">${escapeHTML(item.client)}${clientModeActive ? '' : ' · ' + escapeHTML(item.eg)}</div>
-            ${item.adresse ? `<div class="popup-ville">📍 ${escapeHTML(item.adresse)}</div>` : ''}
             ${clientModeActive ? '' : `<div class="popup-amount">${displayMontant(item.montant)}</div>`}
             ${item.metreur && !clientModeActive ? `<div style="font-size:11px;color:var(--cyan);margin-top:4px;">📐 ${escapeHTML(item.metreur)}</div>` : ''}
             <button onclick="if(window.itineraryMode && window.itineraryMode()){window.addItineraryStop(${JSON.stringify(item).replace(/"/g, '&quot;')})}" 
@@ -6201,11 +6280,6 @@
             </button>
           </div>
         `);
-        
-        // Click handler : scroll direct vers l'affaire dans la liste
-        marker.on('click', function() {
-          scrollToAffaire(item.id);
-        });
         
         markers.push(marker);
         markerByIndex.set(item.id, marker);
@@ -6281,44 +6355,6 @@
       switchProductTab('simple');
       updateAllDropdowns();
     }
-
-    // Fonction pour scroller vers une affaire dans la liste
-    function scrollToAffaire(itemId) {
-      // Trouver l'élément dans la liste
-      const listItem = document.querySelector(`.list-item[data-id="${itemId}"]`);
-      const mobileListItem = document.querySelector(`#mobileList .list-item[data-id="${itemId}"]`);
-      
-      if (listItem) {
-        // Desktop: scroll dans la sidebar
-        listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Highlight temporaire
-        listItem.style.transition = 'all 0.3s';
-        listItem.style.boxShadow = '0 0 0 3px var(--theme-color), 0 4px 20px rgba(225,6,0,0.3)';
-        listItem.style.transform = 'scale(1.02)';
-        
-        setTimeout(() => {
-          listItem.style.boxShadow = '';
-          listItem.style.transform = '';
-        }, 2000);
-      }
-      
-      // Mobile: ouvrir le panel et scroller
-      if (window.innerWidth <= 768 && mobileListItem) {
-        document.getElementById('mobilePanel')?.classList.add('open');
-        setTimeout(() => {
-          mobileListItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          mobileListItem.style.transition = 'all 0.3s';
-          mobileListItem.style.boxShadow = '0 0 0 3px var(--theme-color)';
-          setTimeout(() => {
-            mobileListItem.style.boxShadow = '';
-          }, 2000);
-        }, 300);
-      }
-    }
-    
-    // Rendre la fonction accessible globalement
-    window.scrollToAffaire = scrollToAffaire;
 
     function editItem(id) {
       const item = dataByTab[currentTab].find(i => i.id === id);
@@ -7503,7 +7539,7 @@
       const cloudTabs = await loadTabsConfig();
       if (cloudTabs && Array.isArray(cloudTabs) && cloudTabs.length > 0) {
         tabs = cloudTabs;
-        currentTab = tabs[0]?.id || 'dc';
+        currentTab = tabs[0]?.id || 'richad';
       }
 
       // Load data for each tab
@@ -7512,7 +7548,7 @@
         if (cloudData && Array.isArray(cloudData)) {
           dataByTab[tab.id] = migrateData(cloudData);
         } else {
-          dataByTab[tab.id] = migrateData(defaultDataDC);
+          dataByTab[tab.id] = []; // Pas de données par défaut pour SITE_B
         }
       }
 
@@ -7781,7 +7817,7 @@
           <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span> Gagné</div>
           <div class="legend-item"><span class="legend-dot" style="background:#f43f5e"></span> Perdu</div>
           <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> En cours</div>
-          <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span> Faste</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Faste</div>
           <div class="legend-title" style="margin-top:8px;">Sites SMAC</div>
           <div class="legend-item"><span style="font-size:14px;">🏢</span> Siège</div>
           <div class="legend-item"><span style="font-size:14px;">🏠</span> Agences</div>
