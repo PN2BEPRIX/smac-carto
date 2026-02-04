@@ -5266,8 +5266,24 @@
       showToast('Export PDF téléchargé !', 'success');
     }
 
+    /* Track visits */
+    async function trackVisit() {
+      try {
+        await supabase.from(`${SITE_ID}_visits`).insert({
+          timestamp: new Date().toISOString(),
+          page: window.location.pathname || '/',
+          user_agent: navigator.userAgent.substring(0, 200),
+          screen: `${screen.width}x${screen.height}`,
+          referrer: document.referrer.substring(0, 200) || null
+        });
+      } catch (e) { /* silent fail */ }
+    }
+
     /* Initialize */
     document.addEventListener('DOMContentLoaded', async () => {
+      // Track visit
+      trackVisit();
+      
       // Load CSS
       await Promise.all([
         injectCSS(CDN.leafletCSS),
