@@ -110,6 +110,44 @@
     }
 
     /* === TABS with Drag & Drop === */
+    /* Header KPIs */
+    .header-kpis {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .hkpi {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .hkpi-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .hkpi-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #18181b;
+    }
+    .hkpi-lbl {
+      font-size: 11px;
+      color: #a1a1aa;
+      font-weight: 400;
+    }
+    @media (max-width: 900px) {
+      .header-kpis { gap: 8px; padding: 0 8px; }
+      .hkpi-lbl { display: none; }
+    }
+    @media (max-width: 600px) {
+      .header-kpis { display: none; }
+    }
+
     .tabs-container {
       background: rgba(255, 255, 255, 0.3);
       backdrop-filter: blur(25px) saturate(180%);
@@ -403,7 +441,7 @@
       backdrop-filter: blur(4px);
       align-items: flex-start;
       justify-content: center;
-      padding-top: 80px;
+      padding-top: 122px;
     }
     .global-search-overlay.open {
       display: flex;
@@ -2783,7 +2821,9 @@
       display: flex;
       overflow: hidden;
       background: #0a0a0f;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
+      user-select: none;
+      -webkit-user-select: none;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
     }
     .welcome-screen.hidden {
       opacity: 0;
@@ -2932,6 +2972,7 @@
     }
     .wlc-enter-btn:hover::before { opacity: 1; }
     .wlc-enter-btn:active { transform: translateY(0); }
+
     .wlc-enter-arrow {
       width: 18px;
       height: 18px;
@@ -3055,6 +3096,7 @@
         Accéder à la carte
         <svg class="wlc-enter-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
       </button>
+
     </div>
 
     <!-- Séparateur -->
@@ -3127,6 +3169,14 @@
         <div class="logo-text">SMAC</div>
         <div class="logo-subtitle">Cartographie des affaires</div>
       </div>
+    </div>
+    <div class="header-kpis" id="kpiBar">
+      <div class="hkpi"><span class="hkpi-val" id="kpiTotal">—</span><span class="hkpi-lbl">affaires</span></div>
+      <div class="hkpi"><span class="hkpi-val" id="kpiCA">—</span><span class="hkpi-lbl">CA</span></div>
+      <div class="hkpi"><span class="hkpi-dot" style="background:#22c55e"></span><span class="hkpi-val" id="kpiGagne">—</span><span class="hkpi-lbl">gagné</span></div>
+      <div class="hkpi"><span class="hkpi-dot" style="background:#f59e0b"></span><span class="hkpi-val" id="kpiEncours">—</span><span class="hkpi-lbl">en cours</span></div>
+      <div class="hkpi"><span class="hkpi-dot" style="background:#f43f5e"></span><span class="hkpi-val" id="kpiPerdu">—</span><span class="hkpi-lbl">perdu</span></div>
+      <div class="hkpi"><span class="hkpi-dot" style="background:#3b82f6"></span><span class="hkpi-val" id="kpiFaste">—</span><span class="hkpi-lbl">faste</span></div>
     </div>
     <div class="header-actions">
       <span id="syncStatus" style="font-size: 12px; margin-right: 8px; color: #71717a;">☁️ En ligne</span>
@@ -4851,6 +4901,11 @@
       if (isTabLocked(currentTab)) {
         document.getElementById('statsTotalAffaires').textContent = '🔒';
         document.getElementById('statsTotalMontant').textContent = '🔒';
+        // KPI bar masqué si verrouillé
+        ['kpiTotal','kpiCA','kpiGagne','kpiEncours','kpiPerdu','kpiFaste'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = '🔒';
+        });
         // Masquer les graphiques
         document.querySelectorAll('.stats-section').forEach(el => {
           el.style.opacity = '0.2';
@@ -4883,6 +4938,20 @@
       // Update summary cards
       document.getElementById('statsTotalAffaires').textContent = total;
       document.getElementById('statsTotalMontant').textContent = formatMontantShort(totalMontant);
+      
+      // Update KPI bar
+      const kT = document.getElementById('kpiTotal');
+      const kC = document.getElementById('kpiCA');
+      const kG = document.getElementById('kpiGagne');
+      const kE = document.getElementById('kpiEncours');
+      const kP = document.getElementById('kpiPerdu');
+      const kF = document.getElementById('kpiFaste');
+      if (kT) kT.textContent = total;
+      if (kC) kC.textContent = formatMontantShort(totalMontant);
+      if (kG) kG.textContent = gagne;
+      if (kE) kE.textContent = encours;
+      if (kP) kP.textContent = perdu;
+      if (kF) kF.textContent = faste;
       
       // Update pie chart
       updatePieChart(gagne, perdu, encours, faste, total, horssmac);
@@ -7053,146 +7122,121 @@
         const canvas = document.getElementById('wlcCanvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        let W, H, mouse = { x: -999, y: -999 }, particles = [], raf;
+        let W, H, mouse = { x: -999, y: -999 }, particles = [], ripples = [], raf;
 
-        function resize() {
-          W = canvas.width  = canvas.offsetWidth;
-          H = canvas.height = canvas.offsetHeight;
-        }
+        function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
         resize();
         window.addEventListener('resize', resize);
 
-        // Suivi souris sur le welcome screen uniquement
         const wlcScreen = document.getElementById('welcomeScreen');
         wlcScreen?.addEventListener('mousemove', e => {
           const r = canvas.getBoundingClientRect();
           mouse.x = e.clientX - r.left;
           mouse.y = e.clientY - r.top;
         });
-        wlcScreen?.addEventListener('mouseleave', () => {
-          mouse.x = -999; mouse.y = -999;
-        });
+        wlcScreen?.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
 
-        // Clic : explosion de particules
+        // Clic : ripple subtil + quelques particules
         wlcScreen?.addEventListener('click', e => {
+          if (e.target.closest('.wlc-enter-btn')) return;
           const r = canvas.getBoundingClientRect();
-          const cx = e.clientX - r.left;
-          const cy = e.clientY - r.top;
-          for (let i = 0; i < 18; i++) {
-            const angle = (Math.PI * 2 * i) / 18;
-            const speed = 2 + Math.random() * 4;
+          const cx = e.clientX - r.left, cy = e.clientY - r.top;
+          // Un seul anneau doux
+          ripples.push({ x: cx, y: cy, r: 0, maxR: 100 + Math.random()*40, life: 1 });
+          // Quelques particules légères
+          for (let i = 0; i < 10; i++) {
+            const angle = (Math.PI * 2 * i) / 10 + (Math.random()-0.5)*0.4;
+            const speed = 1 + Math.random() * 2.5;
             particles.push({
               x: cx, y: cy,
-              vx: Math.cos(angle) * speed,
-              vy: Math.sin(angle) * speed,
-              life: 1, decay: 0.03 + Math.random() * 0.02,
-              size: 2 + Math.random() * 3,
-              type: 'burst'
+              vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+              life: 1, decay: 0.02 + Math.random()*0.015,
+              size: 1.5 + Math.random()*2, type: 'burst'
             });
           }
         });
 
-        // Créer particules flottantes de fond
-        for (let i = 0; i < 60; i++) {
-          particles.push(mkDot());
-        }
+        // Particules flottantes de fond
+        for (let i = 0; i < 140; i++) particles.push(mkDot());
 
         function mkDot() {
           return {
-            x: Math.random() * (W || 1200),
-            y: Math.random() * (H || 800),
-            vx: (Math.random() - 0.5) * 0.4,
-            vy: (Math.random() - 0.5) * 0.4,
-            baseVx: (Math.random() - 0.5) * 0.4,
-            baseVy: (Math.random() - 0.5) * 0.4,
-            size: 0.8 + Math.random() * 1.4,
-            life: 1, decay: 0,
-            type: 'dot',
-            alpha: 0.15 + Math.random() * 0.3
+            x: Math.random()*(W||1200), y: Math.random()*(H||800),
+            vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+            baseVx: (Math.random()-0.5)*0.3, baseVy: (Math.random()-0.5)*0.3,
+            size: 0.6 + Math.random()*1.4, life: 1, decay: 0, type: 'dot',
+            alpha: 0.12 + Math.random()*0.2, pulse: Math.random()*Math.PI*2
           };
         }
 
         function draw() {
-          if (document.getElementById('welcomeScreen')?.classList.contains('hidden')) {
-            cancelAnimationFrame(raf);
-            return;
-          }
+          if (document.getElementById('welcomeScreen')?.classList.contains('hidden')) { cancelAnimationFrame(raf); return; }
           raf = requestAnimationFrame(draw);
           ctx.clearRect(0, 0, W, H);
 
           // Lueur douce qui suit la souris
           if (mouse.x > 0) {
-            const grd = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 280);
-            grd.addColorStop(0, 'rgba(225,6,0,0.09)');
-            grd.addColorStop(0.5, 'rgba(225,6,0,0.03)');
+            const grd = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 250);
+            grd.addColorStop(0, 'rgba(225,6,0,0.07)');
+            grd.addColorStop(0.5, 'rgba(225,6,0,0.02)');
             grd.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, W, H);
+
           }
 
-          // Mise à jour + dessin des particules
-          for (let i = particles.length - 1; i >= 0; i--) {
+          // Ripples
+          for (let i = ripples.length-1; i >= 0; i--) {
+            const rp = ripples[i];
+            rp.r += (rp.maxR - rp.r) * 0.06;
+            rp.life -= 0.018;
+            if (rp.life <= 0) { ripples.splice(i,1); continue; }
+            ctx.beginPath();
+            ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI*2);
+            ctx.strokeStyle = 'rgba(225,6,0,' + (rp.life*0.3) + ')';
+            ctx.lineWidth = 1.5 * rp.life;
+            ctx.stroke();
+          }
+
+          // Particules
+          for (let i = particles.length-1; i >= 0; i--) {
             const p = particles[i];
 
             if (p.type === 'dot') {
+              p.pulse += 0.015;
+              const pAlpha = p.alpha * (0.8 + Math.sin(p.pulse)*0.2);
               // Attraction légère vers la souris
               if (mouse.x > 0) {
-                const dx = mouse.x - p.x;
-                const dy = mouse.y - p.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const dx = mouse.x-p.x, dy = mouse.y-p.y;
+                const dist = Math.sqrt(dx*dx+dy*dy);
                 if (dist < 180) {
-                  const force = (180 - dist) / 180 * 0.012;
-                  p.vx += dx * force;
-                  p.vy += dy * force;
+                  const force = (180-dist)/180*0.008;
+                  p.vx += dx*force; p.vy += dy*force;
                 }
               }
-              // Retour progressif à la vélocité de base
-              p.vx += (p.baseVx - p.vx) * 0.04;
-              p.vy += (p.baseVy - p.vy) * 0.04;
-              p.x += p.vx;
-              p.y += p.vy;
+              p.vx += (p.baseVx-p.vx)*0.03; p.vy += (p.baseVy-p.vy)*0.03;
+              p.x += p.vx; p.y += p.vy;
+              if(p.x<0){p.x=0;p.vx*=-1;p.baseVx*=-1;} if(p.x>W){p.x=W;p.vx*=-1;p.baseVx*=-1;}
+              if(p.y<0){p.y=0;p.vy*=-1;p.baseVy*=-1;} if(p.y>H){p.y=H;p.vy*=-1;p.baseVy*=-1;}
 
-              // Rebond bords
-              if (p.x < 0)  { p.x = 0;  p.vx *= -1; p.baseVx *= -1; }
-              if (p.x > W)  { p.x = W;  p.vx *= -1; p.baseVx *= -1; }
-              if (p.y < 0)  { p.y = 0;  p.vy *= -1; p.baseVy *= -1; }
-              if (p.y > H)  { p.y = H;  p.vy *= -1; p.baseVy *= -1; }
-
-              // Lignes de connexion entre points proches
-              for (let j = i - 1; j >= 0; j--) {
-                const q = particles[j];
-                if (q.type !== 'dot') continue;
-                const ddx = p.x - q.x, ddy = p.y - q.y;
-                const d2 = ddx * ddx + ddy * ddy;
-                if (d2 < 110 * 110) {
-                  const alpha = (1 - d2 / (110 * 110)) * 0.12;
-                  ctx.beginPath();
-                  ctx.moveTo(p.x, p.y);
-                  ctx.lineTo(q.x, q.y);
-                  ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-                  ctx.lineWidth = 0.6;
-                  ctx.stroke();
+              // Connexions
+              for (let j = i-1; j >= 0; j--) {
+                const q = particles[j]; if (q.type !== 'dot') continue;
+                const ddx=p.x-q.x, ddy=p.y-q.y, d2=ddx*ddx+ddy*ddy;
+                if (d2 < 110*110) {
+                  const a = (1-d2/(110*110))*0.1;
+                  ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+                  ctx.strokeStyle = 'rgba(255,255,255,'+a+')'; ctx.lineWidth = 0.5; ctx.stroke();
                 }
               }
-
-              // Point
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
-              ctx.fill();
+              ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+              ctx.fillStyle = 'rgba(255,255,255,'+pAlpha+')'; ctx.fill();
 
             } else if (p.type === 'burst') {
-              p.x += p.vx;
-              p.y += p.vy;
-              p.vx *= 0.95;
-              p.vy *= 0.95;
-              p.life -= p.decay;
-              if (p.life <= 0) { particles.splice(i, 1); continue; }
-
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(225,6,0,${p.life * 0.8})`;
-              ctx.fill();
+              p.x += p.vx; p.y += p.vy; p.vx *= 0.96; p.vy *= 0.96; p.life -= p.decay;
+              if (p.life <= 0) { particles.splice(i,1); continue; }
+              ctx.beginPath(); ctx.arc(p.x, p.y, p.size*p.life, 0, Math.PI*2);
+              ctx.fillStyle = 'rgba(225,6,0,' + (p.life*0.6) + ')'; ctx.fill();
             }
           }
         }
