@@ -845,6 +845,16 @@
       overflow-y: auto;
     }
 
+    .pin-badge {
+      animation: pinPulse 0.8s ease infinite alternate;
+      margin-right: 6px;
+      font-size: 16px;
+    }
+    @keyframes pinPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.3); }
+    }
+
     .list-item {
       padding: 14px 16px;
       border-bottom: 1px solid var(--gray-100);
@@ -2742,10 +2752,8 @@
     }
 
     /* Hide elements in client mode */
+    body.client-mode .header-kpis,
     body.client-mode .list-item-amount,
-    body.client-mode .hkpi-dot,
-    body.client-mode .hkpi-val,
-    body.client-mode .hkpi,
     body.client-mode .total-bar strong,
     body.client-mode .popup-amount,
     body.client-mode .stats-card-value,
@@ -4399,10 +4407,10 @@
     }
 
     /* Protection Modal Functions */
-    function openSetPasswordModal(tabId) {
+    async function openSetPasswordModal(tabId) {
       const masterCodeInput = prompt('🔐 Code de gestion requis :');
       if (!masterCodeInput) return showToast('Annulé', 'info');
-      if (masterCodeInput !== MASTER_CODE) return showToast('❌ Code incorrect', 'error');
+      if (!await checkMasterCode(masterCodeInput)) return showToast('❌ Code incorrect', 'error');
       
       protectingTabId = tabId;
       document.getElementById('newPasswordInput').value = '';
@@ -4497,10 +4505,10 @@
     }
 
     /* Remove Protection Modal Functions */
-    function openRemoveProtectionModal(tabId) {
+    async function openRemoveProtectionModal(tabId) {
       const masterCodeInput = prompt('🔐 Code de gestion requis :');
       if (!masterCodeInput) return showToast('Annulé', 'info');
-      if (masterCodeInput !== MASTER_CODE) return showToast('❌ Code incorrect', 'error');
+      if (!await checkMasterCode(masterCodeInput)) return showToast('❌ Code incorrect', 'error');
       
       removingProtectionTabId = tabId;
       document.getElementById('removeProtectionPassword').value = '';
@@ -4547,7 +4555,6 @@
     }
 
     /* Default Data */
-    const umapDataDC = [{"id": "dc_umap_21745a1b", "affaires": "OpCore (France) - Saint-Ouen l'Aumône", "client": "OpCore (France)", "description": "90 MW 2,5 milliards d'euros d'investissement Source : Les Echos", "eg": "", "architect": "", "adresse": "Saint-Ouen l'Aumône", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.04313, 2.105287], "tags": ["Data Center", "Projet"], "link": "", "notes": "90 MW 2,5 milliards d'euros d'investissement  Source : Les Echos"}, {"id": "dc_umap_ab72ed34", "affaires": "Altarea (France) - Val-de-Reuil", "client": "Altarea (France)", "description": "Engagement de raccordement signé Mise en service fin 2027 14 MW Source : Altarea", "eg": "", "architect": "", "adresse": "Val-de-Reuil", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.272602, 1.217085], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé  Mise en service fin 2027 14 MW  Source : Altarea"}, {"id": "dc_umap_d6c3d871", "affaires": "Altarea (France) - Velizy", "client": "Altarea (France)", "description": "Engagement de raccordement signé Mise en service prévue au deuxième semestre 2027 7 MW Source : Altarea", "eg": "", "architect": "", "adresse": "Velizy", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.787899, 2.190408], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé Mise en service prévue au deuxième semestre 2027 7 MW  Source : Altarea"}, {"id": "dc_umap_1cbf3aad", "affaires": "Amazon (Etats-Unis) et Cyrus One (Etats-Unis) - Wissous", "client": "Amazon (Etats-Unis) et Cyrus One (Etats-Unis)", "description": "Recours en cours au Tribunal Administratif 100MW Date: 2028 Source : Next Ink, Le Parisien", "eg": "", "architect": "", "adresse": "Wissous, Essonne", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.7316381, 2.3268669], "tags": ["Data Center", "Projet"], "link": "", "notes": "Recours en cours au Tribunal Administratif 100MW  Date: 2028  Source : Next Ink, Le Parisien"}, {"id": "dc_umap_20841d8a", "affaires": "Azur Datacenter (France) - Meyzieu", "client": "Azur Datacenter (France)", "description": "Source : DC Mag", "eg": "", "architect": "", "adresse": "Meyzieu, Métropole de Lyon", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [45.7764637, 5.0044767], "tags": ["Data Center", "Projet"], "link": "", "notes": "Source : DC Mag"}, {"id": "dc_umap_f2a2fdd1", "affaires": "Bosquel", "client": "Bosquel", "description": "Appel à manifestation d'intérêt (AMI) en cours Entre 500 et 1500 MW Fast-track", "eg": "", "architect": "", "adresse": "France", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.738665, 2.216737], "tags": ["Data Center", "Projet"], "link": "", "notes": "Appel à manifestation d'intérêt (AMI) en cours Entre 500 et 1500 MW Fast-track"}, {"id": "dc_umap_a8858668", "affaires": "Brownfield (France) et Sepia (France) - Cagny", "client": "Brownfield (France) et Sepia (France)", "description": "En cours de négociation", "eg": "", "architect": "", "adresse": "Cagny", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.147306, -0.255309], "tags": ["Data Center", "Projet"], "link": "", "notes": "En cours de négociation"}, {"id": "dc_umap_210164d9", "affaires": "Brownfields (France) - Vitry-sur-Seine", "client": "Brownfields (France)", "description": "En négociation avec Brownfield Ancien dépôt pétrolier Source : Les Echos", "eg": "", "architect": "", "adresse": "Vitry-sur-Seine, Val-de-Marne", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.7876, 2.39164], "tags": ["Data Center", "Projet"], "link": "", "notes": "En négociation avec Brownfield Ancien dépôt pétrolier  Source : Les Echos"}, {"id": "dc_umap_b772c523", "affaires": "BXIA/Osae (France) - Bordeaux", "client": "BXIA/Osae (France)", "description": "380 MWA 2,5 milliards d'euros d'investissement 300 emplois directs prévus Livraison prévue entre 2030 et 2036 https://www.latribune.fr/article/tech/14", "eg": "", "architect": "", "adresse": "Bordeaux", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [44.8416106, -0.5810938], "tags": ["Data Center", "Projet"], "link": "", "notes": "380 MWA 2,5 milliards d'euros d'investissement 300 emplois directs prévus  Livraison prévue entre 2030 et 2036  https://www.latribune.fr/article/tech/14708755073072/data-centers-ce-qu-il-faut-savoir-sur-le-projet-de-supercalculateur-dedie-a-l-ia-a-bordeaux"}, {"id": "dc_umap_9bde176d", "affaires": "Colt Data Centre Services (Royaume-Uni)  -Les Ulis", "client": "Colt Data Centre Services (Royaume-Uni)  -Les Ulis", "description": "2 Nouveaux data centers près d'un site existant 45 MW en 2030 Mise en service : 2030 et 2031 Source : L'Usine Digitale", "eg": "", "architect": "", "adresse": "Essonne, Île-de-France", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "45 MW", "responsable": "", "metreur": "", "coords": [48.681708, 2.1701573], "tags": ["Data Center", "Projet"], "link": "", "notes": "2 Nouveaux data centers près d'un site existant 45 MW en 2030 Mise en service : 2030 et 2031  Source : L'Usine Digitale"}, {"id": "dc_umap_3427326a", "affaires": "Colt Data Centre Services (Royaume-Uni) - Villebon-sur-Yvette", "client": "Colt Data Centre Services (Royaume-Uni)", "description": "Construction de trois nouveaux data centers Capacité totale : 40MW en 2028 Près de 80 MW en 2031 Emplois directs : centaines Emplois indirects : milli", "eg": "", "architect": "", "adresse": "Villebon-sur-Yvette, Essonne", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.7000046, 2.2276489], "tags": ["Data Center", "Projet"], "link": "", "notes": "Construction de trois nouveaux data centers  Capacité totale : 40MW en 2028 Près de 80 MW en 2031  Emplois directs : centaines Emplois indirects : milliers  Source : L'Usine Digitale"}, {"id": "dc_umap_b44959f5", "affaires": "Data4 (France) - Nozay", "client": "Data4 (France)", "description": "En cours de construction 250 MW 2 milliards d'euros d'investissement 1 000 emplois temps plein Source : Data4", "eg": "", "architect": "", "adresse": "Nozay", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.645613, 2.232086], "tags": ["Data Center", "Projet"], "link": "", "notes": "En cours de construction 250 MW 2 milliards d'euros d'investissement 1 000 emplois temps plein  Source : Data4"}, {"id": "dc_umap_2efa932e", "affaires": "Data4 (France) et Brookfield (Canada) - Cambrai", "client": "Data4 (France) et Brookfield (Canada)", "description": "En cours de négociation", "eg": "", "architect": "", "adresse": "Cambrai", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [50.173538, 3.236633], "tags": ["Data Center", "Projet"], "link": "", "notes": "En cours de négociation"}, {"id": "dc_umap_609bb08e", "affaires": "Data4 (France) et Brookflied (Canada) - Escaudain", "client": "Data4 (France) et Brookflied (Canada)", "description": "En cours de négociation", "eg": "", "architect": "", "adresse": "Escaudain", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [50.3339891, 3.3440231], "tags": ["Data Center", "Projet"], "link": "", "notes": "En cours de négociation"}, {"id": "dc_umap_5bce89af", "affaires": "DataOne (France) et Core42 (Emirats arabes unis) - Eybens", "client": "DataOne (France) et Core42 (Emirats arabes unis)", "description": "En construction 400 MW Livraison prévue pour 2027 Source : La Tribune / https://www.latribune.fr/innovation/2025-02-21/ia-dataone-se-lance-dans-la-bat", "eg": "", "architect": "", "adresse": "Eybens", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [45.147713, 5.750144], "tags": ["Data Center", "Projet"], "link": "", "notes": "En construction 400 MW Livraison prévue pour 2027  Source : La Tribune / https://www.latribune.fr/innovation/2025-02-21/ia-dataone-se-lance-dans-la-bataille-des-supercalculateurs-en-isere-1018672.html"}, {"id": "dc_umap_70f5e10f", "affaires": "Digital Realty (Etats-Unis) - Bussy-Saint-Georges", "client": "Digital Realty (Etats-Unis)", "description": "1 milliard d'euros d'investissement 120 MW 60 emplois directs 250 emplois indirects Début des travaux prévu Q1 2027 Source : Digital Realty", "eg": "", "architect": "", "adresse": "Bussy-Saint-Georges", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.842205, 2.69802], "tags": ["Data Center", "Projet"], "link": "", "notes": "1 milliard d'euros d'investissement 120 MW 60 emplois directs 250 emplois indirects  Début des travaux prévu Q1 2027  Source : Digital Realty"}, {"id": "dc_umap_e8592b9c", "affaires": "Digital Realty (Etats-Unis) - Dugny", "client": "Digital Realty (Etats-Unis)", "description": "En construction 2 milliards d'euros d'investissement 200 MW 150 emplois directs 500 emplois directs Livraison prévue pour 2027", "eg": "", "architect": "", "adresse": "Dugny", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "": "2 Md€", "responsable": "", "metreur": "", "coords": [48.952179, 2.416983], "tags": ["Data Center", "Projet"], "link": "", "notes": "En construction 2 milliards d'euros d'investissement 200 MW 150 emplois directs 500 emplois directs Livraison prévue pour 2027"}, {"id": "dc_umap_006916ad", "affaires": "Digital Realty (Etats-Unis) - Les Ulis", "client": "Digital Realty (Etats-Unis)", "description": "1,1 milliard d'euros d'investissements 100 MW 60 emplois directs 250 emplois indirects Construction en cours, fin prévue fin 2026", "eg": "", "architect": "", "adresse": "Les Ulis", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "": "1.1 Md€", "responsable": "", "metreur": "", "coords": [48.6792779, 2.16647], "tags": ["Data Center", "Projet"], "link": "", "notes": "1,1 milliard d'euros d'investissements 100 MW 60 emplois directs 250 emplois indirects  Construction en cours, fin prévue fin 2026"}, {"id": "dc_umap_08120e9a", "affaires": "Digital Realty (Etats-Unis) - Segro Logistics ( Royaume-Uni) - Marseille", "client": "Digital Realty (Etats-Unis)", "description": "En construction Ancienne friche Louis Sucre 300 millions d'euros d'investissement 38 MW 30 emplois directs 170 emplois indirects Source : Digital Real", "eg": "", "architect": "", "adresse": "Segro Logistics ( Royaume-Uni) - Marseille", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [43.3025742, 5.3690743], "tags": ["Data Center", "Projet"], "link": "", "notes": "En construction Ancienne friche Louis Sucre 300 millions d'euros d'investissement  38 MW 30 emplois directs 170 emplois indirects  Source : Digital Realty / La Tribune https://www.latribune.fr/entreprises-finance/2025-06-19/datacenters-comment-digital-realty-peaufine-sa-strategie-en-france-1027663.h"}, {"id": "dc_umap_3466f772", "affaires": "Digital Realty (Etats-Unis) -Bouc-Bel-Air", "client": "Digital Realty (Etats-Unis) -Bouc-Bel-Air", "description": "Engagement de raccordement signé 730 millions d'euros d'investissement 80 MW 50 emplois directs 200 emplois indirects Livraison fin 2027 Source : Digi", "eg": "", "architect": "", "adresse": "France", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [43.451152, 5.413875], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé  730 millions d'euros d'investissement 80 MW 50 emplois directs 200 emplois indirects  Livraison fin 2027  Source : Digital Realty / La Tribune https://www.latribune.fr/entreprises-finance/2025-06-19/datacenters-comment-digital-realty-peaufine-sa-strategie-en-france-"}, {"id": "dc_umap_6eb6c592", "affaires": "Eclairion - Bruyères-le-Châtel", "client": "Eclairion", "description": "Engagement de raccordement signé 300 millions d'euros d'investissement, dont 29 millions d'euros financés par le programme France 2030 Source : La Trb", "eg": "", "architect": "", "adresse": "Bruyères-le-Châtel", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.593388, 2.192499], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé 300 millions d'euros d'investissement, dont 29 millions d'euros financés par le programme France 2030  Source : La Trbune / https://www.latribune.fr/article/tech/37923012103495/pourquoi-les-maires-ont-interet-a-accueillir-des-data-centers-sur-leur-territoire"}, {"id": "dc_umap_1ffd4490", "affaires": "Eclairion (France) - Bessé-sur-Braye", "client": "Eclairion (France)", "description": "Engagement de raccordement signé 600 millions d'euros d'investissement Livraison prévue en 2028 80 à 120 emplois prévus 120 MW", "eg": "", "architect": "", "adresse": "Bessé-sur-Braye", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [47.833387, 0.753144], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé  600 millions d'euros d'investissement Livraison prévue en 2028 80 à 120 emplois prévus  120 MW"}, {"id": "dc_umap_d0fd0189", "affaires": "Eclairion (France) - Richemont", "client": "Eclairion (France)", "description": "Engagement de raccordement signé 2 milliards d'euros d'investissement entre Richemont et La Maxe", "eg": "", "architect": "", "adresse": "Richemont", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.2765234, 6.1632437], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé  2 milliards d'euros d'investissement entre Richemont et La Maxe"}, {"id": "dc_umap_d230f378", "affaires": "Equinix (Etats-Unis) - Argenteuil", "client": "Equinix (Etats-Unis)", "description": "55 MW", "eg": "", "architect": "", "adresse": "Argenteuil", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.9472096, 2.2466847], "tags": ["Data Center", "Projet"], "link": "", "notes": "55 MW"}, {"id": "dc_umap_081a7548", "affaires": "Equinix (Etats-Unis) - Meudon", "client": "Equinix (Etats-Unis)", "description": "48 MW", "eg": "", "architect": "", "adresse": "Meudon", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.812995, 2.23847], "tags": ["Data Center", "Projet"], "link": "", "notes": "48 MW"}, {"id": "dc_umap_3c56f444", "affaires": "Evroc (Suède) - Mougins", "client": "Evroc (Suède)", "description": "En construction 4 milliards d'euros d'investissement 96 MW Source : Journal du Net et DGE", "eg": "", "architect": "", "adresse": "Mougins", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [43.6023319, 7.006491], "tags": ["Data Center", "Projet"], "link": "", "notes": "En construction 4 milliards d'euros d'investissement 96 MW Source : Journal du Net et DGE"}, {"id": "dc_umap_43ed881e", "affaires": "Gazel Energie (République Tchèque) - Saint-Avold", "client": "Gazel Energie (République Tchèque)", "description": "Source : La Tribune / L'Usine Nouvelle", "eg": "", "architect": "", "adresse": "Saint-Avold, Moselle", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.1043397, 6.7071754], "tags": ["Data Center", "Projet"], "link": "", "notes": "Source : La Tribune / L'Usine Nouvelle"}, {"id": "dc_umap_d41421c3", "affaires": "GazelEnergie (République Tchèque) - Gardanne", "client": "GazelEnergie (République Tchèque)", "description": "Source : La Tribune https://www.latribune.fr/economie/2025-05-15/gazelenergie-conforte-son-modele-d-eco-plateforme-industrielle-1025048.html", "eg": "", "architect": "", "adresse": "Gardanne, Bouches-du-Rhône", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [43.455613, 5.4710661], "tags": ["Data Center", "Projet"], "link": "", "notes": "Source : La Tribune https://www.latribune.fr/economie/2025-05-15/gazelenergie-conforte-son-modele-d-eco-plateforme-industrielle-1025048.html"}, {"id": "dc_umap_7a0cabfa", "affaires": "Google (Etats-Unis) - Étrechet", "client": "Google (Etats-Unis)", "description": "Engagement de raccordement signé 195 hectares Source : ICI Berry et DGE", "eg": "", "architect": "", "adresse": "Étrechet", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [46.777906, 1.784905], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé  195 hectares  Source : ICI Berry et DGE"}, {"id": "dc_umap_7060a5e7", "affaires": "H&DC\nParticipations (France) - Parc Industriel de la Plaine de l'Ain (PIPA)", "client": "H&DC\nParticipations (France)", "description": "Foncier sécurisé 195 MW", "eg": "", "architect": "", "adresse": "Parc Industriel de la Plaine de l'Ain (PIPA)", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [45.8520145, 5.2814013], "tags": ["Data Center", "Projet"], "link": "", "notes": "Foncier sécurisé  195 MW"}, {"id": "dc_umap_659ee558", "affaires": "H&DC Participations (France) - Dardilly", "client": "H&DC Participations (France)", "description": "Foncier sécurisé 18 MW", "eg": "", "architect": "", "adresse": "Dardilly", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [45.805587, 4.753184], "tags": ["Data Center", "Projet"], "link": "", "notes": "Foncier sécurisé  18 MW"}, {"id": "dc_umap_27e38318", "affaires": "H&DC Participations (France) - Manduel", "client": "H&DC Participations (France)", "description": "300 millions d'euros Capacité : 50 MW 300 emplois directs prévus Source : Les Echos", "eg": "", "architect": "", "adresse": "Manduel, Gard", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [43.8185561, 4.4732242], "tags": ["Data Center", "Projet"], "link": "", "notes": "300 millions d'euros  Capacité : 50 MW 300 emplois directs prévus   Source : Les Echos"}, {"id": "dc_umap_5eb41912", "affaires": "H&DC Participations (France) - Noyon", "client": "H&DC Participations (France)", "description": "Puissance maximale attendue : 450 MW 18 Ha", "eg": "", "architect": "", "adresse": "Noyon", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.580166, 3.0007229], "tags": ["Data Center", "Projet"], "link": "", "notes": "Puissance maximale attendue : 450 MW 18 Ha"}, {"id": "dc_umap_019d4655", "affaires": "La Maxe - Eclairion (France)", "client": "La Maxe", "description": "Engagement de raccordement signé 2 milliards d'euros d'investissement entre Richemont et La Maxe", "eg": "", "architect": "", "adresse": "Eclairion (France)", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.160569, 6.189544], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé  2 milliards d'euros d'investissement entre Richemont et La Maxe"}, {"id": "dc_umap_85775b3c", "affaires": "Les Pennes-Mirabeau - Telehouse (Japon)", "client": "Les Pennes-Mirabeau", "description": "Foncier sécurisé Ne communique pas encore les autres éléments Source : Telehouse", "eg": "", "architect": "", "adresse": "Telehouse (Japon)", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [43.410272, 5.308922], "tags": ["Data Center", "Projet"], "link": "", "notes": "Foncier sécurisé Ne communique pas encore les autres éléments  Source : Telehouse"}, {"id": "dc_umap_0f446025", "affaires": "Loire-sur-Rhône", "client": "Loire-sur-Rhône", "description": "Appel à manifestation d'intérêt (AMI) en cours Sélection du candidat en avril 2026 Entre 250 et 500 MW Ancien site EDF", "eg": "", "architect": "", "adresse": "France", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [45.561285, 4.805186], "tags": ["Data Center", "Projet"], "link": "", "notes": "Appel à manifestation d'intérêt (AMI) en cours Sélection du candidat en avril 2026 Entre 250 et 500 MW Ancien site EDF"}, {"id": "dc_umap_c992389d", "affaires": "Magny-les-Hameaux - Telehouse", "client": "Magny-les-Hameaux", "description": "En construction 4 milliards d'euros d'investissement 96 MW Source : Journal du Net et DGE", "eg": "", "architect": "", "adresse": "Telehouse", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.741829, 2.053208], "tags": ["Data Center", "Projet"], "link": "", "notes": "En construction 4 milliards d'euros d'investissement 96 MW Source : Journal du Net et DGE"}, {"id": "dc_umap_e5a8b854", "affaires": "MGX (Emirats arabes unis) - Banque Public D'Investissement (France) - Mistral (France) - Nvidia (Etats-Unis) - Crisenoy/Fouju", "client": "MGX (Emirats arabes unis)", "description": "Engagement de raccordement signé 240 MW d'ici fin 2027 et 700 MW d'ici fin 2029 50 milliards d'euros d'investissement Fast Track", "eg": "", "architect": "", "adresse": "Banque Public D'Investissement (France) - Mistral (France) - Nvidia (Etats-Unis) - Crisenoy/Fouju", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.595981, 2.743004], "tags": ["Data Center", "Projet"], "link": "", "notes": "Engagement de raccordement signé 240 MW d'ici fin 2027 et 700 MW d'ici fin 2029 50 milliards d'euros d'investissement Fast Track"}, {"id": "dc_umap_77312bc2", "affaires": "Microsoft (Etats-Unis) - Petit-Landau", "client": "Microsoft (Etats-Unis)", "description": "2 milliards d'euros d'investissement ( 4 milliards d'euros) Présentation publique Source : Contexte / La Tribune", "eg": "", "architect": "", "adresse": "Petit-Landau, Haut-Rhin", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [47.7314942, 7.5177461], "tags": ["Data Center", "Projet"], "link": "", "notes": "2 milliards d'euros d'investissement ( 4 milliards d'euros)  Présentation publique   Source : Contexte / La Tribune"}, {"id": "dc_umap_40db16e0", "affaires": "Nebius (Pays-Bas) - Béthune", "client": "Nebius (Pays-Bas)", "description": "Friche Bridgestone Au moins 1,5 milliard d'euros d'investissement 240 MW attendue en 2027 30 emplois directs Source : La Tribune https://www.latribune", "eg": "", "architect": "", "adresse": "Béthune", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [50.531036, 2.63926], "tags": ["Data Center", "Projet"], "link": "", "notes": "Friche Bridgestone Au moins 1,5 milliard d'euros d'investissement 240 MW attendue en 2027 30 emplois directs    Source : La Tribune https://www.latribune.fr/article/tech/2012026527085614/data-center-le-groupe-nebius-erige-un-site-colossal-dans-les-hauts-de-france / Les Echos"}, {"id": "dc_umap_eca96369", "affaires": "NTT (Japon) et Logistics Capital Partners (Royaume-Uni) - Le Coudray-Montceaux", "client": "NTT (Japon) et Logistics Capital Partners (Royaume-Uni)", "description": "Extension d'un site existant, construction de deux nouveaux data center (3 au total) Enquete publique terminée, autorisation de permis de construction", "eg": "", "architect": "", "adresse": "Le Coudray-Montceaux, Essonne", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.5653177, 2.4855792], "tags": ["Data Center", "Projet"], "link": "", "notes": "Extension d'un site existant, construction de deux nouveaux data center (3 au total)  Enquete publique terminée, autorisation de permis de construction et de la Préfecture donné Friche industrielle (ex-site Altis Semiconductor). 125 MW au total Date: 2028"}, {"id": "dc_umap_29173a9b", "affaires": "OpCore (France) - Vernou-la-Celle-sur-Seine", "client": "OpCore (France)", "description": "Foncier sécurisé Fast Track 4 milliards d'euros d'investissement Plusieurs centaines de MW Première mise en service attendue pour 2027 Plusieurs centa", "eg": "", "architect": "", "adresse": "Vernou-la-Celle-sur-Seine", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.389297, 2.8480387], "tags": ["Data Center", "Projet"], "link": "", "notes": "Foncier sécurisé Fast Track 4 milliards d'euros d'investissement Plusieurs centaines de MW Première mise en service attendue pour 2027 Plusieurs centaines d'emplois directs et indirects   Source : OpCore (Iliad) / La Tribune https://www.latribune.fr/article/tech/intelligence-artificielle/58923098793"}, {"id": "dc_umap_33fbd25c", "affaires": "Rantigny", "client": "Rantigny", "description": "Friche Avon Début de la construction 2027 Livraison prévue en 2029 300 MW Un acteur mondial du cloud (nom pas encore communiqué) 4,5 milliards d'euros", "eg": "", "architect": "", "adresse": "France", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [49.329992, 2.440265], "tags": ["Data Center", "Projet"], "link": "", "notes": "Friche Avon Début de la construction 2027 Livraison prévue en 2029 300 MW Un acteur mondial du cloud (nom pas encore communiqué) 4,5 milliards d'euros   Source : DC Mag"}, {"id": "dc_umap_82bed5c6", "affaires": "Segro Logistics (Royaume-Uni) - Le Bourget", "client": "Segro Logistics (Royaume-Uni)", "description": "Ancienne plateforme logistique H&M 75 MW de puissance Source : Le Parisien", "eg": "", "architect": "", "adresse": "Le Bourget, Seine-Saint-Denis", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.9351403, 2.4258354], "tags": ["Data Center", "Projet"], "link": "", "notes": "Ancienne plateforme logistique H&M  75 MW de puissance  Source : Le Parisien"}, {"id": "dc_umap_ba136bea", "affaires": "Sesterce (France) - Alixan", "client": "Sesterce (France)", "description": "Foncier sécurisé 1,5 milliard d'euros d'investissement 80 MW Mise en service d'une première tranche de 10 MW en 2026 Mise en service de 80 MW prévue p", "eg": "", "architect": "", "adresse": "Alixan", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [44.9752935, 5.0276775], "tags": ["Data Center", "Projet"], "link": "", "notes": "Foncier sécurisé 1,5 milliard d'euros d'investissement 80 MW Mise en service d'une première tranche de 10 MW en 2026  Mise en service de 80 MW prévue pour 2027 800 emplois directs et indirects   Source : Sesterce / La Tribune https://www.latribune.fr/auvergne-rhone-alpes-75/territoire/2025-02-11/ia-"}, {"id": "dc_umap_7c7c1c9b", "affaires": "SNC Data Hills (France) - Aulnay-sous-Bois", "client": "SNC Data Hills (France)", "description": "En construction Au moins 1 milliard d'euros d'investissement Puissance annoncée de 240 MW Mise en service de 2027 à 2040 240 emplois directs Source : ", "eg": "", "architect": "", "adresse": "Aulnay-sous-Bois", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.9412151, 2.4970711], "tags": ["Data Center", "Projet"], "link": "", "notes": "En construction Au moins 1 milliard d'euros d'investissement  Puissance annoncée de 240 MW  Mise en service de 2027 à 2040 240 emplois directs   Source :  Data Hills / La Gazette Eco"}, {"id": "dc_umap_40b2a808", "affaires": "Thésée (France) - Aubergenville", "client": "Thésée (France)", "description": "Foncier sécurisé Début des travaux 2026 Mise en service d'un premier bâtiment de 10 MW en 2027 Objectif de puissance maximale : 50 MW 500 millions d'e", "eg": "", "architect": "", "adresse": "Aubergenville", "smac": "PN2", "datePrevisionnelle": "", "statut": "Hors SMAC", "montant": "", "responsable": "", "metreur": "", "coords": [48.9591319, 1.855891], "tags": ["Data Center", "Projet"], "link": "", "notes": "Foncier sécurisé Début des travaux 2026 Mise en service d'un premier bâtiment de 10 MW en 2027 Objectif de puissance maximale : 50 MW  500 millions d'euros d'investissement 50 emplois directs  Plusieurs centaines d'emplois indirects   Source : Thésée / DC Mag"}];
 
     const defaultDataDC = [];
 
@@ -4556,7 +4563,16 @@
     ];
 
     /* State */
-    const MASTER_CODE = 'Villepinte'; // Code maître pour protéger/supprimer des onglets
+    // Code maître hashé (SHA-256 de 'Villepinte')
+    const MASTER_CODE_HASH = '385aaefd63478a8670b161810a6ab7cdc0ee9157ef21df5b025739f2c6dedc0c';
+    async function checkMasterCode(input) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(input);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex === MASTER_CODE_HASH;
+    }
     let tabs = [
       { id: 'dc', name: 'Data-Centers', color: '#3b82f6' },
       { id: 'projets', name: 'Projets Chiffrés 2026', color: '#8b5cf6' }
@@ -5423,7 +5439,7 @@
     async function deleteTab(tabId) {
       const masterCodeInput = prompt('🔐 Code de gestion requis :');
       if (!masterCodeInput) return showToast('Annulé', 'info');
-      if (masterCodeInput !== MASTER_CODE) return showToast('❌ Code incorrect', 'error');
+      if (!await checkMasterCode(masterCodeInput)) return showToast('❌ Code incorrect', 'error');
       
       const idx = tabs.findIndex(t => t.id === tabId);
       if (idx > -1) {
@@ -5449,9 +5465,11 @@
         el.innerHTML = '🔄 Synchronisation...';
         el.style.color = '#f59e0b';
       } else if (status === 'saved') {
-        el.innerHTML = '✓ Synchronisé';
+        const now = new Date();
+        const hm = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+        el.innerHTML = '✓ Synchro ' + hm;
         el.style.color = '#22c55e';
-        setTimeout(() => { el.innerHTML = '☁️ En ligne'; el.style.color = '#71717a'; }, 2000);
+        setTimeout(() => { el.innerHTML = '☁️ ' + hm; el.style.color = '#71717a'; }, 3000);
       } else if (status === 'error') {
         el.innerHTML = '⚠️ Erreur sync';
         el.style.color = '#f43f5e';
@@ -5710,7 +5728,7 @@
         const lng = parseCoord(item.coords?.[1]);
         if (isNaN(lat) || isNaN(lng)) return;
 
-        const color = item.statut === 'Gagné' ? '#22c55e' : item.statut === 'Perdu' ? '#f43f5e' : item.statut === 'Faste' ? '#3b82f6' : item.statut === 'Hors SMAC' ? '#94a3b8' : '#f59e0b';
+        const color = clientModeActive ? '#9ca3af' : (item.statut === 'Gagné' ? '#22c55e' : item.statut === 'Perdu' ? '#f43f5e' : item.statut === 'Faste' ? '#3b82f6' : item.statut === 'Hors SMAC' ? '#94a3b8' : '#f59e0b');
         
         const icon = L.divIcon({
           className: 'custom-marker',
@@ -5734,7 +5752,7 @@
           </div>
         `);
         
-        // Clic marqueur → scroll vers l'affaire dans la liste
+        // Clic marqueur → scroll vers l'affaire dans la liste avec badge pulsant
         marker.on('click', () => {
           [document.getElementById('listContainer'), document.getElementById('mobileListContainer')].forEach(c => {
             if (!c) return;
@@ -5743,7 +5761,14 @@
               el.scrollIntoView({ behavior: 'smooth', block: 'center' });
               el.style.background = 'var(--theme-color-light)';
               el.style.boxShadow = '0 0 0 2px var(--theme-color)';
-              setTimeout(() => { el.style.background = ''; el.style.boxShadow = ''; }, 2000);
+              // Badge pulsant
+              const oldBadge = el.querySelector('.pin-badge');
+              if (oldBadge) oldBadge.remove();
+              const badge = document.createElement('span');
+              badge.className = 'pin-badge';
+              badge.textContent = '📍';
+              el.querySelector('.list-item-header')?.prepend(badge);
+              setTimeout(() => { el.style.background = ''; el.style.boxShadow = ''; badge.remove(); }, 3000);
             }
           });
         });
@@ -5925,15 +5950,14 @@
       deletingIdx = null;
     }
 
-    let undoDeleteTimer = null;
 
-    function confirmDelete() {
+    async function confirmDelete() {
       if (!deletingIdx) return;
       
       // Demander le code de gestion avant suppression
       const masterCodeInput = prompt('🔐 Code de gestion requis pour supprimer :');
       if (!masterCodeInput) { closeConfirm(); return showToast('Annulé', 'info'); }
-      if (masterCodeInput !== MASTER_CODE) { closeConfirm(); return showToast('❌ Code incorrect', 'error'); }
+      if (!await checkMasterCode(masterCodeInput)) { closeConfirm(); return showToast('❌ Code incorrect', 'error'); }
       
       const id = deletingIdx;
       const tabId = currentTab;
@@ -5950,23 +5974,17 @@
       applyFilters();
       closeConfirm();
 
-      // Cancel any previous pending delete
-      if (undoDeleteTimer) clearTimeout(undoDeleteTimer);
+      // Sauvegarder immédiatement (pas de délai)
+      saveToCloud(tabId);
 
-      // Show undo toast
+      // Show undo toast — undo = restaurer + re-sauvegarder
       showToastUndo(`"${deletedItem.affaires}" supprimée`, () => {
-        // Undo: restore item at original position
-        if (undoDeleteTimer) clearTimeout(undoDeleteTimer);
         dataByTab[tabId].splice(deletedIdx, 0, deletedItem);
         updateTabCounts();
         applyFilters();
+        saveToCloud(tabId);
         showToast('Suppression annulée ✓', 'success');
       });
-
-      // Persist to Supabase after 5s delay
-      undoDeleteTimer = setTimeout(() => {
-        saveToCloud(tabId);
-      }, 5000);
     }
 
     function showToastUndo(message, onUndo) {
@@ -6257,12 +6275,7 @@
         const cloudData = await loadFromCloud(tab.id);
         let baseData = cloudData && Array.isArray(cloudData) ? cloudData
                      : (tab.id === 'dc' ? defaultDataDC : defaultDataProj);
-        // Fusionner les projets uMap pour l'onglet dc (si pas déjà présents)
-        if (tab.id === 'dc' && umapDataDC.length) {
-          const existingNames = new Set(baseData.map(i => i.affaires?.toLowerCase().trim()));
-          const toAdd = umapDataDC.filter(i => !existingNames.has(i.affaires?.toLowerCase().trim()));
-          baseData = [...baseData, ...toAdd];
-        }
+
         dataByTab[tab.id] = migrateData(baseData);
       }));
 
@@ -7201,6 +7214,15 @@
             ctx.stroke();
           }
 
+          // Build spatial grid
+          const grid = {};
+          for (const p of particles) {
+            if (p.type !== 'dot') continue;
+            const key = Math.floor(p.x/120)+','+Math.floor(p.y/120);
+            if (!grid[key]) grid[key] = [];
+            grid[key].push(p);
+          }
+
           // Particules
           for (let i = particles.length-1; i >= 0; i--) {
             const p = particles[i];
@@ -7222,14 +7244,19 @@
               if(p.x<0){p.x=0;p.vx*=-1;p.baseVx*=-1;} if(p.x>W){p.x=W;p.vx*=-1;p.baseVx*=-1;}
               if(p.y<0){p.y=0;p.vy*=-1;p.baseVy*=-1;} if(p.y>H){p.y=H;p.vy*=-1;p.baseVy*=-1;}
 
-              // Connexions
-              for (let j = i-1; j >= 0; j--) {
-                const q = particles[j]; if (q.type !== 'dot') continue;
-                const ddx=p.x-q.x, ddy=p.y-q.y, d2=ddx*ddx+ddy*ddy;
-                if (d2 < 110*110) {
-                  const a = (1-d2/(110*110))*0.1;
-                  ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
-                  ctx.strokeStyle = 'rgba(255,255,255,'+a+')'; ctx.lineWidth = 0.5; ctx.stroke();
+              // Connexions (grid spatial)
+              const gx = Math.floor(p.x/120), gy = Math.floor(p.y/120);
+              for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+                const key = (gx+dx)+','+(gy+dy);
+                if (!grid[key]) continue;
+                for (const q of grid[key]) {
+                  if (q === p || q.type !== 'dot') continue;
+                  const ddx=p.x-q.x, ddy=p.y-q.y, d2=ddx*ddx+ddy*ddy;
+                  if (d2 < 110*110) {
+                    const a = (1-d2/(110*110))*0.1;
+                    ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+                    ctx.strokeStyle = 'rgba(255,255,255,'+a+')'; ctx.lineWidth = 0.5; ctx.stroke();
+                  }
                 }
               }
               ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
