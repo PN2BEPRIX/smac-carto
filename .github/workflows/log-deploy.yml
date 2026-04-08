@@ -1,0 +1,19 @@
+name: Log deploy
+on: [push]
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send log to Supabase
+        run: |
+          curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/logs" \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" \
+            -d '{
+              "type": "deploy",
+              "commit_message": "${{ github.event.head_commit.message }}",
+              "author": "${{ github.event.head_commit.author.name }}",
+              "branch": "${{ github.ref_name }}"
+            }'
