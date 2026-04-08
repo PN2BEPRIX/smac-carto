@@ -7283,4 +7283,40 @@
     });
   </script>
 
-<script src="./Cartographie SMAC2_files/leaflet.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/leaflet.markercluster.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/xlsx.full.min.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/jspdf.umd.min.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/jspdf.plugin.autotable.min.js.téléchargement" async=""></script></body></html>
+<script src="./Cartographie SMAC2_files/leaflet.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/leaflet.markercluster.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/xlsx.full.min.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/jspdf.umd.min.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/jspdf.plugin.autotable.min.js.téléchargement" async=""></script>
+
+<!-- ===== TRACKER SMAC ===== -->
+<script>
+(async () => {
+  const SUPA_URL = 'https://ynqehqskpehxiwiegfky.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlucWVocXNrcGVoeGl3aWVnZmt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzc0MjYsImV4cCI6MjA5MTIxMzQyNn0.SfYuYLLIujvyqPAdqfiMPsrgXxsX7MyoWjJ_qu0VNBc';
+
+  let ip = '—';
+  try {
+    const r = await fetch('https://api.ipify.org?format=json');
+    const d = await r.json();
+    ip = d.ip;
+  } catch(e) {}
+
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPA_KEY,
+        'Authorization': `Bearer ${SUPA_KEY}`
+      },
+      body: JSON.stringify({
+        type: 'visit',
+        page: window.location.pathname,
+        ip: ip,
+        user_agent: navigator.userAgent,
+        referrer: document.referrer || '—'
+      })
+    });
+  } catch(e) {}
+})();
+</script>
+<!-- ===== FIN TRACKER ===== -->
+
+</body></html>
