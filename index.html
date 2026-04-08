@@ -5423,6 +5423,7 @@
       renderTabs();
       switchTab(newTab.id);
       showToast(`Onglet "${name}" créé !`, 'success');
+      trackEvent('creation_onglet', { label: `Nouvel onglet : ${name}`, extra: newTab.id });
     }
 
     async function renameTab(tabId, newName) {
@@ -5433,6 +5434,7 @@
         await saveTabsConfig();
         renderTabs();
         showToast('Onglet renommé !', 'success');
+        trackEvent('modif_onglet', { label: `Onglet renommé : ${newName}`, extra: tabId });
       }
     }
 
@@ -6056,6 +6058,7 @@
       applyFilters();
       closeModal();
       showToast(editingId ? 'Affaire modifiée !' : 'Affaire créée !', 'success');
+      trackEvent(editingId ? 'modif_affaire' : 'creation_affaire', { label: affaires, detail: client, extra: currentTab });
     }
 
     /* Tags Input */
@@ -6118,6 +6121,7 @@
       XLSX.utils.book_append_sheet(wb, ws, 'Affaires');
       XLSX.writeFile(wb, `SMAC_Export_${formatDateStamp()}.xlsx`);
       showToast('Export Excel téléchargé !', 'success');
+      trackEvent('export_excel', { label: `Export Excel`, detail: `${currentList.length} affaires`, extra: currentTab });
     }
 
     function exportPDF() {
@@ -6229,6 +6233,7 @@
       
       doc.save(`SMAC_${tabName}_${today.getFullYear()}-${(today.getMonth()+1).toString().padStart(2,'0')}-${today.getDate().toString().padStart(2,'0')}.pdf`);
       showToast('Export PDF téléchargé !', 'success');
+      trackEvent('export_pdf', { label: `Export PDF - ${tabName}`, detail: `${currentList.length} affaires`, extra: tabName });
     }
 
     /* Track visits */
@@ -7287,35 +7292,42 @@
 
 <!-- ===== TRACKER SMAC ===== -->
 <script>
-(async () => {
-  const SUPA_URL = 'https://ynqehqskpehxiwiegfky.supabase.co';
-  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlucWVocXNrcGVoeGl3aWVnZmt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzc0MjYsImV4cCI6MjA5MTIxMzQyNn0.SfYuYLLIujvyqPAdqfiMPsrgXxsX7MyoWjJ_qu0VNBc';
+  const _SUPA_URL = 'https://ynqehqskpehxiwiegfky.supabase.co';
+  const _SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlucWVocXNrcGVoeGl3aWVnZmt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzc0MjYsImV4cCI6MjA5MTIxMzQyNn0.SfYuYLLIujvyqPAdqfiMPsrgXxsX7MyoWjJ_qu0VNBc';
+  let _visitorIP = '—';
 
-  let ip = '—';
-  try {
-    const r = await fetch('https://api.ipify.org?format=json');
-    const d = await r.json();
-    ip = d.ip;
-  } catch(e) {}
+  // Envoie un événement à Supabase
+  async function trackEvent(type, details = {}) {
+    try {
+      await fetch(`${_SUPA_URL}/rest/v1/logs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': _SUPA_KEY,
+          'Authorization': `Bearer ${_SUPA_KEY}`
+        },
+        body: JSON.stringify({
+          type,
+          ip: _visitorIP,
+          user_agent: navigator.userAgent,
+          page: window.location.pathname,
+          referrer: details.referrer || null,
+          commit_message: details.label || null,
+          author: details.detail || null,
+          branch: details.extra || null
+        })
+      });
+    } catch(e) {}
+  }
 
-  try {
-    await fetch(`${SUPA_URL}/rest/v1/logs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPA_KEY,
-        'Authorization': `Bearer ${SUPA_KEY}`
-      },
-      body: JSON.stringify({
-        type: 'visit',
-        page: window.location.pathname,
-        ip: ip,
-        user_agent: navigator.userAgent,
-        referrer: document.referrer || '—'
-      })
-    });
-  } catch(e) {}
-})();
+  // Au chargement : log visite + récupère IP
+  (async () => {
+    try {
+      _visitorIP = await fetch('https://api.ipify.org?format=json')
+        .then(r => r.json()).then(d => d.ip);
+    } catch(e) {}
+    trackEvent('visit', { referrer: document.referrer || '—' });
+  })();
 </script>
 <!-- ===== FIN TRACKER ===== -->
 
