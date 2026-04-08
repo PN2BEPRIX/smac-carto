@@ -3081,6 +3081,274 @@
       .wlc-logo-word { font-size: 52px; }
     }
 
+    /* ============================================================
+       MOBILE OPTIMIZATIONS — smartphones (≤ 768px)
+       ============================================================ */
+    @media (max-width: 768px) {
+
+      /* === HEADER === */
+      header {
+        padding: 0 12px;
+        height: 52px;
+      }
+      .logo-subtitle { display: none; }
+      .logo-text { font-size: 17px; }
+
+      /* Masquer les boutons secondaires dans le header */
+      #statsBtn,
+      #helpBtn,
+      #clientModeBtn,
+      #globalSearchBtn,
+      #refreshBtn,
+      .export-dropdown,
+      #exportDropdown {
+        display: none !important;
+      }
+
+      /* Garder seulement : Add + menu mobile */
+      #addBtn {
+        padding: 8px 12px;
+        font-size: 13px;
+        gap: 4px;
+      }
+      #addBtn svg { width: 14px; height: 14px; }
+
+      /* === TABS === */
+      .tabs-container {
+        padding: 0 8px;
+        height: 46px;
+        top: 52px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .tabs-container::-webkit-scrollbar { display: none; }
+
+      .tab-btn {
+        padding: 0 10px !important;
+        font-size: 12px !important;
+        height: 36px !important;
+        min-width: auto !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .drag-handle { display: none !important; }
+      .tab-actions { display: none !important; }
+      .tab-count {
+        font-size: 10px !important;
+        padding: 1px 5px !important;
+      }
+      .add-tab-btn {
+        padding: 0 10px !important;
+        font-size: 12px !important;
+        flex-shrink: 0;
+      }
+
+      /* === MAIN MAP === */
+      main {
+        padding-top: 98px !important; /* header 52 + tabs 46 */
+        height: 100dvh !important;
+      }
+      #map {
+        height: calc(100dvh - 98px - 60px) !important; /* minus bottom nav */
+      }
+
+      /* === MAP CONTROLS (bas droite pour le pouce) === */
+      .map-controls {
+        top: auto !important;
+        bottom: 80px !important;
+        left: auto !important;
+        right: 10px !important;
+      }
+      .map-control-btn {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 20px !important;
+      }
+      .itinerary-panel {
+        top: auto !important;
+        bottom: 80px !important;
+        left: 10px !important;
+        right: 60px !important;
+        max-width: none !important;
+        width: auto !important;
+      }
+
+      /* === MODAL === */
+      .modal-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+      }
+      .modal {
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: 92dvh !important;
+        border-radius: 20px 20px 0 0 !important;
+        animation: modalSlideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1) !important;
+        margin: 0 !important;
+      }
+      @keyframes modalSlideUp {
+        from { transform: translateY(100%); opacity: 1; }
+        to   { transform: translateY(0);    opacity: 1; }
+      }
+      .modal-header {
+        padding: 14px 16px 10px !important;
+        position: sticky;
+        top: 0;
+        background: rgba(255,255,255,0.97);
+        z-index: 1;
+      }
+      /* Drag handle visuel sur le modal */
+      .modal-header::before {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        background: #d4d4d4;
+        border-radius: 2px;
+        margin: 0 auto 10px;
+      }
+      .modal-body { padding: 12px 16px !important; }
+      .modal-footer {
+        padding: 12px 16px !important;
+        position: sticky;
+        bottom: 0;
+        background: rgba(255,255,255,0.97);
+        border-top: 1px solid var(--gray-200);
+      }
+      /* Formulaire en 1 colonne sur mobile */
+      .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      .form-group.full { grid-column: span 1 !important; }
+      .form-input, .form-select, .form-textarea {
+        font-size: 16px !important; /* évite le zoom iOS */
+        padding: 12px !important;
+        border-radius: 10px !important;
+      }
+      .form-label { font-size: 13px !important; }
+
+      /* === MOBILE SIDEBAR === */
+      .mobile-sidebar-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        top: auto !important;
+        bottom: 0 !important;
+        max-height: 85dvh !important;
+        animation: modalSlideUp 0.3s ease !important;
+      }
+      .mobile-header {
+        padding: 12px 16px !important;
+      }
+      .mobile-header::before {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        background: #d4d4d4;
+        border-radius: 2px;
+        margin: 0 auto 10px;
+      }
+
+      /* === BOTTOM NAV === */
+      .bottom-nav {
+        display: flex !important;
+      }
+
+      /* === STATS PANEL === */
+      .stats-overlay .stats-panel {
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: 90dvh !important;
+        border-radius: 20px 20px 0 0 !important;
+        bottom: 0 !important;
+        top: auto !important;
+        right: 0 !important;
+        left: 0 !important;
+        position: fixed !important;
+        animation: modalSlideUp 0.3s ease !important;
+      }
+
+      /* === WELCOME SCREEN === */
+      .wlc-enter-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 14px 20px !important;
+        font-size: 15px !important;
+      }
+      .wlc-badge { font-size: 11px !important; }
+      .wlc-tagline { font-size: 13px !important; }
+
+      /* === LISTE AFFAIRES (mobile sidebar) === */
+      .list-item {
+        padding: 12px 14px !important;
+      }
+      .search-input {
+        font-size: 16px !important; /* évite zoom iOS */
+      }
+
+      /* Toast en bas au dessus de la nav */
+      .toast-container {
+        bottom: 70px !important;
+        left: 12px !important;
+        right: 12px !important;
+      }
+    }
+
+    /* Extra small (< 400px) */
+    @media (max-width: 400px) {
+      .logo-text { font-size: 15px; }
+      .tab-btn { padding: 0 8px !important; font-size: 11px !important; }
+      #addBtn span { display: none; }
+      #addBtn { padding: 8px !important; border-radius: 8px !important; }
+    }
+
+    /* === BOTTOM NAV BAR === */
+    .bottom-nav {
+      display: none; /* visible seulement en mobile via @media */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(229,229,229,0.8);
+      z-index: 500;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 8px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+    }
+    .bottom-nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background 0.2s;
+      min-width: 60px;
+      color: var(--gray-500);
+      font-size: 10px;
+      font-weight: 500;
+    }
+    .bottom-nav-btn .bn-icon { font-size: 22px; line-height: 1; }
+    .bottom-nav-btn:active { background: var(--gray-100); }
+    .bottom-nav-btn.primary {
+      background: var(--red);
+      color: white;
+      border-radius: 14px;
+      padding: 10px 20px;
+    }
+    .bottom-nav-btn.primary:active { background: var(--red-dark); }
+
   </style>
 <link rel="stylesheet" href="./Cartographie SMAC2_files/leaflet.css"><link rel="stylesheet" href="./Cartographie SMAC2_files/MarkerCluster.css"><link rel="stylesheet" href="./Cartographie SMAC2_files/MarkerCluster.Default.css"></head>
 <body>
@@ -3812,6 +4080,30 @@
       </div>
     </div>
   </main>
+
+  <!-- Bottom Nav (mobile only) -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bottom-nav-btn" id="bnMap" title="Carte">
+      <span class="bn-icon">🗺️</span>
+      <span>Carte</span>
+    </button>
+    <button class="bottom-nav-btn" id="bnList" title="Liste">
+      <span class="bn-icon">📋</span>
+      <span>Liste</span>
+    </button>
+    <button class="bottom-nav-btn primary" id="bnAdd" title="Ajouter">
+      <span class="bn-icon">＋</span>
+      <span>Ajouter</span>
+    </button>
+    <button class="bottom-nav-btn" id="bnExport" title="Exporter">
+      <span class="bn-icon">📤</span>
+      <span>Export</span>
+    </button>
+    <button class="bottom-nav-btn" id="bnStats" title="Stats">
+      <span class="bn-icon">📊</span>
+      <span>Stats</span>
+    </button>
+  </nav>
 
   <!-- Mobile Sidebar -->
   <div class="mobile-sidebar" id="mobileSidebar">
@@ -7289,6 +7581,72 @@
   </script>
 
 <script src="./Cartographie SMAC2_files/leaflet.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/leaflet.markercluster.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/xlsx.full.min.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/jspdf.umd.min.js.téléchargement" async=""></script><script src="./Cartographie SMAC2_files/jspdf.plugin.autotable.min.js.téléchargement" async=""></script>
+
+<!-- ===== BOTTOM NAV MOBILE ===== -->
+<script>
+(function() {
+  function isMobile() { return window.innerWidth <= 768; }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const bnAdd    = document.getElementById('bnAdd');
+    const bnList   = document.getElementById('bnList');
+    const bnExport = document.getElementById('bnExport');
+    const bnStats  = document.getElementById('bnStats');
+    const bnMap    = document.getElementById('bnMap');
+
+    // Ajouter affaire
+    bnAdd?.addEventListener('click', function() {
+      document.getElementById('addBtn')?.click();
+    });
+
+    // Ouvrir la liste (mobile sidebar)
+    bnList?.addEventListener('click', function() {
+      document.getElementById('mobileMenuBtn')?.click();
+    });
+
+    // Export PDF (rapide)
+    let exportOpen = false;
+    bnExport?.addEventListener('click', function() {
+      // Créer un mini menu d'export
+      const existing = document.getElementById('mobileExportMenu');
+      if (existing) { existing.remove(); exportOpen = false; return; }
+      exportOpen = true;
+      const menu = document.createElement('div');
+      menu.id = 'mobileExportMenu';
+      menu.style.cssText = `
+        position: fixed; bottom: 68px; right: 10px; z-index: 600;
+        background: white; border: 1px solid #e5e5e5; border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15); overflow: hidden;
+      `;
+      menu.innerHTML = `
+        <button onclick="document.getElementById('exportExcel')?.click(); document.getElementById('mobileExportMenu')?.remove();"
+          style="display:flex;align-items:center;gap:10px;width:100%;padding:14px 18px;border:none;background:white;font-size:14px;cursor:pointer;border-bottom:1px solid #f0f0f0;">
+          📊 Export Excel
+        </button>
+        <button onclick="document.getElementById('exportPdf')?.click(); document.getElementById('mobileExportMenu')?.remove();"
+          style="display:flex;align-items:center;gap:10px;width:100%;padding:14px 18px;border:none;background:white;font-size:14px;cursor:pointer;">
+          📄 Export PDF
+        </button>
+      `;
+      document.body.appendChild(menu);
+      setTimeout(() => document.addEventListener('click', function handler(e) {
+        if (!menu.contains(e.target) && e.target !== bnExport) { menu.remove(); document.removeEventListener('click', handler); }
+      }), 100);
+    });
+
+    // Stats
+    bnStats?.addEventListener('click', function() {
+      document.getElementById('statsBtn')?.click();
+    });
+
+    // Map → fermer sidebar si ouverte
+    bnMap?.addEventListener('click', function() {
+      document.getElementById('mobileSidebar')?.classList.remove('open');
+    });
+  });
+})();
+</script>
+<!-- ===== FIN BOTTOM NAV ===== -->
 
 <!-- ===== TRACKER SMAC ===== -->
 <script>
