@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard SMAC</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+    }
+
+    /* LOGIN */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 50% 40%, #1a1f2e 0%, #0d1117 70%);
+    }
+    .login-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+    .login-box .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .login-box h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: .25rem; color: #e6edf3; }
+    .login-box p { font-size: .85rem; color: #8b949e; margin-bottom: 1.5rem; }
+    .login-box input {
+      width: 100%;
+      padding: .7rem 1rem;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #e6edf3;
+      font-size: .95rem;
+      outline: none;
+      margin-bottom: .75rem;
+      transition: border-color .2s;
+    }
+    .login-box input:focus { border-color: #e10600; }
+    .login-box button {
+      width: 100%;
+      padding: .7rem;
+      background: #e10600;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .login-box button:hover { background: #b30500; }
+    .login-error {
+      color: #f85149;
+      font-size: .82rem;
+      margin-top: .5rem;
+      display: none;
+    }
+
+    /* APP */
+    #app { display: none; }
+
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .header-logo { font-size: 1.1rem; font-weight: 700; color: #e10600; }
+    .header-sub { font-size: .8rem; color: #8b949e; }
+    .header-right { display: flex; align-items: center; gap: .75rem; }
+    .btn-refresh {
+      padding: .4rem .9rem;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #e6edf3;
+      font-size: .82rem;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-refresh:hover { background: #30363d; }
+    .btn-logout {
+      padding: .4rem .9rem;
+      background: transparent;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #8b949e;
+      font-size: .82rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-logout:hover { border-color: #f85149; color: #f85149; }
+
+    main { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+
+    /* STATS CARDS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+    }
+    .stat-label { font-size: .78rem; color: #8b949e; margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .05em; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: #e6edf3; }
+    .stat-value.red { color: #e10600; }
+    .stat-value.green { color: #3fb950; }
+    .stat-value.blue { color: #58a6ff; }
+    .stat-value.purple { color: #bc8cff; }
+
+    /* FILTERS */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .section-title { font-size: 1rem; font-weight: 600; color: #e6edf3; }
+    .filter-btns { display: flex; gap: .4rem; }
+    .filter-btn {
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      border: 1px solid #30363d;
+      background: transparent;
+      color: #8b949e;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-btn.active { background: #e10600; border-color: #e10600; color: #fff; }
+    .filter-btn:not(.active):hover { border-color: #8b949e; color: #e6edf3; }
+
+    /* TABLE */
+    .table-wrap {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #0d1117; }
+    th {
+      padding: .75rem 1rem;
+      text-align: left;
+      font-size: .78rem;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid #30363d;
+      white-space: nowrap;
+    }
+    td {
+      padding: .75rem 1rem;
+      font-size: .85rem;
+      border-bottom: 1px solid #21262d;
+      color: #e6edf3;
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #1c2128; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+    .badge-visit { background: #1f3a5f; color: #79c0ff; }
+    .badge-deploy { background: #2d1f3d; color: #bc8cff; }
+
+    .ip-cell { font-family: monospace; font-size: .8rem; color: #8b949e; }
+    .date-cell { font-size: .8rem; color: #8b949e; white-space: nowrap; }
+    .page-cell { color: #58a6ff; font-family: monospace; font-size: .82rem; }
+    .commit-cell { color: #3fb950; font-size: .83rem; }
+    .author-cell { font-size: .82rem; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #8b949e;
+      font-size: .9rem;
+    }
+    .empty-state .big { font-size: 2rem; margin-bottom: .5rem; }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #8b949e;
+      font-size: .85rem;
+    }
+    .spinner {
+      width: 24px; height: 24px;
+      border: 2px solid #30363d;
+      border-top-color: #e10600;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .last-updated {
+      font-size: .75rem;
+      color: #8b949e;
+      margin-top: 1rem;
+      text-align: right;
+    }
+
+    @media (max-width: 640px) {
+      main { padding: 1rem; }
+      header { padding: 0 1rem; }
+      .header-sub { display: none; }
+      td, th { padding: .6rem .75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="icon">🔐</div>
+    <h2>Dashboard SMAC</h2>
+    <p>Accès réservé à l'administrateur</p>
+    <input type="password" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter') doLogin()">
+    <button onclick="doLogin()">Connexion</button>
+    <div class="login-error" id="login-error">Mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="header-left">
+      <span class="header-logo">● SMAC</span>
+      <span class="header-sub">Dashboard de logs</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-refresh" onclick="loadLogs()">↻ Rafraîchir</button>
+      <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Visites totales</div>
+        <div class="stat-value red" id="stat-visits">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">IPs uniques</div>
+        <div class="stat-value blue" id="stat-ips">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Déploiements</div>
+        <div class="stat-value purple" id="stat-deploys">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Dernier commit</div>
+        <div class="stat-value green" style="font-size:1rem;margin-top:.3rem" id="stat-last-commit">—</div>
+      </div>
+    </div>
+
+    <!-- LOGS TABLE -->
+    <div class="section-header">
+      <div class="section-title">Activité récente</div>
+      <div class="filter-btns">
+        <button class="filter-btn active" onclick="applyFilter('all', this)">Tout</button>
+        <button class="filter-btn" onclick="applyFilter('visit', this)">Visites</button>
+        <button class="filter-btn" onclick="applyFilter('deploy', this)">Déploiements</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        Chargement des logs...
+      </div>
+      <table id="logs-table" style="display:none">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Page / Commit</th>
+            <th>IP</th>
+            <th>Auteur / Branche</th>
+            <th>Navigateur</th>
+          </tr>
+        </thead>
+        <tbody id="logs-body"></tbody>
+      </table>
+      <div class="empty-state" id="empty-state" style="display:none">
+        <div class="big">📭</div>
+        Aucun log pour le moment
+      </div>
+    </div>
+
+    <div class="last-updated" id="last-updated"></div>
+  </main>
+</div>
+
+<script>
+  // ═══════════════════════════════════════════
+  //  CONFIG — change uniquement le mot de passe
+  // ═══════════════════════════════════════════
+  const PASSWORD    = 'smac2024admin';   // ← change ça
+  const SUPA_URL    = 'https://ynqehqskpehxiwiegfky.supabase.co';
+  const SUPA_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlucWVocXNrcGVoeGl3aWVnZmt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzc0MjYsImV4cCI6MjA5MTIxMzQyNn0.SfYuYLLIujvyqPAdqfiMPsrgXxsX7MyoWjJ_qu0VNBc';
+
+  let allLogs = [];
+
+  // ── Auth ──────────────────────────────────
+  function doLogin() {
+    const val = document.getElementById('pwd-input').value;
+    if (val === PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadLogs();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('pwd-input').value = '';
+    }
+  }
+
+  function doLogout() {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('pwd-input').value = '';
+  }
+
+  // ── Load ──────────────────────────────────
+  async function loadLogs() {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('logs-table').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'none';
+
+    try {
+      const res = await fetch(
+        `${SUPA_URL}/rest/v1/logs?order=created_at.desc&limit=500`,
+        { headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` } }
+      );
+      allLogs = await res.json();
+      updateStats(allLogs);
+      renderLogs(allLogs);
+      document.getElementById('last-updated').textContent =
+        'Mis à jour le ' + new Date().toLocaleString('fr-FR');
+    } catch(e) {
+      document.getElementById('loading').innerHTML = '⚠️ Erreur de chargement';
+    }
+  }
+
+  // ── Stats ─────────────────────────────────
+  function updateStats(logs) {
+    const visits  = logs.filter(l => l.type === 'visit');
+    const deploys = logs.filter(l => l.type === 'deploy');
+    const uniqueIPs = new Set(visits.map(l => l.ip).filter(ip => ip && ip !== '—')).size;
+    const lastCommit = deploys[0];
+
+    document.getElementById('stat-visits').textContent  = visits.length;
+    document.getElementById('stat-ips').textContent     = uniqueIPs;
+    document.getElementById('stat-deploys').textContent = deploys.length;
+    document.getElementById('stat-last-commit').textContent =
+      lastCommit ? lastCommit.commit_message?.substring(0, 30) + (lastCommit.commit_message?.length > 30 ? '…' : '') : '—';
+  }
+
+  // ── Render ────────────────────────────────
+  function renderLogs(logs) {
+    document.getElementById('loading').style.display = 'none';
+
+    if (!logs.length) {
+      document.getElementById('empty-state').style.display = 'block';
+      document.getElementById('logs-table').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('logs-table').style.display = 'table';
+    document.getElementById('empty-state').style.display = 'none';
+
+    document.getElementById('logs-body').innerHTML = logs.map(l => {
+      const date = new Date(l.created_at).toLocaleString('fr-FR', {
+        day:'2-digit', month:'2-digit', year:'numeric',
+        hour:'2-digit', minute:'2-digit'
+      });
+      const content = l.type === 'deploy'
+        ? `<span class="commit-cell" title="${l.commit_message || ''}">${(l.commit_message || '—').substring(0, 50)}${(l.commit_message||'').length > 50 ? '…' : ''}</span>`
+        : `<span class="page-cell">${l.page || '/'}</span>`;
+      const info = l.type === 'deploy'
+        ? `<span class="author-cell">👤 ${l.author || '—'} · ${l.branch || '—'}</span>`
+        : `<span class="author-cell">${l.referrer && l.referrer !== '—' ? '↩ ' + l.referrer.substring(0,30) : '—'}</span>`;
+      const ua = l.user_agent
+        ? l.user_agent.substring(0, 45) + (l.user_agent.length > 45 ? '…' : '')
+        : '—';
+
+      return `<tr>
+        <td class="date-cell">${date}</td>
+        <td><span class="badge badge-${l.type}">${l.type === 'visit' ? '👁 visite' : '🚀 deploy'}</span></td>
+        <td>${content}</td>
+        <td class="ip-cell">${l.ip || '—'}</td>
+        <td>${info}</td>
+        <td title="${l.user_agent || ''}" style="color:#8b949e;font-size:.78rem">${ua}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Filter ────────────────────────────────
+  function applyFilter(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = type === 'all' ? allLogs : allLogs.filter(l => l.type === type);
+    renderLogs(filtered);
+  }
+
+  // Auto-refresh toutes les 60 secondes
+  setInterval(() => {
+    if (document.getElementById('app').style.display !== 'none') loadLogs();
+  }, 60000);
+</script>
+
+</body>
+</html>
