@@ -3511,7 +3511,7 @@
 <body class="">
 
   <!-- Welcome Screen -->
-  <div class="welcome-screen hidden" id="welcomeScreen">
+  <div class="welcome-screen" id="welcomeScreen">
     <!-- Fond -->
     <div class="wlc-bg-img"></div>
     <div class="wlc-grid"></div>
@@ -6644,7 +6644,7 @@
       // Generate particles animation
       const particlesContainer = document.getElementById('particles');
       if (particlesContainer) {
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 80; i++) {
           const particle = document.createElement('div');
           particle.className = 'particle';
           particle.style.left = Math.random() * 100 + '%';
@@ -7534,7 +7534,7 @@
         });
 
         // Particules flottantes de fond
-        for (let i = 0; i < 140; i++) particles.push(mkDot());
+        for (let i = 0; i < 280; i++) particles.push(mkDot());
 
         function mkDot() {
           return {
