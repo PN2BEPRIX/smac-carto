@@ -8467,15 +8467,28 @@ document.addEventListener('keydown', function(e) {
           <div style="font-size:11px; color:var(--gray-500); margin-top:4px;">Une mini-carte zoomée sur Paris apparaîtra dans un coin pour mieux voir les affaires denses.</div>
         </div>
 
+        <!-- Qualité carte -->
+        <div>
+          <div class="svg-sec-label">🔬 Qualité du fond de carte</div>
+          <select class="svg-input" id="svgMapQuality">
+            <option value="1.5">Standard — rapide (~50 tuiles)</option>
+            <option value="2.5" selected>Haute — recommandé (~150 tuiles)</option>
+            <option value="4">Maximale — très net mais lent (~400 tuiles)</option>
+          </select>
+          <div style="font-size:11px; color:var(--gray-500); margin-top:4px;">
+            Plus la qualité est élevée, plus les tuiles sont détaillées (zoom net dans le PDF) mais le téléchargement est long et le fichier lourd.
+          </div>
+        </div>
+
         <!-- Type PDF -->
         <div>
           <div class="svg-sec-label">📑 Format PDF</div>
           <select class="svg-input" id="svgPdfType">
-            <option value="raster" selected>Raster (compatible, ~2-8 Mo)</option>
-            <option value="vector">Vectoriel pur (zoom infini, ~3-15 Mo) — via svg2pdf.js</option>
+            <option value="vector" selected>Vectoriel — textes nets au zoom (recommandé)</option>
+            <option value="raster">Raster 300 DPI — compatibilité maximale</option>
           </select>
           <div style="font-size:11px; color:var(--gray-500); margin-top:4px;">
-            <strong>Raster</strong> = image haute résolution dans le PDF (200 DPI). <strong>Vectoriel</strong> = textes/formes restent vectoriels (image carte reste raster).
+            <strong>Vectoriel</strong> : titres, marqueurs, liste = vectoriels (zoom infini net). La carte reste une image mais en haute résolution. <strong>Raster</strong> : tout en image 300 DPI (plus compatible, fichier plus lourd).
           </div>
         </div>
 
@@ -8936,9 +8949,37 @@ function chooseZoom(bounds, targetPx) {
   return Math.min(13, Math.max(6, Math.round(z)));
 }
 
-async function fetchMapBackground(bounds, targetWidth, provider, onProgress) {
+// Filtre CSS équivalent (cuit dans l'image — fonctionne dans SVG ET PDF vectoriel)
+function cssFilterFor(style) {
+  const f = {
+    poster: 'saturate(0.92) brightness(1.04) contrast(1.02)',
+    paper:  'sepia(0.18) saturate(1.12) brightness(1.05) contrast(1.04)',
+    cool:   'saturate(1.1) brightness(1.02) hue-rotate(-8deg)',
+    none:   'none'
+  };
+  return f[style] || f.poster;
+}
+
+// Choisit le zoom le plus élevé possible sous une limite de tuiles
+function chooseZoomHQ(bounds, targetPx, maxTiles) {
+  let zoom = Math.min(16, Math.max(6, Math.round(Math.log2(targetPx * 360 / ((bounds.east - bounds.west) * 256)))));
+  while (zoom > 6) {
+    const a = latLngToTile(bounds.north, bounds.west, zoom);
+    const b = latLngToTile(bounds.south, bounds.east, zoom);
+    const nx = Math.floor(b.x) - Math.floor(a.x) + 1;
+    const ny = Math.floor(b.y) - Math.floor(a.y) + 1;
+    if (nx * ny <= maxTiles) break;
+    zoom--;
+  }
+  return zoom;
+}
+
+async function fetchMapBackground(bounds, targetWidth, provider, onProgress, qualityMult, filterStyle) {
+  qualityMult = qualityMult || 1;
   const TS = TILE_PROVIDERS[provider].size || 256;
-  const zoom = chooseZoom(bounds, targetWidth);
+  // Résolution cible = largeur d'affichage × multiplicateur qualité
+  const MAX_TILES = 700;  // garde-fou perf/mémoire
+  const zoom = chooseZoomHQ(bounds, targetWidth * qualityMult, MAX_TILES);
   const minT = latLngToTile(bounds.north, bounds.west, zoom);
   const maxT = latLngToTile(bounds.south, bounds.east, zoom);
   const minTX = Math.floor(minT.x), minTY = Math.floor(minT.y);
@@ -8950,21 +8991,33 @@ async function fetchMapBackground(bounds, targetWidth, provider, onProgress) {
   const ctx = cv.getContext('2d');
   ctx.fillStyle = '#f5f5f5'; ctx.fillRect(0, 0, cv.width, cv.height);
   let loaded = 0;
-  await Promise.all([...Array(numX*numY)].map((_, i) => {
-    const tx = minTX + (i % numX), ty = minTY + Math.floor(i / numX);
-    return new Promise(res => {
-      const img = new Image(); img.crossOrigin = 'anonymous';
-      img.onload = () => { ctx.drawImage(img, (tx-minTX)*TS, (ty-minTY)*TS, TS, TS); loaded++; if (onProgress) onProgress(loaded, total); res(); };
-      img.onerror = () => { loaded++; if (onProgress) onProgress(loaded, total); res(); };
-      img.src = TILE_PROVIDERS[provider].url(zoom, tx, ty);
-    });
-  }));
+  // Fetch par lots pour ne pas saturer (max 24 en parallèle)
+  const tiles = [];
+  for (let i = 0; i < numX * numY; i++) tiles.push(i);
+  const BATCH = 24;
+  for (let b = 0; b < tiles.length; b += BATCH) {
+    const batch = tiles.slice(b, b + BATCH);
+    await Promise.all(batch.map(i => {
+      const tx = minTX + (i % numX), ty = minTY + Math.floor(i / numX);
+      return new Promise(res => {
+        const img = new Image(); img.crossOrigin = 'anonymous';
+        img.onload = () => { ctx.drawImage(img, (tx-minTX)*TS, (ty-minTY)*TS, TS, TS); loaded++; if (onProgress) onProgress(loaded, total); res(); };
+        img.onerror = () => { loaded++; if (onProgress) onProgress(loaded, total); res(); };
+        img.src = TILE_PROVIDERS[provider].url(zoom, tx, ty);
+      });
+    }));
+  }
   const offX = (minT.x - minTX) * TS, offY = (minT.y - minTY) * TS;
   const cW = (maxT.x - minT.x) * TS, cH = (maxT.y - minT.y) * TS;
   const out = document.createElement('canvas');
   out.width = Math.round(cW); out.height = Math.round(cH);
-  out.getContext('2d').drawImage(cv, offX, offY, cW, cH, 0, 0, cW, cH);
-  return { dataUrl: out.toDataURL('image/png'), width: out.width, height: out.height };
+  const octx = out.getContext('2d');
+  // CUIRE le filtre couleur directement dans l'image
+  octx.filter = cssFilterFor(filterStyle || 'none');
+  octx.drawImage(cv, offX, offY, cW, cH, 0, 0, out.width, out.height);
+  octx.filter = 'none';
+  // JPEG haute qualité = bon compromis taille/netteté pour une carte
+  return { dataUrl: out.toDataURL('image/jpeg', 0.93), width: out.width, height: out.height };
 }
 
 function spreadOverlappingMarkers(markers, minDist) {
@@ -9060,7 +9113,7 @@ function startManualZoneSelection() {
 
 // ════════════════ GÉNÉRATION SVG ════════════════
 async function generateMapSVG(options) {
-  const { bounds, fields, mode, markerSize, title, items, provider, filterStyle, parisInset, statusColors: rawStatusColors, theme, annotations, hideStatus, anonymousGroup, anonymousColor } = options;
+  const { bounds, fields, mode, markerSize, title, items, provider, filterStyle, parisInset, statusColors: rawStatusColors, theme, annotations, hideStatus, anonymousGroup, anonymousColor, mapQuality } = options;
   // Override couleurs si mode anonyme
   const statusColors = hideStatus ? Object.fromEntries(STATUT_ORDER.map(k => [k, anonymousColor])) : rawStatusColors;
 
@@ -9104,7 +9157,7 @@ async function generateMapSVG(options) {
   const MAP_RIGHT = MAP_LEFT + MAP_W;
   const MAP_BOTTOM = MAP_TOP + MAP_H;
 
-  const bg = await fetchMapBackground(bounds, MAP_W, provider, (l, t) => setSub(`Tuiles : ${l} / ${t}`));
+  const bg = await fetchMapBackground(bounds, MAP_W, provider, (l, t) => setSub(`Tuiles : ${l} / ${t}`), mapQuality, filterStyle);
 
   // Encart Paris (si demandé et IDF / grande zone)
   let parisBg = null, parisLayout = null;
@@ -9112,7 +9165,7 @@ async function generateMapSVG(options) {
     setSub('Téléchargement de l\'encart Paris…');
     const parisBounds = SVG_ZONES.paris_intra;
     const insetTargetW = Math.round(MAP_W * 0.32);
-    parisBg = await fetchMapBackground(parisBounds, insetTargetW, provider, () => {});
+    parisBg = await fetchMapBackground(parisBounds, insetTargetW, provider, () => {}, mapQuality, filterStyle);
     // Position : en bas à droite de la carte
     const ratio = (parisBounds.east - parisBounds.west) / (toMerc(parisBounds.north) - toMerc(parisBounds.south)) * (Math.PI/180);
     const iH = insetTargetW / ratio;
@@ -9266,7 +9319,7 @@ async function generateMapSVG(options) {
 
   // CARTE PRINCIPALE
   s += `<rect x="${MAP_LEFT-8}" y="${MAP_TOP-8}" width="${MAP_W+16}" height="${MAP_H+16}" rx="6" fill="${dark?'#000':'#1c1917'}" opacity="0.08" filter="url(#sh)"/>`;
-  s += `<image href="${bg.dataUrl}" x="${MAP_LEFT}" y="${MAP_TOP}" width="${MAP_W}" height="${MAP_H}" preserveAspectRatio="xMidYMid slice" filter="url(#mapFilter)"/>`;
+  s += `<image href="${bg.dataUrl}" x="${MAP_LEFT}" y="${MAP_TOP}" width="${MAP_W}" height="${MAP_H}" preserveAspectRatio="xMidYMid slice"/>`;
   s += `<rect x="${MAP_LEFT}" y="${MAP_TOP}" width="${MAP_W}" height="${MAP_H}" fill="url(#mapVignette)" opacity="0.6"/>`;
   s += `<rect x="${MAP_LEFT}" y="${MAP_TOP}" width="${MAP_W}" height="${MAP_H}" fill="none" stroke="${dark?'#1e293b':'#1c1917'}" stroke-width="2"/>`;
 
@@ -9326,7 +9379,7 @@ async function generateMapSVG(options) {
     // Ombre + cadre
     s += `<rect x="${ix-6}" y="${iy-6}" width="${iw+12}" height="${ih+12+30}" rx="6" fill="${cardC}" filter="url(#sh)" opacity="0.98"/>`;
     s += `<text x="${ix+10}" y="${iy-12}" font-size="${16*SC_T}" font-weight="800" fill="${accentC}" letter-spacing="3">ZOOM PARIS</text>`;
-    s += `<image href="${parisBg.dataUrl}" x="${ix}" y="${iy}" width="${iw}" height="${ih}" preserveAspectRatio="xMidYMid slice" filter="url(#mapFilter)"/>`;
+    s += `<image href="${parisBg.dataUrl}" x="${ix}" y="${iy}" width="${iw}" height="${ih}" preserveAspectRatio="xMidYMid slice"/>`;
     s += `<rect x="${ix}" y="${iy}" width="${iw}" height="${ih}" fill="none" stroke="${accentC}" stroke-width="2"/>`;
     // Marqueurs Paris dans l'encart
     sortedItems.forEach(it => {
@@ -9603,10 +9656,13 @@ async function runSvgExport(outputFormat) {
     const hideStatus = document.getElementById('svgHideStatus')?.checked || false;
     const anonymousGroup = document.getElementById('svgAnonymousGroup')?.value || 'none';
     const anonymousColor = document.getElementById('svgAnonymousColor')?.value || '#e10600';
+    let mapQuality = parseFloat(document.getElementById('svgMapQuality')?.value) || 2.5;
+    // Pour le PDF on pousse encore la qualité d'un cran
+    if (outputFormat === 'pdf') mapQuality = Math.max(mapQuality, 3);
     const svgStr = await generateMapSVG({
       bounds, fields, mode, markerSize, title, items, provider, filterStyle, parisInset,
       statusColors, theme, annotations: svgAnnotations,
-      hideStatus, anonymousGroup, anonymousColor
+      hideStatus, anonymousGroup, anonymousColor, mapQuality
     });
     const zoneLabel = bounds.label.replace(/[\s—·]+/g, '_');
     const dateStr = new Date().toISOString().slice(0,10);
@@ -9635,40 +9691,58 @@ async function runSvgExport(outputFormat) {
 }
 
 // ════════════════ PDF EXPORT ════════════════
+// Attendre que svg2pdf soit chargé (chargé en async)
+async function ensureSvg2pdf() {
+  if (typeof window.svg2pdf !== 'undefined') return true;
+  for (let i = 0; i < 60; i++) {
+    await new Promise(r => setTimeout(r, 100));
+    if (typeof window.svg2pdf !== 'undefined') return true;
+  }
+  return false;
+}
+
 async function downloadSvgAsPDF(svgStr, paperFormat, orient, filename, pdfType) {
   const sizes = { A0: [1189, 841], A1: [841, 594], A2: [594, 420], A3: [420, 297] };
   const [longSide, shortSide] = sizes[paperFormat] || sizes.A1;
   const [pdfW, pdfH] = orient === 'landscape' ? [longSide, shortSide] : [shortSide, longSide];
 
-  if (typeof jspdf === 'undefined' || typeof jspdf.jsPDF === 'undefined') {
-    throw new Error('jsPDF non chargé');
-  }
+  if (typeof jspdf === 'undefined' || typeof jspdf.jsPDF === 'undefined') throw new Error('jsPDF non chargé');
   const { jsPDF } = jspdf;
   const pdf = new jsPDF({ orientation: orient, unit: 'mm', format: [pdfW, pdfH], compress: true });
 
-  if (pdfType === 'vector' && typeof window.svg2pdf !== 'undefined') {
-    // Mode vectoriel via svg2pdf
+  let useVector = (pdfType === 'vector');
+  if (useVector) {
+    const ok = await ensureSvg2pdf();
+    if (!ok) { useVector = false; showToast('svg2pdf indisponible — PDF raster 300 DPI utilisé', 'info'); }
+  }
+
+  if (useVector) {
+    // Mode vectoriel : textes/formes vectoriels, carte = image HD intégrée
     const parser = new DOMParser();
     const docSvg = parser.parseFromString(svgStr, 'image/svg+xml');
     const svgEl = docSvg.documentElement;
-    // Attacher temporairement au DOM (svg2pdf requiert souvent ça)
-    svgEl.style.position = 'fixed'; svgEl.style.left = '-9999px'; svgEl.style.top = '-9999px';
+    svgEl.setAttribute('width', pdfW);
+    svgEl.setAttribute('height', pdfH);
+    svgEl.style.position = 'fixed'; svgEl.style.left = '-99999px'; svgEl.style.top = '0';
     document.body.appendChild(svgEl);
     try {
       await window.svg2pdf(svgEl, pdf, { x: 0, y: 0, width: pdfW, height: pdfH });
+      svgEl.remove();
     } catch (err) {
       svgEl.remove();
-      throw new Error('svg2pdf erreur : ' + err.message + ' — utilise PDF raster à la place.');
+      console.error('svg2pdf:', err);
+      showToast('Erreur vectoriel — bascule en raster 300 DPI', 'info');
+      useVector = false;
     }
-    svgEl.remove();
-  } else {
-    // Mode raster (fallback)
-    if (pdfType === 'vector') showToast('svg2pdf non chargé — PDF raster utilisé', 'info');
+  }
+
+  if (!useVector) {
+    // Mode raster 300 DPI
     const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
     const svgUrl = URL.createObjectURL(svgBlob);
     const img = new Image();
-    await new Promise((res, rej) => { img.onload = res; img.onerror = (e) => rej(new Error('Erreur SVG : ' + e)); img.src = svgUrl; });
-    const DPI = 200;
+    await new Promise((res, rej) => { img.onload = res; img.onerror = (e) => rej(new Error('Erreur SVG')); img.src = svgUrl; });
+    const DPI = 300;
     const canvasW = Math.round(pdfW / 25.4 * DPI);
     const canvasH = Math.round(pdfH / 25.4 * DPI);
     const canvas = document.createElement('canvas');
@@ -9677,8 +9751,9 @@ async function downloadSvgAsPDF(svgStr, paperFormat, orient, filename, pdfType) 
     ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvasW, canvasH);
     ctx.drawImage(img, 0, 0, canvasW, canvasH);
     URL.revokeObjectURL(svgUrl);
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
-    pdf.addImage(dataUrl, 'JPEG', 0, 0, pdfW, pdfH);
+    // JPEG 0.92 pour limiter le poids tout en restant net
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    pdf.addImage(dataUrl, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
   }
   pdf.save(filename);
 }
@@ -9702,4 +9777,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 </body></html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
