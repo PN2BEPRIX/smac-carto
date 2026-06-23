@@ -411,6 +411,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      white-space: nowrap;
       width: 100%;
       padding: 10px 14px;
       border: none;
@@ -3608,21 +3609,222 @@
     .svg-filter-action { display: flex; gap: 6px; margin-bottom: 6px; font-size: 11px; }
     .svg-filter-action button { background: none; border: none; color: var(--red); cursor: pointer; font-weight: 600; padding: 2px 6px; font-size: 11px; }
     .svg-filter-action button:hover { text-decoration: underline; }
+
+    /* ════════ V16 : MODE PRÉSENTATION ════════ */
+    body.presentation-mode header,
+    body.presentation-mode .tabs-container,
+    body.presentation-mode .sidebar,
+    body.presentation-mode .bottom-nav,
+    body.presentation-mode .legend { display: none !important; }
+    body.presentation-mode .main-content,
+    body.presentation-mode #map {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 500 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+    .presentation-exit {
+      display: none;
+      position: fixed; top: 18px; right: 18px; z-index: 9999;
+      background: rgba(15, 15, 18, 0.82);
+      backdrop-filter: blur(10px);
+      color: #fff; border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 999px; padding: 10px 20px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      display: none; align-items: center; gap: 8px;
+      transition: all 0.25s; opacity: 0.45;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+    .presentation-exit:hover { opacity: 1; transform: scale(1.04); background: rgba(225,6,0,0.92); }
+    body.presentation-mode .presentation-exit { display: flex; }
+    .presentation-watermark {
+      display: none;
+      position: fixed; bottom: 22px; left: 26px; z-index: 9999;
+      font-size: 22px; font-weight: 900; letter-spacing: -1px;
+      color: rgba(225, 6, 0, 0.85); pointer-events: none;
+      text-shadow: 0 1px 8px rgba(255,255,255,0.6);
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+    .presentation-watermark span { color: rgba(28,25,23,0.55); font-weight: 400; font-size: 13px; letter-spacing: 2px; margin-left: 10px; }
+    body.presentation-mode .presentation-watermark { display: block; }
+
+    /* ════════ V16 : ACCUEIL — refonte ════════ */
+    .wlc-aurora {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1;
+      filter: blur(70px) saturate(1.2);
+      opacity: 0.55;
+    }
+    .wlc-aurora .blob {
+      position: absolute; border-radius: 50%;
+      mix-blend-mode: screen;
+      animation: wlcBlob 26s ease-in-out infinite alternate;
+    }
+    .wlc-aurora .b1 { width: 55vw; height: 55vw; background: radial-gradient(circle, rgba(225,6,0,0.5), transparent 65%); top: -18vw; left: -12vw; animation-duration: 30s; }
+    .wlc-aurora .b2 { width: 42vw; height: 42vw; background: radial-gradient(circle, rgba(40,80,200,0.45), transparent 65%); bottom: -14vw; right: -8vw; animation-duration: 38s; animation-delay: -8s; }
+    .wlc-aurora .b3 { width: 36vw; height: 36vw; background: radial-gradient(circle, rgba(255,140,0,0.30), transparent 65%); top: 30%; left: 55%; animation-duration: 33s; animation-delay: -16s; }
+    @keyframes wlcBlob {
+      0%   { transform: translate(0, 0) scale(1); }
+      50%  { transform: translate(6vw, -4vw) scale(1.15); }
+      100% { transform: translate(-4vw, 5vw) scale(0.95); }
+    }
+    .wlc-vignette {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 45%, rgba(5,5,8,0.55) 100%);
+    }
+    /* Le canvas au-dessus des blobs */
+    .wlc-canvas { z-index: 3 !important; }
+    .wlc-left, .wlc-right, .wlc-divider { z-index: 5; }
+
+    /* Entrée animée du contenu */
+    .wlc-left > * { opacity: 0; transform: translateY(22px); animation: wlcRise 0.9s cubic-bezier(.22,1,.36,1) forwards; }
+    .wlc-left > *:nth-child(1) { animation-delay: 0.15s; }
+    .wlc-left > *:nth-child(2) { animation-delay: 0.30s; }
+    .wlc-left > *:nth-child(3) { animation-delay: 0.45s; }
+    .wlc-left > *:nth-child(4) { animation-delay: 0.62s; }
+    .wlc-feature-card { opacity: 0; transform: translateX(26px); animation: wlcSlide 0.85s cubic-bezier(.22,1,.36,1) forwards; }
+    .wlc-right .wlc-feature-card:nth-child(2) { animation-delay: 0.45s; }
+    .wlc-right .wlc-feature-card:nth-child(3) { animation-delay: 0.58s; }
+    .wlc-right .wlc-feature-card:nth-child(4) { animation-delay: 0.71s; }
+    .wlc-right .wlc-feature-card:nth-child(5) { animation-delay: 0.84s; }
+    .wlc-right-label { opacity: 0; animation: wlcRise 0.8s 0.35s forwards; }
+    @keyframes wlcRise  { to { opacity: 1; transform: translateY(0); } }
+    @keyframes wlcSlide { to { opacity: 1; transform: translateX(0); } }
+
+    /* Sortie douce de l'accueil */
+    .welcome-screen { transition: opacity 0.8s cubic-bezier(.4,0,.2,1), transform 0.8s cubic-bezier(.4,0,.2,1); }
+    .welcome-screen.leaving { opacity: 0; transform: scale(1.06); pointer-events: none; }
+
+    /* Hint discret en bas */
+    .wlc-hint {
+      position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%);
+      z-index: 5; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); pointer-events: none;
+      animation: wlcHintPulse 3.5s ease-in-out infinite;
+    }
+    @keyframes wlcHintPulse { 0%,100% { opacity: 0.35; } 50% { opacity: 0.75; } }
+
+    /* ════════ V16 : POLISH GLOBAL ════════ */
+    ::-webkit-scrollbar { width: 9px; height: 9px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(120,120,130,0.35); border-radius: 99px; border: 2px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(120,120,130,0.6); border: 2px solid transparent; background-clip: content-box; }
+
+    header { backdrop-filter: blur(12px); }
+    .btn { transition: all 0.18s cubic-bezier(.4,0,.2,1) !important; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0) scale(0.98); }
+    .btn-primary { box-shadow: 0 2px 10px rgba(225,6,0,0.25); }
+    .btn-primary:hover { box-shadow: 0 4px 18px rgba(225,6,0,0.38); }
+
+    .tab-btn { transition: all 0.2s cubic-bezier(.4,0,.2,1); }
+    .tab-btn:hover:not(.active) { transform: translateY(-1px); }
+
+    .sidebar { box-shadow: -1px 0 0 rgba(0,0,0,0.04), -8px 0 24px rgba(0,0,0,0.03); }
+
+    .leaflet-popup-content-wrapper { border-radius: 12px !important; box-shadow: 0 12px 40px rgba(0,0,0,0.18) !important; }
+    .leaflet-control-zoom a { transition: all 0.15s; }
+
+    .modal, .svg-export-modal { animation: modalIn 0.28s cubic-bezier(.22,1,.36,1); }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
+
+    /* ════════ V17 : SKYLINE BTP + densité ════════ */
+    .wlc-aurora { opacity: 0.75 !important; }
+    .wlc-skyline {
+      position: absolute; bottom: 0; left: 0; width: 100%; height: 30vh;
+      z-index: 4; pointer-events: none;
+    }
+    .wlc-skyline svg { width: 100%; height: 100%; display: block; }
+    .wlc-crane-light { animation: craneBlink 2.4s ease-in-out infinite; }
+    .wlc-crane-light.d2 { animation-delay: 0.8s; }
+    .wlc-crane-light.d3 { animation-delay: 1.5s; }
+    @keyframes craneBlink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+    .wlc-window { animation: windowFlicker 7s ease-in-out infinite; }
+    @keyframes windowFlicker { 0%,100% { opacity: 0.55; } 50% { opacity: 0.85; } }
+    /* le hint passe au-dessus de la skyline */
+    .wlc-hint { z-index: 6; bottom: 18px; }
+
+    /* ════════ V18 : SOBRIÉTÉ PRO ════════ */
+    .wlc-aurora { opacity: 0.32 !important; filter: blur(90px) saturate(0.9) !important; }
+    .wlc-aurora .b3 { display: none; }
+    .wlc-aurora .b1 { background: radial-gradient(circle, rgba(180,20,15,0.4), transparent 65%) !important; }
+    .wlc-aurora .b2 { background: radial-gradient(circle, rgba(30,50,120,0.38), transparent 65%) !important; }
+    .wlc-skyline, .wlc-hint { display: none !important; }
+
+    /* ════════ V19 : MODAL TABLEAU ════════ */
+    .tableau-overlay { display:none; position:fixed; inset:0; background:rgba(10,10,15,0.55); backdrop-filter:blur(4px); z-index:6000; align-items:center; justify-content:center; padding:20px; }
+    .tableau-overlay.open { display:flex; animation:modalIn 0.28s cubic-bezier(.22,1,.36,1); }
+    .tableau-box { background:#fff; border-radius:16px; width:min(1280px,97vw); height:min(860px,94vh); display:flex; flex-direction:column; box-shadow:0 30px 90px rgba(0,0,0,0.4); overflow:hidden; }
+    .tableau-head { padding:16px 22px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+    .tableau-head h2 { margin:0; font-size:17px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:8px; }
+    .tableau-tools { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .tableau-toggle { display:flex; align-items:center; gap:7px; font-size:13px; color:#475569; cursor:pointer; user-select:none; font-weight:500; }
+    .tableau-toggle input { width:16px; height:16px; accent-color:#e10600; cursor:pointer; }
+    .tableau-search { padding:7px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; width:200px; outline:none; }
+    .tableau-search:focus { border-color:#e10600; }
+    .tableau-scroll { flex:1; overflow:auto; padding:0; }
+    table.tableau { width:100%; border-collapse:separate; border-spacing:0; font-size:12.5px; }
+    table.tableau th { position:sticky; top:0; background:#1e293b; color:#fff; text-align:left; padding:10px 12px; font-weight:600; font-size:11px; letter-spacing:0.4px; white-space:nowrap; z-index:2; }
+    table.tableau th.ac-col { background:#e10600; }
+    table.tableau td { padding:8px 12px; border-bottom:1px solid #f1f5f9; vertical-align:middle; color:#334155; }
+    table.tableau tr:hover td { background:#fafafa; }
+    table.tableau .montant-cell { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; }
+    .tableau-region { display:inline-block; padding:2px 8px; background:#eef2ff; color:#4338ca; border-radius:99px; font-size:11px; font-weight:600; white-space:nowrap; }
+    .tableau-ac-cell { display:flex; flex-direction:column; gap:4px; min-width:230px; }
+    .tableau-ac-cell select, .tableau-ac-cell input { padding:5px 8px; border:1px solid #e2e8f0; border-radius:6px; font-size:11.5px; outline:none; background:#fff; width:100%; }
+    .tableau-ac-cell select:focus, .tableau-ac-cell input:focus { border-color:#e10600; }
+    .tableau-ac-cell select { color:#1e293b; font-weight:500; }
+    .tableau-foot { padding:14px 22px; border-top:1px solid #eee; display:flex; align-items:center; justify-content:space-between; gap:14px; background:#fafafa; }
+    .tableau-count { font-size:13px; color:#64748b; }
+    .tableau-count b { color:#1e293b; }
+    .tableau-actions { display:flex; gap:10px; }
+    .tableau-status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+
+    /* ════════ V20 : TABLEAU amélioré ════════ */
+    table.tableau tbody tr:nth-child(even) td { background:#fbfbfc; }
+    table.tableau tbody tr:hover td { background:#fff5f5 !important; }
+    table.tableau th.sortable { cursor:pointer; user-select:none; }
+    table.tableau th.sortable:hover { background:#334155; }
+    table.tableau th.ac-col.sortable:hover { background:#c70500; }
+    table.tableau th .sort-arrow { opacity:0.4; margin-left:4px; font-size:9px; }
+    table.tableau th.sorted .sort-arrow { opacity:1; }
+    /* 1re colonne figée */
+    table.tableau th:first-child, table.tableau td:first-child {
+      position:sticky; left:0; z-index:1; box-shadow:1px 0 0 #e2e8f0;
+    }
+    table.tableau th:first-child { z-index:3; }
+    table.tableau td:first-child { background:#fff; }
+    table.tableau tbody tr:nth-child(even) td:first-child { background:#fbfbfc; }
+    table.tableau tbody tr:hover td:first-child { background:#fff5f5; }
+    /* badge statut */
+    .tableau-stbadge { display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:99px; font-size:11px; font-weight:600; white-space:nowrap; }
+    /* champs AC remplis = léger fond vert */
+    .tableau-ac-cell select.filled, .tableau-ac-filled { background:#f0fdf4 !important; border-color:#bbf7d0 !important; }
+    /* état vide */
+    .tableau-empty { padding:60px 20px; text-align:center; color:#94a3b8; font-size:14px; }
+    .tableau-empty .big { font-size:40px; margin-bottom:10px; opacity:0.5; }
+    /* barre d'outils plus aérée */
+    .tableau-head { background:#fafafa; }
+    .tableau-ac-legend { font-size:10.5px; color:#94a3b8; padding:6px 22px; background:#fff; border-bottom:1px solid #f1f5f9; }
 </style>
 <link rel="stylesheet" href="./Cartographie SMAC1304_files/leaflet.css"><link rel="stylesheet" href="./Cartographie SMAC1304_files/MarkerCluster.css"><link rel="stylesheet" href="./Cartographie SMAC1304_files/MarkerCluster.Default.css"><link rel="stylesheet" href="./Cartographie SMAC1304_files/leaflet(1).css"><link rel="stylesheet" href="./Cartographie SMAC1304_files/MarkerCluster(1).css"><link rel="stylesheet" href="./Cartographie SMAC1304_files/MarkerCluster(1).Default.css">
 <script src="https://cdn.jsdelivr.net/npm/svg2pdf.js@2.2.3/dist/svg2pdf.umd.min.js" async defer></script>
 </head>
 <body class="">
+  <button class="presentation-exit" id="presentationExitBtn">✕ Quitter la présentation <span style="opacity:0.55;font-weight:400;">ESC</span></button>
+  <div class="presentation-watermark">SMAC<span>CARTOGRAPHIE PN2</span></div>
 
   <!-- Welcome Screen -->
   <div class="welcome-screen" id="welcomeScreen">
     <!-- Fond -->
     <div class="wlc-bg-img"></div>
     <div class="wlc-grid"></div>
-    <div class="wlc-glow"></div>
-    <div class="wlc-glow2"></div>
+    <div class="wlc-aurora"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+    <div class="wlc-vignette"></div>
     <canvas class="wlc-canvas" id="wlcCanvas" width="1471" height="708"></canvas>
-    <div class="particles" id="particles"><div class="particle" style="left: 12.4659%; bottom: -10px; animation-delay: 14.0602s; animation-duration: 16.9284s;"></div><div class="particle" style="left: 60.4278%; bottom: -10px; animation-delay: 10.3579s; animation-duration: 18.2099s;"></div><div class="particle" style="left: 55.9391%; bottom: -10px; animation-delay: 0.756813s; animation-duration: 13.1576s;"></div><div class="particle" style="left: 11.4755%; bottom: -10px; animation-delay: 14.1024s; animation-duration: 15.666s;"></div><div class="particle" style="left: 51.8681%; bottom: -10px; animation-delay: 6.35138s; animation-duration: 13.4338s;"></div><div class="particle" style="left: 12.2452%; bottom: -10px; animation-delay: 0.479842s; animation-duration: 13.9504s;"></div><div class="particle" style="left: 40.9073%; bottom: -10px; animation-delay: 3.39872s; animation-duration: 10.7175s;"></div><div class="particle" style="left: 17.5899%; bottom: -10px; animation-delay: 10.2991s; animation-duration: 18.5209s;"></div><div class="particle" style="left: 84.202%; bottom: -10px; animation-delay: 6.72388s; animation-duration: 13.4708s;"></div><div class="particle" style="left: 51.3069%; bottom: -10px; animation-delay: 2.9666s; animation-duration: 16.2559s;"></div><div class="particle" style="left: 7.76052%; bottom: -10px; animation-delay: 1.49453s; animation-duration: 13.8318s;"></div><div class="particle" style="left: 4.22722%; bottom: -10px; animation-delay: 2.41925s; animation-duration: 15.6937s;"></div><div class="particle" style="left: 13.1007%; bottom: -10px; animation-delay: 5.07018s; animation-duration: 19.0361s;"></div><div class="particle" style="left: 16.7741%; bottom: -10px; animation-delay: 7.22222s; animation-duration: 12.4786s;"></div><div class="particle" style="left: 39.9445%; bottom: -10px; animation-delay: 13.3176s; animation-duration: 14.3759s;"></div><div class="particle" style="left: 16.6372%; bottom: -10px; animation-delay: 7.65878s; animation-duration: 12.6323s;"></div><div class="particle" style="left: 48.4431%; bottom: -10px; animation-delay: 7.62946s; animation-duration: 12.1916s;"></div><div class="particle" style="left: 19.0512%; bottom: -10px; animation-delay: 10.3067s; animation-duration: 15.3933s;"></div><div class="particle" style="left: 94.3653%; bottom: -10px; animation-delay: 11.3419s; animation-duration: 19.398s;"></div><div class="particle" style="left: 66.3225%; bottom: -10px; animation-delay: 2.93613s; animation-duration: 16.3516s;"></div><div class="particle" style="left: 47.7238%; bottom: -10px; animation-delay: 12.6679s; animation-duration: 10.0677s;"></div><div class="particle" style="left: 22.7714%; bottom: -10px; animation-delay: 12.8633s; animation-duration: 17.1289s;"></div><div class="particle" style="left: 89.0379%; bottom: -10px; animation-delay: 14.7902s; animation-duration: 19.6371s;"></div><div class="particle" style="left: 83.2803%; bottom: -10px; animation-delay: 9.25787s; animation-duration: 18.2089s;"></div><div class="particle" style="left: 25.9802%; bottom: -10px; animation-delay: 2.57011s; animation-duration: 14.3385s;"></div><div class="particle" style="left: 5.60594%; bottom: -10px; animation-delay: 6.17051s; animation-duration: 18.4326s;"></div><div class="particle" style="left: 71.3057%; bottom: -10px; animation-delay: 3.30999s; animation-duration: 15.5554s;"></div><div class="particle" style="left: 83.2755%; bottom: -10px; animation-delay: 5.33021s; animation-duration: 12.4189s;"></div><div class="particle" style="left: 81.8987%; bottom: -10px; animation-delay: 6.91793s; animation-duration: 15.6262s;"></div><div class="particle" style="left: 73.4404%; bottom: -10px; animation-delay: 10.3059s; animation-duration: 15.8659s;"></div><div class="particle" style="left: 17.9781%; bottom: -10px; animation-delay: 8.25235s; animation-duration: 18.774s;"></div><div class="particle" style="left: 34.6189%; bottom: -10px; animation-delay: 7.35989s; animation-duration: 18.7633s;"></div><div class="particle" style="left: 73.5083%; bottom: -10px; animation-delay: 12.6198s; animation-duration: 18.5782s;"></div><div class="particle" style="left: 12.0121%; bottom: -10px; animation-delay: 14.6086s; animation-duration: 14.6216s;"></div><div class="particle" style="left: 34.9355%; bottom: -10px; animation-delay: 0.850922s; animation-duration: 15.3835s;"></div><div class="particle" style="left: 27.8457%; bottom: -10px; animation-delay: 11.3566s; animation-duration: 11.5297s;"></div><div class="particle" style="left: 41.1646%; bottom: -10px; animation-delay: 14.1269s; animation-duration: 14.578s;"></div><div class="particle" style="left: 18.0651%; bottom: -10px; animation-delay: 6.61161s; animation-duration: 10.005s;"></div><div class="particle" style="left: 40.8223%; bottom: -10px; animation-delay: 9.42011s; animation-duration: 10.3223s;"></div><div class="particle" style="left: 77.1696%; bottom: -10px; animation-delay: 5.84131s; animation-duration: 14.5364s;"></div><div class="particle" style="left: 74.1401%; bottom: -10px; animation-delay: 4.48515s; animation-duration: 18.5999s;"></div><div class="particle" style="left: 86.2048%; bottom: -10px; animation-delay: 2.53025s; animation-duration: 15.982s;"></div><div class="particle" style="left: 14.0125%; bottom: -10px; animation-delay: 11.6146s; animation-duration: 14.6866s;"></div><div class="particle" style="left: 89.0282%; bottom: -10px; animation-delay: 9.94919s; animation-duration: 11.5747s;"></div><div class="particle" style="left: 69.1795%; bottom: -10px; animation-delay: 13.9736s; animation-duration: 19.6583s;"></div><div class="particle" style="left: 15.0565%; bottom: -10px; animation-delay: 1.9387s; animation-duration: 12.1541s;"></div><div class="particle" style="left: 63.3254%; bottom: -10px; animation-delay: 14.5465s; animation-duration: 11.6336s;"></div><div class="particle" style="left: 8.49105%; bottom: -10px; animation-delay: 7.67125s; animation-duration: 13.1958s;"></div><div class="particle" style="left: 67.5174%; bottom: -10px; animation-delay: 8.02121s; animation-duration: 14.0394s;"></div><div class="particle" style="left: 25.0004%; bottom: -10px; animation-delay: 6.73368s; animation-duration: 19.4726s;"></div><div class="particle" style="left: 80.677%; bottom: -10px; animation-delay: 8.59847s; animation-duration: 10.7262s;"></div><div class="particle" style="left: 19.1633%; bottom: -10px; animation-delay: 8.73116s; animation-duration: 14.2747s;"></div><div class="particle" style="left: 44.9109%; bottom: -10px; animation-delay: 1.89089s; animation-duration: 12.5204s;"></div><div class="particle" style="left: 64.7078%; bottom: -10px; animation-delay: 13.0052s; animation-duration: 13.8391s;"></div><div class="particle" style="left: 88.5862%; bottom: -10px; animation-delay: 14.18s; animation-duration: 19.4017s;"></div><div class="particle" style="left: 58.4176%; bottom: -10px; animation-delay: 13.0026s; animation-duration: 10.2473s;"></div><div class="particle" style="left: 57.8936%; bottom: -10px; animation-delay: 9.57705s; animation-duration: 18.2526s;"></div><div class="particle" style="left: 18.8516%; bottom: -10px; animation-delay: 13.7042s; animation-duration: 16.0853s;"></div><div class="particle" style="left: 84.7534%; bottom: -10px; animation-delay: 4.78307s; animation-duration: 15.1309s;"></div><div class="particle" style="left: 53.3362%; bottom: -10px; animation-delay: 1.4767s; animation-duration: 19.6886s;"></div></div>
+        <div class="particles" id="particles"><div class="particle" style="left: 12.4659%; bottom: -10px; animation-delay: 14.0602s; animation-duration: 16.9284s;"></div><div class="particle" style="left: 60.4278%; bottom: -10px; animation-delay: 10.3579s; animation-duration: 18.2099s;"></div><div class="particle" style="left: 55.9391%; bottom: -10px; animation-delay: 0.756813s; animation-duration: 13.1576s;"></div><div class="particle" style="left: 11.4755%; bottom: -10px; animation-delay: 14.1024s; animation-duration: 15.666s;"></div><div class="particle" style="left: 51.8681%; bottom: -10px; animation-delay: 6.35138s; animation-duration: 13.4338s;"></div><div class="particle" style="left: 12.2452%; bottom: -10px; animation-delay: 0.479842s; animation-duration: 13.9504s;"></div><div class="particle" style="left: 40.9073%; bottom: -10px; animation-delay: 3.39872s; animation-duration: 10.7175s;"></div><div class="particle" style="left: 17.5899%; bottom: -10px; animation-delay: 10.2991s; animation-duration: 18.5209s;"></div><div class="particle" style="left: 84.202%; bottom: -10px; animation-delay: 6.72388s; animation-duration: 13.4708s;"></div><div class="particle" style="left: 51.3069%; bottom: -10px; animation-delay: 2.9666s; animation-duration: 16.2559s;"></div><div class="particle" style="left: 7.76052%; bottom: -10px; animation-delay: 1.49453s; animation-duration: 13.8318s;"></div><div class="particle" style="left: 4.22722%; bottom: -10px; animation-delay: 2.41925s; animation-duration: 15.6937s;"></div><div class="particle" style="left: 13.1007%; bottom: -10px; animation-delay: 5.07018s; animation-duration: 19.0361s;"></div><div class="particle" style="left: 16.7741%; bottom: -10px; animation-delay: 7.22222s; animation-duration: 12.4786s;"></div><div class="particle" style="left: 39.9445%; bottom: -10px; animation-delay: 13.3176s; animation-duration: 14.3759s;"></div><div class="particle" style="left: 16.6372%; bottom: -10px; animation-delay: 7.65878s; animation-duration: 12.6323s;"></div><div class="particle" style="left: 48.4431%; bottom: -10px; animation-delay: 7.62946s; animation-duration: 12.1916s;"></div><div class="particle" style="left: 19.0512%; bottom: -10px; animation-delay: 10.3067s; animation-duration: 15.3933s;"></div><div class="particle" style="left: 94.3653%; bottom: -10px; animation-delay: 11.3419s; animation-duration: 19.398s;"></div><div class="particle" style="left: 66.3225%; bottom: -10px; animation-delay: 2.93613s; animation-duration: 16.3516s;"></div><div class="particle" style="left: 47.7238%; bottom: -10px; animation-delay: 12.6679s; animation-duration: 10.0677s;"></div><div class="particle" style="left: 22.7714%; bottom: -10px; animation-delay: 12.8633s; animation-duration: 17.1289s;"></div><div class="particle" style="left: 89.0379%; bottom: -10px; animation-delay: 14.7902s; animation-duration: 19.6371s;"></div><div class="particle" style="left: 83.2803%; bottom: -10px; animation-delay: 9.25787s; animation-duration: 18.2089s;"></div><div class="particle" style="left: 25.9802%; bottom: -10px; animation-delay: 2.57011s; animation-duration: 14.3385s;"></div><div class="particle" style="left: 5.60594%; bottom: -10px; animation-delay: 6.17051s; animation-duration: 18.4326s;"></div><div class="particle" style="left: 71.3057%; bottom: -10px; animation-delay: 3.30999s; animation-duration: 15.5554s;"></div><div class="particle" style="left: 83.2755%; bottom: -10px; animation-delay: 5.33021s; animation-duration: 12.4189s;"></div><div class="particle" style="left: 81.8987%; bottom: -10px; animation-delay: 6.91793s; animation-duration: 15.6262s;"></div><div class="particle" style="left: 73.4404%; bottom: -10px; animation-delay: 10.3059s; animation-duration: 15.8659s;"></div><div class="particle" style="left: 17.9781%; bottom: -10px; animation-delay: 8.25235s; animation-duration: 18.774s;"></div><div class="particle" style="left: 34.6189%; bottom: -10px; animation-delay: 7.35989s; animation-duration: 18.7633s;"></div><div class="particle" style="left: 73.5083%; bottom: -10px; animation-delay: 12.6198s; animation-duration: 18.5782s;"></div><div class="particle" style="left: 12.0121%; bottom: -10px; animation-delay: 14.6086s; animation-duration: 14.6216s;"></div><div class="particle" style="left: 34.9355%; bottom: -10px; animation-delay: 0.850922s; animation-duration: 15.3835s;"></div><div class="particle" style="left: 27.8457%; bottom: -10px; animation-delay: 11.3566s; animation-duration: 11.5297s;"></div><div class="particle" style="left: 41.1646%; bottom: -10px; animation-delay: 14.1269s; animation-duration: 14.578s;"></div><div class="particle" style="left: 18.0651%; bottom: -10px; animation-delay: 6.61161s; animation-duration: 10.005s;"></div><div class="particle" style="left: 40.8223%; bottom: -10px; animation-delay: 9.42011s; animation-duration: 10.3223s;"></div><div class="particle" style="left: 77.1696%; bottom: -10px; animation-delay: 5.84131s; animation-duration: 14.5364s;"></div><div class="particle" style="left: 74.1401%; bottom: -10px; animation-delay: 4.48515s; animation-duration: 18.5999s;"></div><div class="particle" style="left: 86.2048%; bottom: -10px; animation-delay: 2.53025s; animation-duration: 15.982s;"></div><div class="particle" style="left: 14.0125%; bottom: -10px; animation-delay: 11.6146s; animation-duration: 14.6866s;"></div><div class="particle" style="left: 89.0282%; bottom: -10px; animation-delay: 9.94919s; animation-duration: 11.5747s;"></div><div class="particle" style="left: 69.1795%; bottom: -10px; animation-delay: 13.9736s; animation-duration: 19.6583s;"></div><div class="particle" style="left: 15.0565%; bottom: -10px; animation-delay: 1.9387s; animation-duration: 12.1541s;"></div><div class="particle" style="left: 63.3254%; bottom: -10px; animation-delay: 14.5465s; animation-duration: 11.6336s;"></div><div class="particle" style="left: 8.49105%; bottom: -10px; animation-delay: 7.67125s; animation-duration: 13.1958s;"></div><div class="particle" style="left: 67.5174%; bottom: -10px; animation-delay: 8.02121s; animation-duration: 14.0394s;"></div><div class="particle" style="left: 25.0004%; bottom: -10px; animation-delay: 6.73368s; animation-duration: 19.4726s;"></div><div class="particle" style="left: 80.677%; bottom: -10px; animation-delay: 8.59847s; animation-duration: 10.7262s;"></div><div class="particle" style="left: 19.1633%; bottom: -10px; animation-delay: 8.73116s; animation-duration: 14.2747s;"></div><div class="particle" style="left: 44.9109%; bottom: -10px; animation-delay: 1.89089s; animation-duration: 12.5204s;"></div><div class="particle" style="left: 64.7078%; bottom: -10px; animation-delay: 13.0052s; animation-duration: 13.8391s;"></div><div class="particle" style="left: 88.5862%; bottom: -10px; animation-delay: 14.18s; animation-duration: 19.4017s;"></div><div class="particle" style="left: 58.4176%; bottom: -10px; animation-delay: 13.0026s; animation-duration: 10.2473s;"></div><div class="particle" style="left: 57.8936%; bottom: -10px; animation-delay: 9.57705s; animation-duration: 18.2526s;"></div><div class="particle" style="left: 18.8516%; bottom: -10px; animation-delay: 13.7042s; animation-duration: 16.0853s;"></div><div class="particle" style="left: 84.7534%; bottom: -10px; animation-delay: 4.78307s; animation-duration: 15.1309s;"></div><div class="particle" style="left: 53.3362%; bottom: -10px; animation-delay: 1.4767s; animation-duration: 19.6886s;"></div></div>
 
     <!-- Branding gauche -->
     <div class="wlc-left">
@@ -3726,13 +3928,16 @@
 
       <!-- Export button → ouvre le panneau avancé -->
       <div class="export-dropdown" id="exportDropdown">
-        <button class="btn btn-ghost btn-sm" title="Export Carte SVG" onclick="openSvgExportModal()" style="display:flex;align-items:center;gap:5px;font-size:13px;">
-          📐 Carte SVG
-        </button>
-        <button class="btn btn-secondary btn-sm" id="exportMenuBtn" title="Exporter" onclick="openExportPanel()">
+        <button class="btn btn-secondary btn-sm" id="exportMenuBtn" title="Exporter / Tableau / Carte SVG" onclick="toggleExportMenu(event)" style="display:flex;align-items:center;gap:6px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Exporter
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:-1px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
+        <div class="export-menu" id="exportMenu">
+          <button class="export-menu-item" onclick="closeExportMenu();openTableauModal()">📋 Tableau détaillé<span style="margin-left:auto;font-size:10px;color:#94a3b8;">Région · Action co.</span></button>
+          <button class="export-menu-item" onclick="closeExportMenu();openExportPanel()">⬇️ Export Excel / PDF</button>
+          <button class="export-menu-item" onclick="closeExportMenu();openSvgExportModal()">📐 Carte SVG / PDF</button>
+        </div>
         <!-- Boutons fantômes conservés pour compatibilité avec le code existant -->
         <div style="display:none">
           <button id="exportExcel"></button>
@@ -3751,6 +3956,9 @@
       </button>
       <button class="btn btn-ghost btn-sm" id="statsBtn" title="Statistiques">📊</button>
       <button class="btn btn-ghost btn-sm" id="helpBtn" title="Aide (?)">❓</button>
+      <button class="btn btn-ghost btn-sm" id="presentationBtn" title="Mode présentation plein écran (P)">
+        🖥️
+      </button>
       <button class="btn btn-secondary btn-sm client-mode-btn" id="clientModeBtn" title="Mode Client (présentation)">
         👁️ Client
       </button>
@@ -4666,6 +4874,45 @@
 
     /* Utils */
     const escapeHTML = str => String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    /* ════════ V19 : RÉGIONS FR (centroïdes) ════════ */
+    const REGIONS_FR = [
+      { name: 'Île-de-France', c: [48.78, 2.50] },
+      { name: 'Hauts-de-France', c: [50.10, 2.75] },
+      { name: 'Normandie', c: [49.10, 0.30] },
+      { name: 'Grand Est', c: [48.65, 5.60] },
+      { name: 'Bretagne', c: [48.20, -2.90] },
+      { name: 'Pays de la Loire', c: [47.45, -0.90] },
+      { name: 'Centre-Val de Loire', c: [47.50, 1.70] },
+      { name: 'Bourgogne-Franche-Comté', c: [47.20, 4.80] },
+      { name: 'Nouvelle-Aquitaine', c: [45.20, 0.20] },
+      { name: 'Auvergne-Rhône-Alpes', c: [45.50, 4.40] },
+      { name: 'Occitanie', c: [43.70, 2.20] },
+      { name: "Provence-Alpes-Côte d'Azur", c: [43.95, 6.05] },
+      { name: 'Corse', c: [42.15, 9.10] }
+    ];
+    function getRegion(item) {
+      const co = item && item.coords;
+      if (!co || !Number.isFinite(co[0]) || !Number.isFinite(co[1])) return '';
+      let best = '', bd = Infinity;
+      for (const r of REGIONS_FR) {
+        const dlat = co[0] - r.c[0], dlng = (co[1] - r.c[1]) * Math.cos(co[0] * Math.PI/180);
+        const d = dlat*dlat + dlng*dlng;
+        if (d < bd) { bd = d; best = r.name; }
+      }
+      return best;
+    }
+
+    /* ════════ V19 : ACTION COMMERCIALE (persistée) ════════ */
+    const SMAC_AGENCES = ['SMAC Villepinte', 'SMAC Gennevilliers', 'SMAC Antony', 'SMAC Paris', 'FASTE', 'SMAC — Siège social'];
+    let actionCommercialeData = {};
+    try { actionCommercialeData = JSON.parse(localStorage.getItem(`${SITE_ID}_action_commerciale`) || '{}'); } catch(e) { actionCommercialeData = {}; }
+    function getActionCommerciale(id) { return actionCommercialeData[id] || { agence:'', interlocuteur:'', contact:'' }; }
+    function setActionCommerciale(id, field, value) {
+      if (!actionCommercialeData[id]) actionCommercialeData[id] = { agence:'', interlocuteur:'', contact:'' };
+      actionCommercialeData[id][field] = value;
+      try { localStorage.setItem(`${SITE_ID}_action_commerciale`, JSON.stringify(actionCommercialeData)); } catch(e) {}
+    }
     const normalize = s => (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     
     const parseMontant = s => {
@@ -6089,6 +6336,55 @@
 
         const color = clientModeActive ? '#9ca3af' : (item.statut === 'Gagné' ? '#22c55e' : item.statut === 'Perdu' ? '#f43f5e' : item.statut === 'Faste' ? '#3b82f6' : item.statut === 'Hors SMAC' ? '#94a3b8' : '#f59e0b');
         
+        function buildAffairePopup(item) {
+          const presMode = document.body.classList.contains('presentation-mode');
+          const stColors = { 'Gagné':'#22c55e','Perdu':'#f43f5e','En cours':'#f59e0b','Faste':'#3b82f6','Hors SMAC':'#94a3b8' };
+          const stC = stColors[item.statut] || '#64748b';
+          const itinBtn = `<button onclick="if(window.itineraryMode && window.itineraryMode()){window.addItineraryStop(${JSON.stringify(item).replace(/"/g, '&quot;')})}" style="margin-top:10px;padding:7px 10px;background:#e10600;color:white;border:none;border-radius:5px;font-size:11px;cursor:pointer;width:100%;font-weight:600;">🚗 Ajouter à l'itinéraire</button>`;
+
+          if (!presMode) {
+            return `<div class="popup-content">
+              <div class="popup-title">${escapeHTML(item.affaires)}</div>
+              <div class="popup-client">${escapeHTML(item.client)}${clientModeActive ? '' : ' · ' + escapeHTML(item.eg)}</div>
+              ${clientModeActive ? '' : `<div class="popup-amount">${displayMontant(item.montant)}</div>`}
+              ${itinBtn}
+            </div>`;
+          }
+
+          // ── Mode présentation : fiche détaillée (pas de panneau latéral) ──
+          const ac = getActionCommerciale(item.id);
+          const row = (label, val, icon) => val ? `<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #f1f1f3;font-size:12.5px;"><span style="color:#94a3b8;min-width:78px;font-size:11px;">${icon} ${label}</span><span style="color:#1e293b;font-weight:500;flex:1;">${escapeHTML(val)}</span></div>` : '';
+          const acBlock = (ac && (ac.agence || ac.interlocuteur || ac.contact))
+            ? `<div style="margin-top:8px;padding:8px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;">
+                 <div style="font-size:10px;font-weight:700;color:#e10600;letter-spacing:0.5px;margin-bottom:4px;">⚡ ACTION COMMERCIALE</div>
+                 ${ac.agence ? `<div style="font-size:12px;color:#1e293b;"><b>${escapeHTML(ac.agence)}</b></div>` : ''}
+                 ${ac.interlocuteur ? `<div style="font-size:12px;color:#475569;">${escapeHTML(ac.interlocuteur)}</div>` : ''}
+                 ${ac.contact ? `<div style="font-size:11.5px;color:#64748b;">${escapeHTML(ac.contact)}</div>` : ''}
+               </div>`
+            : '';
+          return `<div class="popup-content" style="min-width:250px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="width:10px;height:10px;border-radius:50%;background:${stC};flex-shrink:0;box-shadow:0 0 0 3px ${stC}22;"></span>
+              <span class="popup-title" style="margin:0;">${escapeHTML(item.affaires)}</span>
+            </div>
+            <div style="display:inline-block;font-size:10px;font-weight:700;color:#fff;background:${stC};padding:2px 8px;border-radius:99px;margin-bottom:8px;">${escapeHTML(item.statut || '—')}</div>
+            <div style="background:#fafafa;border-radius:7px;padding:4px 10px;">
+              ${row('MOA', item.client, '🏛️')}
+              ${row('EG', item.eg, '🏗️')}
+              ${row('MOE', item.architect, '📐')}
+              ${row('Adresse', item.adresse, '📍')}
+              ${row('Région', getRegion(item), '🗺️')}
+              ${row('Date prév.', item.datePrevisionnelle ? formatDateFR(item.datePrevisionnelle) : '', '📅')}
+              ${clientModeActive ? '' : row('Montant', displayMontant(item.montant), '💰')}
+              ${row('Responsable', item.responsable, '👤')}
+              ${row('Métreur', item.metreur, '📏')}
+            </div>
+            ${item.description ? `<div style="margin-top:8px;font-size:12px;color:#475569;line-height:1.5;background:#f8fafc;padding:8px 10px;border-radius:6px;border-left:3px solid ${stC};">${escapeHTML(item.description)}</div>` : ''}
+            ${acBlock}
+            ${itinBtn}
+          </div>`;
+        }
+
         const icon = L.divIcon({
           className: 'custom-marker',
           html: `<div style="width:24px;height:24px;background:${color};border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>`,
@@ -6099,17 +6395,7 @@
         const marker = L.marker([lat, lng], { icon });
         marker.itemData = item; // Store item data for itinerary
         
-        marker.bindPopup(`
-          <div class="popup-content">
-            <div class="popup-title">${escapeHTML(item.affaires)}</div>
-            <div class="popup-client">${escapeHTML(item.client)}${clientModeActive ? '' : ' · ' + escapeHTML(item.eg)}</div>
-            ${clientModeActive ? '' : `<div class="popup-amount">${displayMontant(item.montant)}</div>`}
-            <button onclick="if(window.itineraryMode && window.itineraryMode()){window.addItineraryStop(${JSON.stringify(item).replace(/"/g, '&quot;')})}" 
-                    style="margin-top:8px;padding:6px 10px;background:#e10600;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;width:100%;">
-              🚗 Ajouter à l'itinéraire
-            </button>
-          </div>
-        `);
+        marker.bindPopup(() => buildAffairePopup(item), { maxWidth: 340, minWidth: 240 });
         
         // Clic marqueur → scroll vers l'affaire dans la liste avec badge pulsant
         marker.on('click', () => {
@@ -6765,7 +7051,8 @@
       // Welcome screen: toujours affichée, disparaît au clic
       const welcomeScreen = document.getElementById('welcomeScreen');
       document.getElementById('enterAppBtn')?.addEventListener('click', () => {
-        welcomeScreen?.classList.add('hidden');
+        welcomeScreen?.classList.add('leaving');
+        setTimeout(() => welcomeScreen?.classList.add('hidden'), 780);
       });
 
       // Initialize map — clear any pre-rendered Leaflet DOM (saved-from-browser artifact)
@@ -7606,139 +7893,217 @@
         const canvas = document.getElementById('wlcCanvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        let W, H, mouse = { x: -999, y: -999 }, particles = [], ripples = [], raf;
+        let W, H, raf;
+        const mouse = { x: -9999, y: -9999, vx: 0, vy: 0, px: -9999, py: -9999 };
+        const stars = [], shooting = [], ripples = [];
 
         function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
         resize();
         window.addEventListener('resize', resize);
 
         const wlcScreen = document.getElementById('welcomeScreen');
+
         wlcScreen?.addEventListener('mousemove', e => {
           const r = canvas.getBoundingClientRect();
-          mouse.x = e.clientX - r.left;
-          mouse.y = e.clientY - r.top;
+          const nx = e.clientX - r.left, ny = e.clientY - r.top;
+          if (mouse.px > -9000) { mouse.vx = nx - mouse.px; mouse.vy = ny - mouse.py; }
+          mouse.px = nx; mouse.py = ny;
+          mouse.x = nx; mouse.y = ny;
+          // Parallaxe douce sur les blobs aurora
+          const cx = (nx / W - 0.5), cy = (ny / H - 0.5);
+          const aurora = document.querySelector('.wlc-aurora');
+          if (aurora) aurora.style.transform = `translate(${cx * -22}px, ${cy * -16}px)`;
         });
-        wlcScreen?.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
+        wlcScreen?.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; mouse.px = -9999; });
 
-        // Clic : ripple subtil + quelques particules
+        // Clic = étoile filante depuis le point cliqué + onde discrète
+        const bursts = [];
         wlcScreen?.addEventListener('click', e => {
-          if (e.target.closest('.wlc-enter-btn')) return;
+          if (e.target.closest('.wlc-enter-btn') || e.target.closest('.wlc-feature-card')) return;
           const r = canvas.getBoundingClientRect();
-          const cx = e.clientX - r.left, cy = e.clientY - r.top;
-          // Un seul anneau doux
-          ripples.push({ x: cx, y: cy, r: 0, maxR: 100 + Math.random()*40, life: 1 });
-          // Quelques particules légères
-          for (let i = 0; i < 10; i++) {
-            const angle = (Math.PI * 2 * i) / 10 + (Math.random()-0.5)*0.4;
-            const speed = 1 + Math.random() * 2.5;
-            particles.push({
-              x: cx, y: cy,
-              vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
-              life: 1, decay: 0.02 + Math.random()*0.015,
-              size: 1.5 + Math.random()*2, type: 'burst'
-            });
-          }
+          ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, r: 0, maxR: 80, life: 1 });
         });
 
-        // Particules flottantes de fond
-        for (let i = 0; i < 280; i++) particles.push(mkDot());
+        // ── Champ d'étoiles : 3 couches de profondeur ──
+        const COUNT = 200;
+        for (let i = 0; i < COUNT; i++) stars.push(mkStar());
 
-        function mkDot() {
+        function mkStar() {
+          const depth = Math.random();           // 0 = loin, 1 = proche
+          const isRed = false;                    // v18 : palette neutre
           return {
-            x: Math.random()*(W||1200), y: Math.random()*(H||800),
-            vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
-            baseVx: (Math.random()-0.5)*0.3, baseVy: (Math.random()-0.5)*0.3,
-            size: 0.6 + Math.random()*1.4, life: 1, decay: 0, type: 'dot',
-            alpha: 0.12 + Math.random()*0.2, pulse: Math.random()*Math.PI*2
+            x: Math.random() * (W || 1400),
+            y: Math.random() * (H || 800),
+            depth,
+            size: (0.4 + depth * 1.8) * (isRed ? 1.25 : 1),
+            baseAlpha: 0.08 + depth * 0.34,
+            twinkle: Math.random() * Math.PI * 2,
+            twSpeed: 0.005 + Math.random() * 0.01,
+            driftX: (Math.random() - 0.5) * 0.06 * (0.3 + depth),
+            driftY: (Math.random() - 0.5) * 0.04 * (0.3 + depth),
+            ox: 0, oy: 0,
+            color: isRed ? '225,60,50' : '255,255,255'
           };
         }
 
-        function draw() {
+        function spawnShooting(x, y) {
+          const fromEdge = (x === undefined);
+          const sx = fromEdge ? Math.random() * W * 0.7 : x;
+          const sy = fromEdge ? Math.random() * H * 0.35 : y;
+          // Spontanée : diagonale naturelle. Clic : direction 100% aléatoire.
+          const angle = fromEdge
+            ? Math.PI * (0.15 + Math.random() * 0.2)
+            : Math.random() * Math.PI * 2;
+          const speed = 8 + Math.random() * 6;
+          shooting.push({
+            x: sx, y: sy,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 1, trail: [],
+            gravity: fromEdge ? 0.05 : 0.015
+          });
+        }
+
+        // Étoile filante spontanée toutes les 6-14s (apaisant)
+        let nextShoot = performance.now() + 4000;
+
+        function draw(now) {
           if (document.getElementById('welcomeScreen')?.classList.contains('hidden')) { cancelAnimationFrame(raf); return; }
           raf = requestAnimationFrame(draw);
           ctx.clearRect(0, 0, W, H);
 
-          // Lueur douce qui suit la souris
-          if (mouse.x > 0) {
-            const grd = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 250);
-            grd.addColorStop(0, 'rgba(225,6,0,0.07)');
-            grd.addColorStop(0.5, 'rgba(225,6,0,0.02)');
+          // v18 : pas d'étoiles filantes (sobriété)
+
+          // ── Halo très doux autour de la souris ──
+          if (mouse.x > -9000) {
+            const grd = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
+            grd.addColorStop(0, 'rgba(255,255,255,0.03)');
+            grd.addColorStop(0.4, 'rgba(225,6,0,0.012)');
             grd.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, W, H);
-
           }
 
-          // Ripples
-          for (let i = ripples.length-1; i >= 0; i--) {
+          // ── Ondes de clic ──
+          for (let i = ripples.length - 1; i >= 0; i--) {
             const rp = ripples[i];
-            rp.r += (rp.maxR - rp.r) * 0.06;
-            rp.life -= 0.018;
-            if (rp.life <= 0) { ripples.splice(i,1); continue; }
-            ctx.beginPath();
-            ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI*2);
-            ctx.strokeStyle = 'rgba(225,6,0,' + (rp.life*0.3) + ')';
-            ctx.lineWidth = 1.5 * rp.life;
-            ctx.stroke();
+            rp.r += (rp.maxR - rp.r) * 0.07;
+            rp.life -= 0.02;
+            if (rp.life <= 0) { ripples.splice(i, 1); continue; }
+            ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,255,255,' + (rp.life * 0.22) + ')';
+            ctx.lineWidth = 1.2 * rp.life; ctx.stroke();
           }
 
-          // Build spatial grid
+          // ── Constellations : connexions fines (grille spatiale) ──
           const grid = {};
-          for (const p of particles) {
-            if (p.type !== 'dot') continue;
-            const key = Math.floor(p.x/120)+','+Math.floor(p.y/120);
-            if (!grid[key]) grid[key] = [];
-            grid[key].push(p);
+          for (const s of stars) {
+            const px = s.x + s.ox, py = s.y + s.oy;
+            const key = (px / 130 | 0) + ',' + (py / 130 | 0);
+            (grid[key] = grid[key] || []).push(s);
           }
-
-          // Particules
-          for (let i = particles.length-1; i >= 0; i--) {
-            const p = particles[i];
-
-            if (p.type === 'dot') {
-              p.pulse += 0.015;
-              const pAlpha = p.alpha * (0.8 + Math.sin(p.pulse)*0.2);
-              // Attraction légère vers la souris
-              if (mouse.x > 0) {
-                const dx = mouse.x-p.x, dy = mouse.y-p.y;
-                const dist = Math.sqrt(dx*dx+dy*dy);
-                if (dist < 180) {
-                  const force = (180-dist)/180*0.008;
-                  p.vx += dx*force; p.vy += dy*force;
+          ctx.lineWidth = 0.5;
+          for (const s of stars) {
+            if (s.depth < 0.45) continue;            // seules les proches se connectent
+            const px = s.x + s.ox, py = s.y + s.oy;
+            const gx = px / 130 | 0, gy = py / 130 | 0;
+            for (let dx = 0; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+              const cell = grid[(gx + dx) + ',' + (gy + dy)];
+              if (!cell) continue;
+              for (const q of cell) {
+                if (q === s || q.depth < 0.45) continue;
+                const qx = q.x + q.ox, qy = q.y + q.oy;
+                const ddx = px - qx, ddy = py - qy, d2 = ddx * ddx + ddy * ddy;
+                if (d2 < 115 * 115) {
+                  const a = (1 - d2 / (115 * 115)) * 0.11;
+                  ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(qx, qy);
+                  ctx.strokeStyle = 'rgba(255,255,255,' + a + ')';
+                  ctx.stroke();
                 }
               }
-              p.vx += (p.baseVx-p.vx)*0.03; p.vy += (p.baseVy-p.vy)*0.03;
-              p.x += p.vx; p.y += p.vy;
-              if(p.x<0){p.x=0;p.vx*=-1;p.baseVx*=-1;} if(p.x>W){p.x=W;p.vx*=-1;p.baseVx*=-1;}
-              if(p.y<0){p.y=0;p.vy*=-1;p.baseVy*=-1;} if(p.y>H){p.y=H;p.vy*=-1;p.baseVy*=-1;}
-
-              // Connexions (grid spatial)
-              const gx = Math.floor(p.x/120), gy = Math.floor(p.y/120);
-              for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
-                const key = (gx+dx)+','+(gy+dy);
-                if (!grid[key]) continue;
-                for (const q of grid[key]) {
-                  if (q === p || q.type !== 'dot') continue;
-                  const ddx=p.x-q.x, ddy=p.y-q.y, d2=ddx*ddx+ddy*ddy;
-                  if (d2 < 110*110) {
-                    const a = (1-d2/(110*110))*0.1;
-                    ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
-                    ctx.strokeStyle = 'rgba(255,255,255,'+a+')'; ctx.lineWidth = 0.5; ctx.stroke();
-                  }
-                }
-              }
-              ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-              ctx.fillStyle = 'rgba(255,255,255,'+pAlpha+')'; ctx.fill();
-
-            } else if (p.type === 'burst') {
-              p.x += p.vx; p.y += p.vy; p.vx *= 0.96; p.vy *= 0.96; p.life -= p.decay;
-              if (p.life <= 0) { particles.splice(i,1); continue; }
-              ctx.beginPath(); ctx.arc(p.x, p.y, p.size*p.life, 0, Math.PI*2);
-              ctx.fillStyle = 'rgba(225,6,0,' + (p.life*0.6) + ')'; ctx.fill();
             }
           }
+
+          // ── Étoiles : RÉPULSION douce (fix du clumping) ──
+          for (const s of stars) {
+            s.twinkle += s.twSpeed;
+            // dérive lente
+            s.x += s.driftX; s.y += s.driftY;
+            if (s.x < -10) s.x = W + 10; if (s.x > W + 10) s.x = -10;
+            if (s.y < -10) s.y = H + 10; if (s.y > H + 10) s.y = -10;
+
+            // répulsion : l'étoile s'écarte de la souris puis revient en place
+            if (mouse.x > -9000) {
+              const dx = (s.x + s.ox) - mouse.x, dy = (s.y + s.oy) - mouse.y;
+              const dist = Math.hypot(dx, dy);
+              const R = 110 + s.depth * 60;
+              if (dist < R && dist > 0.5) {
+                const force = (1 - dist / R) * (0.9 + s.depth * 1.1);
+                s.ox += (dx / dist) * force;
+                s.oy += (dy / dist) * force;
+              }
+            }
+            // rappel élastique vers la position d'origine
+            s.ox *= 0.90; s.oy *= 0.90;
+
+            const px = s.x + s.ox, py = s.y + s.oy;
+            const alpha = s.baseAlpha * (0.75 + Math.sin(s.twinkle) * 0.25);
+
+            // étoiles proches = léger glow
+            if (s.depth > 0.7) {
+              const g = ctx.createRadialGradient(px, py, 0, px, py, s.size * 5);
+              g.addColorStop(0, 'rgba(' + s.color + ',' + alpha * 0.55 + ')');
+              g.addColorStop(1, 'rgba(' + s.color + ',0)');
+              ctx.fillStyle = g;
+              ctx.beginPath(); ctx.arc(px, py, s.size * 5, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.beginPath(); ctx.arc(px, py, s.size, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + s.color + ',' + alpha + ')';
+            ctx.fill();
+          }
+
+          // ── Étincelles de clic ──
+          for (let i = bursts.length - 1; i >= 0; i--) {
+            const b = bursts[i];
+            b.x += b.vx; b.y += b.vy;
+            b.vx *= 0.96; b.vy *= 0.96; b.vy += 0.02;
+            b.life -= b.decay;
+            if (b.life <= 0) { bursts.splice(i, 1); continue; }
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.size * b.life, 0, Math.PI * 2);
+            ctx.fillStyle = b.red
+              ? 'rgba(225,60,40,' + b.life * 0.8 + ')'
+              : 'rgba(255,240,220,' + b.life * 0.7 + ')';
+            ctx.fill();
+          }
+
+          // ── Étoiles filantes ──
+          for (let i = shooting.length - 1; i >= 0; i--) {
+            const sh = shooting[i];
+            sh.trail.push({ x: sh.x, y: sh.y });
+            if (sh.trail.length > 22) sh.trail.shift();
+            sh.x += sh.vx; sh.y += sh.vy;
+            sh.vy += sh.gravity;
+            sh.life -= 0.012;
+            if (sh.life <= 0 || sh.x > W + 60 || sh.y > H + 60) { shooting.splice(i, 1); continue; }
+            // traînée dégradée
+            for (let t = 1; t < sh.trail.length; t++) {
+              const a = (t / sh.trail.length) * sh.life * 0.55;
+              ctx.beginPath();
+              ctx.moveTo(sh.trail[t - 1].x, sh.trail[t - 1].y);
+              ctx.lineTo(sh.trail[t].x, sh.trail[t].y);
+              ctx.strokeStyle = 'rgba(255,235,220,' + a + ')';
+              ctx.lineWidth = (t / sh.trail.length) * 2.4;
+              ctx.stroke();
+            }
+            // tête lumineuse
+            const hg = ctx.createRadialGradient(sh.x, sh.y, 0, sh.x, sh.y, 9);
+            hg.addColorStop(0, 'rgba(255,255,255,' + sh.life + ')');
+            hg.addColorStop(1, 'rgba(255,200,160,0)');
+            ctx.fillStyle = hg;
+            ctx.beginPath(); ctx.arc(sh.x, sh.y, 9, 0, Math.PI * 2); ctx.fill();
+          }
         }
-        draw();
+        raf = requestAnimationFrame(draw);
       })();
       // ===================================================
 
@@ -9776,4 +10141,376 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+
+<script>
+/* ════════ MODE PRÉSENTATION PLEIN ÉCRAN (v16) ════════ */
+(function() {
+  function setPresentation(on) {
+    document.body.classList.toggle('presentation-mode', on);
+    // Fullscreen API (optionnel, ignore les erreurs)
+    try {
+      if (on && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
+      if (!on && document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    } catch(e) {}
+    // Leaflet doit recalculer sa taille
+    setTimeout(() => { if (typeof map !== 'undefined' && map) map.invalidateSize(); }, 350);
+    if (typeof showToast === 'function' && on) showToast('Mode présentation — ESC pour quitter', 'info');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('presentationBtn')?.addEventListener('click', () => setPresentation(true));
+    document.getElementById('presentationExitBtn')?.addEventListener('click', () => setPresentation(false));
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.body.classList.contains('presentation-mode')) setPresentation(false);
+    // Raccourci P (hors champs de saisie)
+    if ((e.key === 'p' || e.key === 'P') && !e.ctrlKey && !e.metaKey) {
+      const tag = document.activeElement?.tagName;
+      if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT' && !document.activeElement?.isContentEditable) {
+        setPresentation(!document.body.classList.contains('presentation-mode'));
+      }
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && document.body.classList.contains('presentation-mode')) {
+      document.body.classList.remove('presentation-mode');
+      setTimeout(() => { if (typeof map !== 'undefined' && map) map.invalidateSize(); }, 350);
+    }
+  });
+})();
+</script>
+
+<div class="tableau-overlay" id="tableauOverlay" onclick="if(event.target===this)closeTableauModal()">
+  <div class="tableau-box">
+    <div class="tableau-head">
+      <h2>📋 Tableau détaillé</h2>
+      <div class="tableau-tools">
+        <input type="text" class="tableau-search" id="tableauSearch" placeholder="🔍 Filtrer…" oninput="renderTableau()">
+        <label class="tableau-toggle"><input type="checkbox" id="tableauShowMontant" checked onchange="renderTableau()"> Afficher les montants</label>
+        <label class="tableau-toggle"><input type="checkbox" id="tableauShowRegion" checked onchange="renderTableau()"> Colonne Région</label>
+        <label class="tableau-toggle"><input type="checkbox" id="tableauShowAC" checked onchange="renderTableau()"> Action commerciale</label>
+      </div>
+      <button class="export-panel-close" onclick="closeTableauModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8;">✕</button>
+    </div>
+    <div class="tableau-scroll">
+      <table class="tableau" id="tableauTable"></table>
+    </div>
+    <div class="tableau-foot">
+      <span class="tableau-count" id="tableauCount"></span>
+      <div class="tableau-actions">
+        <button class="btn btn-secondary" onclick="closeTableauModal()" style="padding:9px 18px;">Fermer</button>
+        <button class="btn btn-secondary" onclick="exportTableauPDF()" style="padding:9px 18px;display:flex;align-items:center;gap:7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          PDF
+        </button>
+        <button class="export-run-btn" onclick="exportTableauExcel()" style="padding:9px 20px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════ MODAL TABLEAU DÉTAILLÉ (v19) ════════════════ */
+function openTableauModal() {
+  document.getElementById('tableauOverlay').classList.add('open');
+  renderTableau();
+}
+function closeTableauModal() {
+  document.getElementById('tableauOverlay').classList.remove('open');
+}
+
+function tableauFilteredList() {
+  const q = (document.getElementById('tableauSearch')?.value || '').toLowerCase().trim();
+  const list = (typeof currentList !== 'undefined' ? currentList : []) || [];
+  if (!q) return list;
+  return list.filter(it => (`${it.affaires} ${it.client} ${it.eg} ${it.architect} ${it.adresse} ${getRegion(it)}`).toLowerCase().includes(q));
+}
+
+function renderTableau() {
+  const showMontant = document.getElementById('tableauShowMontant')?.checked;
+  const showRegion  = document.getElementById('tableauShowRegion')?.checked;
+  const showAC      = document.getElementById('tableauShowAC')?.checked;
+  let list = tableauFilteredList().slice();
+  const stColors = { 'Gagné':'#22c55e','Perdu':'#f43f5e','En cours':'#f59e0b','Faste':'#3b82f6','Hors SMAC':'#94a3b8' };
+
+  // ── Tri ──
+  const sk = tableauSort.key, dir = tableauSort.dir;
+  if (sk) {
+    const val = (it) => {
+      switch (sk) {
+        case 'affaires': return (it.affaires||'').toLowerCase();
+        case 'client':   return (it.client||'').toLowerCase();
+        case 'eg':       return (it.eg||'').toLowerCase();
+        case 'region':   return getRegion(it).toLowerCase();
+        case 'date':     return it.datePrevisionnelle || '';
+        case 'statut':   return (it.statut||'').toLowerCase();
+        case 'montant':  { const n = parseMontant(it.montant); return Number.isFinite(n) ? n : -1; }
+        case 'agence':   return (getActionCommerciale(it.id).agence||'').toLowerCase();
+        default: return '';
+      }
+    };
+    list.sort((a,b) => { const va=val(a), vb=val(b); if (va<vb) return -1*dir; if (va>vb) return 1*dir; return 0; });
+  }
+
+  const arrow = (key) => {
+    const sorted = sk === key;
+    const a = sorted ? (dir === 1 ? '▲' : '▼') : '↕';
+    return `<span class="sort-arrow">${a}</span>`;
+  };
+  const th = (key, label, extra='') => `<th class="sortable ${sk===key?'sorted':''} ${extra}" onclick="tableauSortBy('${key}')">${label}${arrow(key)}</th>`;
+
+  let head = '<thead><tr>';
+  head += th('affaires','Affaire');
+  head += th('client','MOA');
+  head += th('eg','EG');
+  if (showRegion) head += th('region','Région');
+  head += th('date','Date prév.');
+  head += th('statut','Statut');
+  if (showMontant) head += th('montant','Montant');
+  if (showAC) head += th('agence','⚡ Agence SMAC','ac-col') + '<th class="ac-col">Interlocuteur</th><th class="ac-col">Contact</th>';
+  head += '</tr></thead>';
+
+  const agenceOpts = (sel) => ['<option value="">— Agence —</option>']
+    .concat(SMAC_AGENCES.map(a => `<option value="${escapeHTML(a)}" ${a===sel?'selected':''}>${escapeHTML(a)}</option>`)).join('');
+
+  let body = '<tbody>';
+  if (!list.length) {
+    const span = 6 + (showRegion?1:0) + (showMontant?1:0) + (showAC?3:0);
+    body += `<tr><td colspan="${span}"><div class="tableau-empty"><div class="big">🔍</div>Aucune affaire ne correspond au filtre.</div></td></tr>`;
+  }
+  for (const it of list) {
+    const ac = getActionCommerciale(it.id);
+    const stC = stColors[it.statut] || '#64748b';
+    body += '<tr>';
+    body += `<td style="font-weight:600;color:#1e293b;">${escapeHTML(it.affaires||'—')}</td>`;
+    body += `<td>${escapeHTML(it.client||'—')}</td>`;
+    body += `<td>${escapeHTML(it.eg||'—')}</td>`;
+    if (showRegion) body += `<td>${getRegion(it) ? `<span class="tableau-region">${escapeHTML(getRegion(it))}</span>` : '—'}</td>`;
+    body += `<td style="white-space:nowrap;">${it.datePrevisionnelle ? formatDateFR(it.datePrevisionnelle) : '—'}</td>`;
+    body += `<td><span class="tableau-stbadge" style="background:${stC}18;color:${stC};"><span style="width:7px;height:7px;border-radius:50%;background:${stC};"></span>${escapeHTML(it.statut||'—')}</span></td>`;
+    if (showMontant) body += `<td class="montant-cell">${displayMontant(it.montant)}</td>`;
+    if (showAC) {
+      const fAg = ac.agence ? 'filled' : '';
+      const fInt = ac.interlocuteur ? 'tableau-ac-filled' : '';
+      const fCon = ac.contact ? 'tableau-ac-filled' : '';
+      body += `<td><div class="tableau-ac-cell"><select class="${fAg}" onchange="setActionCommerciale('${it.id}','agence',this.value);this.classList.toggle('filled',!!this.value)">${agenceOpts(ac.agence)}</select></div></td>`;
+      body += `<td><input type="text" class="${fInt}" placeholder="Nom prénom" value="${escapeHTML(ac.interlocuteur)}" oninput="setActionCommerciale('${it.id}','interlocuteur',this.value);this.classList.toggle('tableau-ac-filled',!!this.value)"></td>`;
+      body += `<td><input type="text" class="${fCon}" placeholder="Tél / email" value="${escapeHTML(ac.contact)}" oninput="setActionCommerciale('${it.id}','contact',this.value);this.classList.toggle('tableau-ac-filled',!!this.value)"></td>`;
+    }
+    body += '</tr>';
+  }
+  body += '</tbody>';
+
+  document.getElementById('tableauTable').innerHTML = head + body;
+
+  // Total + compteur AC
+  let total = 0, acCount = 0;
+  for (const it of list) {
+    const v = parseMontant(it.montant); if (Number.isFinite(v)) total += v;
+    const a = getActionCommerciale(it.id); if (a.agence || a.interlocuteur || a.contact) acCount++;
+  }
+  const cnt = document.getElementById('tableauCount');
+  let txt = `<b>${list.length}</b> affaire(s)`;
+  if (showMontant) txt += ` · Total : <b>${displayMontant(total)}</b>`;
+  if (showAC) txt += ` · <b>${acCount}</b> action(s) commerciale(s) renseignée(s)`;
+  cnt.innerHTML = txt;
+}
+
+let tableauSort = { key: null, dir: 1 };
+function tableauSortBy(key) {
+  if (tableauSort.key === key) tableauSort.dir *= -1;
+  else { tableauSort.key = key; tableauSort.dir = 1; }
+  renderTableau();
+}
+
+function tableauColumns() {
+  const showMontant = document.getElementById('tableauShowMontant')?.checked;
+  const showRegion  = document.getElementById('tableauShowRegion')?.checked;
+  const showAC      = document.getElementById('tableauShowAC')?.checked;
+  const cols = [
+    { key:'affaires', label:'Affaire',     w:34, get:it=>it.affaires||'' },
+    { key:'client',   label:'MOA',         w:30, get:it=>it.client||'' },
+    { key:'eg',       label:'EG',          w:14, get:it=>it.eg||'' },
+    { key:'architect',label:'MOE',         w:28, get:it=>it.architect||'' },
+    { key:'adresse',  label:'Adresse',     w:34, get:it=>it.adresse||'' }
+  ];
+  if (showRegion) cols.push({ key:'region', label:'Région', w:30, get:it=>getRegion(it) });
+  cols.push({ key:'date', label:'Date prév.', w:18, get:it=>it.datePrevisionnelle?formatDateFR(it.datePrevisionnelle):'' });
+  cols.push({ key:'statut', label:'Statut', w:18, get:it=>it.statut||'' });
+  if (showMontant) cols.push({ key:'montant', label:'Montant', w:24, align:'right', get:it=>it.montant||'' });
+  if (showAC) {
+    cols.push({ key:'agence', label:'Agence SMAC', w:30, get:it=>getActionCommerciale(it.id).agence||'' });
+    cols.push({ key:'interlocuteur', label:'Interlocuteur', w:26, get:it=>getActionCommerciale(it.id).interlocuteur||'' });
+    cols.push({ key:'contact', label:'Contact', w:30, get:it=>getActionCommerciale(it.id).contact||'' });
+  }
+  return cols;
+}
+
+function tableauSortedList() {
+  let list = tableauFilteredList().slice();
+  const sk = tableauSort.key, dir = tableauSort.dir;
+  if (sk) {
+    const val = (it) => {
+      switch (sk) {
+        case 'affaires': return (it.affaires||'').toLowerCase();
+        case 'client': return (it.client||'').toLowerCase();
+        case 'eg': return (it.eg||'').toLowerCase();
+        case 'region': return getRegion(it).toLowerCase();
+        case 'date': return it.datePrevisionnelle||'';
+        case 'statut': return (it.statut||'').toLowerCase();
+        case 'montant': { const n=parseMontant(it.montant); return Number.isFinite(n)?n:-1; }
+        case 'agence': return (getActionCommerciale(it.id).agence||'').toLowerCase();
+        default: return '';
+      }
+    };
+    list.sort((a,b)=>{const va=val(a),vb=val(b);if(va<vb)return -1*dir;if(va>vb)return 1*dir;return 0;});
+  }
+  return list;
+}
+
+function tableauTabName() {
+  try { const o = tabs.find(t=>t.id===currentTab); return o?o.name:'Affaires'; } catch(e){ return 'Affaires'; }
+}
+
+function exportTableauExcel() {
+  if (typeof XLSX === 'undefined') { showToast('Chargement en cours…','error'); return; }
+  const showMontant = document.getElementById('tableauShowMontant')?.checked;
+  const cols = tableauColumns();
+  const list = tableauSortedList();
+  const tabName = tableauTabName();
+  const dateStr = formatDateFR(new Date().toISOString().slice(0,10));
+
+  // Total
+  let total = 0;
+  for (const it of list) { const v = parseMontant(it.montant); if (Number.isFinite(v)) total += v; }
+
+  // Construction en AOA pour une vraie mise en forme (titre, méta, en-têtes, total)
+  const nCols = cols.length;
+  const blank = Array(nCols).fill('');
+  const aoa = [];
+  const titleRow = blank.slice(); titleRow[0] = 'SMAC — CARTOGRAPHIE DES AFFAIRES'; aoa.push(titleRow);
+  const subRow = blank.slice(); subRow[0] = `Onglet : ${tabName}  ·  Export du ${dateStr}  ·  ${list.length} affaire(s)`; aoa.push(subRow);
+  aoa.push(blank.slice());
+  aoa.push(cols.map(c=>c.label));               // en-têtes
+  for (const it of list) aoa.push(cols.map(c=>c.get(it)));
+  // ligne total
+  if (showMontant) {
+    const tRow = blank.slice();
+    tRow[0] = 'TOTAL';
+    const mi = cols.findIndex(c=>c.key==='montant');
+    if (mi>=0) tRow[mi] = nfEUR.format(total);
+    aoa.push(blank.slice());
+    aoa.push(tRow);
+  }
+
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  // Largeurs
+  ws['!cols'] = cols.map(c=>({ wch: c.w }));
+  // Fusions : titre + sous-titre sur toute la largeur
+  ws['!merges'] = [
+    { s:{r:0,c:0}, e:{r:0,c:nCols-1} },
+    { s:{r:1,c:0}, e:{r:1,c:nCols-1} }
+  ];
+  // Hauteurs de lignes (titre plus haut)
+  ws['!rows'] = [{ hpt:26 }, { hpt:16 }, { hpt:6 }, { hpt:20 }];
+  // Auto-filtre sur la ligne d'en-têtes (ligne index 3)
+  const lastColLetter = XLSX.utils.encode_col(nCols-1);
+  ws['!autofilter'] = { ref: `A4:${lastColLetter}${4+list.length}` };
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Tableau');
+  const stamp = (typeof formatDateStamp==='function')?formatDateStamp():new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `SMAC_Tableau_${tabName.replace(/[^a-z0-9]/gi,'-')}_${stamp}.xlsx`);
+  showToast('Tableau Excel téléchargé !','success');
+  if (typeof trackEvent==='function') trackEvent('export_tableau_xls',{label:'Export Tableau XLS',detail:`${list.length} affaires`});
+}
+
+function exportTableauPDF() {
+  if (typeof jspdf === 'undefined' || typeof jspdf.jsPDF === 'undefined') { showToast('Chargement en cours…','error'); return; }
+  const { jsPDF } = jspdf;
+  const showMontant = document.getElementById('tableauShowMontant')?.checked;
+  const cols = tableauColumns();
+  const list = tableauSortedList();
+  const tabName = tableauTabName();
+  const doc = new jsPDF('landscape','mm','a4');
+  const pageW = doc.internal.pageSize.getWidth();
+
+  // En-tête
+  doc.setFontSize(15); doc.setFont(undefined,'bold'); doc.setTextColor(225,6,0);
+  doc.text('SMAC — Cartographie des affaires', 14, 14);
+  doc.setFontSize(8.5); doc.setFont(undefined,'normal'); doc.setTextColor(110,110,110);
+  const dateStr = formatDateFR(new Date().toISOString().slice(0,10));
+  doc.text(`Onglet : ${tabName}  |  Export du ${dateStr}  |  ${list.length} affaire(s)`, 14, 19.5);
+
+  // Total
+  let total = 0;
+  for (const it of list) { const v = parseMontant(it.montant); if (Number.isFinite(v)) total += v; }
+
+  const head = [cols.map(c=>c.label)];
+  const body = list.map(it => cols.map(c => {
+    const v = c.get(it);
+    if (c.key==='montant') { const n = parseMontant(v); return Number.isFinite(n) ? n.toLocaleString('fr-FR').replace(/[\s\u00a0\u202f\u2009]/g,' ')+' EUR' : (v||'-'); }
+    return v || '-';
+  }));
+  // ligne total
+  if (showMontant) {
+    const tRow = cols.map(()=> '');
+    tRow[0] = 'TOTAL';
+    const mi = cols.findIndex(c=>c.key==='montant');
+    if (mi>=0) tRow[mi] = total.toLocaleString('fr-FR').replace(/[\s\u00a0\u202f\u2009]/g,' ')+' EUR';
+    body.push(tRow);
+  }
+
+  // Largeurs proportionnelles
+  const totalW = cols.reduce((s,c)=>s+c.w,0);
+  const avail = pageW - 28;
+  const colStyles = {};
+  cols.forEach((c,i)=>{ colStyles[i] = { cellWidth: avail*c.w/totalW }; if (c.align==='right') colStyles[i].halign='right'; });
+
+  const acStart = cols.findIndex(c=>c.key==='agence');
+
+  doc.autoTable({
+    startY: 24,
+    head, body,
+    theme:'grid',
+    styles:{ fontSize:7.5, cellPadding:2, textColor:[30,30,30], lineWidth:0.1, lineColor:[210,210,210], overflow:'linebreak' },
+    headStyles:{ fillColor:[225,6,0], textColor:[255,255,255], fontStyle:'bold', halign:'left', fontSize:7.5 },
+    bodyStyles:{ fillColor:[255,255,255] },
+    alternateRowStyles:{ fillColor:[252,252,252] },
+    columnStyles: colStyles,
+    didParseCell: function(d) {
+      // ligne total en gras
+      if (showMontant && d.row.index === body.length-1) { d.cell.styles.fontStyle='bold'; d.cell.styles.fillColor=[255,245,245]; }
+      // colonnes action commerciale : en-tête sur fond rouge plus foncé
+      if (d.section==='head' && acStart>=0 && d.column.index>=acStart) { d.cell.styles.fillColor=[183,28,28]; }
+    },
+    margin:{ left:14, right:14 }
+  });
+
+  const stamp = (typeof formatDateStamp==='function')?formatDateStamp():new Date().toISOString().slice(0,10);
+  doc.save(`SMAC_Tableau_${tabName.replace(/[^a-z0-9]/gi,'-')}_${stamp}.pdf`);
+  showToast('Tableau PDF téléchargé !','success');
+  if (typeof trackEvent==='function') trackEvent('export_tableau_pdf',{label:'Export Tableau PDF',detail:`${list.length} affaires`});
+}
+</script>
+
+<script>
+/* ════════ MENU EXPORT DÉROULANT (v20) ════════ */
+function toggleExportMenu(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('exportMenu')?.classList.toggle('open');
+}
+function closeExportMenu() {
+  document.getElementById('exportMenu')?.classList.remove('open');
+}
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('exportDropdown');
+  if (dd && !dd.contains(e.target)) closeExportMenu();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeExportMenu(); });
+</script>
 </body></html>
