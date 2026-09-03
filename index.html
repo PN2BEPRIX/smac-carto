@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!-- saved from url=(0039)https://pn2beprix.github.io/smac-carto/ -->
 <html lang="fr" style="--theme-color: #f43f5e; --theme-color-light: rgba(244, 63, 94, 0.15); --theme-color-dark: rgb(214, 33, 64);"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -7064,7 +7065,7 @@
       map = L.map('map').setView([48.8566, 2.3522], 10);
       
       // Define tile layers
-      const planLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      const planLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_2ucl_1_7eb4b2e1c58789f601e6af4b', {
         attribution: '© <a href="https://carto.com/">CARTO</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       });
       
@@ -8960,11 +8961,11 @@ const PAPER_FORMATS = {
 const STATUT_ORDER = ['Gagné', 'En cours', 'Faste', 'Perdu', 'Hors SMAC'];
 
 const TILE_PROVIDERS = {
-  positron:    { url: (z,x,y) => `https://a.basemaps.cartocdn.com/light_all/${z}/${x}/${y}@2x.png`, size: 512 },
-  positron_nl: { url: (z,x,y) => `https://a.basemaps.cartocdn.com/light_nolabels/${z}/${x}/${y}@2x.png`, size: 512 },
-  voyager:     { url: (z,x,y) => `https://a.basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}@2x.png`, size: 512 },
-  voyager_nl:  { url: (z,x,y) => `https://a.basemaps.cartocdn.com/rastertiles/voyager_nolabels/${z}/${x}/${y}@2x.png`, size: 512 },
-  dark:        { url: (z,x,y) => `https://a.basemaps.cartocdn.com/dark_all/${z}/${x}/${y}@2x.png`, size: 512 }
+  positron:    { url: (z,x,y) => `https://a.basemaps.cartocdn.com/light_all/${z}/${x}/${y}@2x.png?key=cb1_2ucl_1_7eb4b2e1c58789f601e6af4b`, size: 512 },
+  positron_nl: { url: (z,x,y) => `https://a.basemaps.cartocdn.com/light_nolabels/${z}/${x}/${y}@2x.png?key=cb1_2ucl_1_7eb4b2e1c58789f601e6af4b`, size: 512 },
+  voyager:     { url: (z,x,y) => `https://a.basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}@2x.png?key=cb1_2ucl_1_7eb4b2e1c58789f601e6af4b`, size: 512 },
+  voyager_nl:  { url: (z,x,y) => `https://a.basemaps.cartocdn.com/rastertiles/voyager_nolabels/${z}/${x}/${y}@2x.png?key=cb1_2ucl_1_7eb4b2e1c58789f601e6af4b`, size: 512 },
+  dark:        { url: (z,x,y) => `https://a.basemaps.cartocdn.com/dark_all/${z}/${x}/${y}@2x.png?key=cb1_2ucl_1_7eb4b2e1c58789f601e6af4b`, size: 512 }
 };
 
 // ════════════════ THÈMES ════════════════
