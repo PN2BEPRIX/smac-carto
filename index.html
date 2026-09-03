@@ -3516,7 +3516,7 @@
     }
     .svg-export-overlay.open { display: flex; }
     .svg-export-modal {
-      background: #fff; border-radius: 16px; width: 580px; max-width: 96vw;
+      background: #fff; border-radius: 16px; width: 760px; max-width: 96vw;
       max-height: 90vh; display: flex; flex-direction: column;
       box-shadow: 0 24px 80px rgba(0,0,0,0.2);
     }
@@ -3557,6 +3557,27 @@
     .svg-input:focus { outline: none; border-color: var(--red); }
     .svg-preview-bar { background: #f8f8f8; border: 1px solid var(--gray-200); border-radius: 8px;
       padding: 10px 14px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-700); }
+    .svg-mini-btn { background:#fff; border:1px solid var(--gray-200); border-radius:6px;
+      padding:3px 9px; font-size:11px; cursor:pointer; color:var(--gray-700); margin-left:6px;
+      font-family:inherit; text-transform:none; letter-spacing:0; }
+    .svg-mini-btn:hover { border-color: var(--red); color: var(--red); }
+    .svg-poster-preview { position:relative; background:
+        linear-gradient(45deg,#eee 25%,transparent 25%,transparent 75%,#eee 75%),
+        linear-gradient(45deg,#eee 25%,#fff 25%,#fff 75%,#eee 75%);
+      background-size:16px 16px; background-position:0 0,8px 8px;
+      border:1px solid var(--gray-200); border-radius:8px; padding:10px;
+      min-height:140px; display:flex; align-items:center; justify-content:center; }
+    .svg-poster-preview svg { width:100%; height:auto; display:block;
+      box-shadow:0 4px 18px rgba(0,0,0,.18); }
+    .svg-poster-hint { font-size:12px; color:var(--gray-500); padding:28px 0; text-align:center; }
+    .svg-poster-preview.loading::after { content:'Génération de l\'aperçu…'; position:absolute;
+      inset:0; display:flex; align-items:center; justify-content:center; font-size:12px;
+      color:var(--gray-700); background:rgba(255,255,255,.72); border-radius:8px; }
+    .svg-scale-bar { margin-top:6px; font-size:11.5px; color:var(--gray-700);
+      background:#f8f8f8; border:1px solid var(--gray-200); border-radius:8px; padding:8px 12px;
+      line-height:1.6; }
+    .svg-scale-bar b { color:var(--red); }
+    .svg-scale-warn { color:#92400e; background:#fef3c7; border-color:#fde68a; }
 
     .svg-export-loader {
       position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999;
@@ -8843,6 +8864,37 @@ document.addEventListener('keydown', function(e) {
           </div>
         </div>
 
+        <!-- Répartition carte / index -->
+        <div>
+          <div class="svg-sec-label">↔️ Répartition carte / index (mode Atlas)</div>
+          <div class="svg-slider-row">
+            <span style="font-size:11px; color:var(--gray-500);">🗺️ Carte</span>
+            <input type="range" id="svgIndexWidth" min="18" max="55" value="33" oninput="onIndexWidthChange(this.value)">
+            <span style="font-size:11px; color:var(--gray-500);">Index 🗂️</span>
+            <span class="svg-slider-val" id="svgIndexWidthVal" style="min-width:44px;">33 %</span>
+          </div>
+          <div style="font-size:11px; color:var(--gray-500); margin-top:4px;">
+            Part de la largeur de page réservée à la liste des affaires. Vers la gauche, la carte
+            gagne de la place ; vers la droite, l'index respire et accepte plus de colonnes.
+          </div>
+        </div>
+
+        <!-- Colonnes de l'index -->
+        <div>
+          <div class="svg-sec-label">🗂️ Index des affaires (mode Atlas)</div>
+          <select class="svg-input" id="svgIndexCols">
+            <option value="0" selected>Colonnes : automatique</option>
+            <option value="1">1 colonne</option>
+            <option value="2">2 colonnes</option>
+            <option value="3">3 colonnes</option>
+            <option value="4">4 colonnes</option>
+          </select>
+          <div style="font-size:11px; color:var(--gray-500); margin-top:4px;">
+            En automatique, le nombre de colonnes s'adapte à la largeur du bandeau et au nombre d'affaires.
+            Plus de colonnes = lignes plus hautes et plus lisibles en projection.
+          </div>
+        </div>
+
         <!-- Encart Paris -->
         <div>
           <div class="svg-sec-label">🔬 Encart Paris zoomé</div>
@@ -8885,6 +8937,21 @@ document.addEventListener('keydown', function(e) {
             <label class="svg-field-cb"><input type="checkbox" id="svgShowTopOnly"> 🏆 Top 20 par montant</label>
           </div>
         </div>
+      </div>
+
+      <!-- Aperçu visuel -->
+      <div id="svgPosterPreviewWrap">
+        <div class="svg-sec-label" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>👁️ Aperçu du panneau</span>
+          <span>
+            <button type="button" class="svg-mini-btn" onclick="renderPosterPreview(true)">↻ Rafraîchir</button>
+            <button type="button" class="svg-mini-btn" onclick="openPosterPreviewFullsize()">⤢ Taille réelle</button>
+          </span>
+        </div>
+        <div class="svg-poster-preview" id="svgPosterPreview">
+          <div class="svg-poster-hint">L'aperçu s'affiche ici…</div>
+        </div>
+        <div class="svg-scale-bar" id="svgScaleBar"></div>
       </div>
 
       <!-- Preview en bas -->
@@ -9175,6 +9242,11 @@ function pickAnnotationOnMap() {
 }
 
 
+function onIndexWidthChange(val) {
+  const el = document.getElementById('svgIndexWidthVal');
+  if (el) el.textContent = val + ' %';
+}
+
 function onHideStatusChange() {
   const opts = document.getElementById('svgHideStatusOptions');
   if (opts) opts.style.display = document.getElementById('svgHideStatus')?.checked ? 'block' : 'none';
@@ -9192,8 +9264,26 @@ function openSvgExportModal() {
     const el = document.getElementById(id);
     if (el) { el.removeEventListener('input', updateSvgPreview); el.addEventListener('input', updateSvgPreview); }
   });
+  /* updateSvgPreview() a été appelée avant l'ouverture : l'aperçu s'était donc
+     arrêté sur le test « fenêtre ouverte ». On le relance ici. */
+  updatePosterScaleBar();
+  renderPosterPreview();
 }
-function closeSvgExportModal() { document.getElementById('svgExportOverlay').classList.remove('open'); }
+function closeSvgExportModal() {
+  clearTimeout(_previewTimer);
+  document.getElementById('svgExportOverlay').classList.remove('open');
+}
+
+/* Tout réglage de la fenêtre relance l'aperçu (débounce 550 ms). */
+document.addEventListener('DOMContentLoaded', () => {
+  const ov = document.getElementById('svgExportOverlay');
+  if (!ov) return;
+  ['input', 'change'].forEach(evt => ov.addEventListener(evt, e => {
+    if (e.target.closest('#svgPosterPreviewWrap')) return;
+    updatePosterScaleBar();
+    schedulePosterPreview();
+  }));
+});
 
 function getRawSvgBounds() {
   const zone = document.getElementById('svgZone')?.value || 'idf';
@@ -9294,6 +9384,115 @@ function getSvgFilteredItems() {
   });
 }
 
+/* ════════════════ APERÇU DU PANNEAU ════════════════
+   L'aperçu appelle generateMapSVG avec une qualité de tuiles réduite :
+   ce qui s'affiche est donc la mise en page réelle, pas une imitation. */
+let _previewTimer = null, _previewBusy = false, _previewPending = false, _previewSvg = '';
+
+function schedulePosterPreview() {
+  clearTimeout(_previewTimer);
+  _previewTimer = setTimeout(() => renderPosterPreview(), 550);
+}
+
+/* Dimensions physiques du papier (côté long en mm) */
+const PAPER_MM = { A0: 1189, A1: 841, A2: 594, A3: 420 };
+
+function updatePosterScaleBar() {
+  const el = document.getElementById('svgScaleBar');
+  if (!el) return;
+  const fmt = document.getElementById('svgPaperFormat')?.value || 'A1';
+  const R = parseInt(document.getElementById('svgMarkerSize')?.value || 34);
+  const mode = document.querySelector('input[name="svgMode"]:checked')?.value || 'atlas';
+  const longMm = PAPER_MM[fmt] || PAPER_MM.A1;
+  /* Le dessin fait toujours 5400 unités sur son côté long. */
+  const mmPerUnit = longMm / 5400;
+  const pastilleMm = 2 * (R + 6) * mmPerUnit;   // halo blanc compris
+  const chiffreMm = R * 0.7 * mmPerUnit;        // hauteur réelle des chiffres
+  const nb = getSvgFilteredItems().length;
+
+  let msg = `Sur <b>${fmt}</b> : pastilles <b>Ø ${pastilleMm.toFixed(1)} mm</b>`;
+  if (mode === 'atlas') msg += ` · chiffres <b>${chiffreMm.toFixed(1)} mm</b> de haut`;
+  msg += ` · ${nb} affaire${nb > 1 ? 's' : ''}`;
+
+  if (mode === 'atlas') {
+    const orient = document.getElementById('svgPaperOrient')?.value || 'landscape';
+    const pageUnits = orient === 'landscape' ? 5400 : 3818;
+    const pct = parseInt(document.getElementById('svgIndexWidth')?.value || 33);
+    const idxMm = pageUnits * pct / 100 * mmPerUnit;
+    const pageMm = pageUnits * mmPerUnit;
+    msg += `<br>Largeurs : carte ≈ <b>${Math.round(pageMm - idxMm)} mm</b> · index ≈ <b>${Math.round(idxMm)} mm</b>`;
+  }
+
+  const petit = mode === 'atlas' && chiffreMm < 1.8;
+  if (petit) {
+    msg += `<br>⚠️ Les numéros seront difficiles à lire à l'impression. Augmentez la taille des pastilles (onglet Style) ou passez en A2.`;
+  } else if (pastilleMm > 14) {
+    msg += `<br>Pastilles très grosses pour ce format : elles risquent de masquer la carte.`;
+  }
+  el.innerHTML = msg;
+  el.classList.toggle('svg-scale-warn', petit);
+}
+
+async function renderPosterPreview(force) {
+  const box = document.getElementById('svgPosterPreview');
+  if (!box) return;
+  if (!document.getElementById('svgExportOverlay')?.classList.contains('open')) return;
+  if (_previewBusy) { _previewPending = true; return; }
+
+  updatePosterScaleBar();
+
+  const items = getSvgFilteredItems();
+  if (!items.length) {
+    box.innerHTML = '<div class="svg-poster-hint">Aucune affaire ne correspond aux filtres.</div>';
+    _previewSvg = '';
+    return;
+  }
+
+  _previewBusy = true;
+  box.classList.add('loading');
+  try {
+    const mode = document.querySelector('input[name="svgMode"]:checked')?.value || 'atlas';
+    const fields = [...document.querySelectorAll('input[name="svgField"]:checked')].map(cb => cb.value);
+    const opts = {
+      bounds: getSvgBounds(),
+      fields,
+      mode,
+      markerSize: parseInt(document.getElementById('svgMarkerSize')?.value || 34),
+      title: document.getElementById('svgTitle')?.value || 'Cartographie SMAC',
+      items,
+      provider: document.getElementById('svgTileStyle')?.value || 'voyager',
+      filterStyle: document.getElementById('svgFilter')?.value || 'poster',
+      parisInset: document.getElementById('svgParisInset')?.checked || false,
+      statusColors: getActiveStatusColors(),
+      theme: getActiveTheme(),
+      annotations: svgAnnotations,
+      hideStatus: document.getElementById('svgHideStatus')?.checked || false,
+      anonymousGroup: document.getElementById('svgAnonymousGroup')?.value || 'none',
+      anonymousColor: document.getElementById('svgAnonymousColor')?.value || '#e10600',
+      mapQuality: 0.35   // tuiles légères : seule la mise en page compte ici
+    };
+    _previewSvg = await generateMapSVG(opts);
+    box.innerHTML = _previewSvg;
+    const svgEl = box.querySelector('svg');
+    if (svgEl) { svgEl.removeAttribute('width'); svgEl.removeAttribute('height'); }
+  } catch (e) {
+    console.error('Aperçu :', e);
+    box.innerHTML = '<div class="svg-poster-hint">Aperçu indisponible : ' + (e.message || e) + '</div>';
+  } finally {
+    box.classList.remove('loading');
+    _previewBusy = false;
+    if (_previewPending) { _previewPending = false; schedulePosterPreview(); }
+  }
+}
+
+function openPosterPreviewFullsize() {
+  if (!_previewSvg) { showToast('Générez d\'abord l\'aperçu', 'info'); return; }
+  const blob = new Blob([_previewSvg], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
 function updateSvgPreview() {
   const items = getSvgFilteredItems();
   const bounds = getSvgBounds();
@@ -9310,6 +9509,8 @@ function updateSvgPreview() {
   const ori = document.getElementById('svgPaperOrient')?.value || 'landscape';
   const elf = document.getElementById('svgPreviewFormat');
   if (elf) elf.textContent = '· ' + fmt + ' ' + (ori === 'landscape' ? 'paysage' : 'portrait');
+  updatePosterScaleBar();
+  schedulePosterPreview();
 }
 
 // ════════════════ Helpers ════════════════
@@ -9359,8 +9560,14 @@ function chooseZoomHQ(bounds, targetPx, maxTiles) {
   return zoom;
 }
 
+const _tileCache = new Map();
+
 async function fetchMapBackground(bounds, targetWidth, provider, onProgress, qualityMult, filterStyle) {
   qualityMult = qualityMult || 1;
+  /* Le résultat ne dépend que de ces paramètres : on peut le mémoriser. */
+  const ck = [bounds.north, bounds.south, bounds.east, bounds.west,
+              Math.round(targetWidth), provider, qualityMult, filterStyle].join('|');
+  if (_tileCache.has(ck)) { if (onProgress) onProgress(1, 1); return _tileCache.get(ck); }
   const TS = TILE_PROVIDERS[provider].size || 256;
   // Résolution cible = largeur d'affichage × multiplicateur qualité
   const MAX_TILES = 700;  // garde-fou perf/mémoire
@@ -9402,7 +9609,12 @@ async function fetchMapBackground(bounds, targetWidth, provider, onProgress, qua
   octx.drawImage(cv, offX, offY, cW, cH, 0, 0, out.width, out.height);
   octx.filter = 'none';
   // JPEG haute qualité = bon compromis taille/netteté pour une carte
-  return { dataUrl: out.toDataURL('image/jpeg', 0.93), width: out.width, height: out.height };
+  const result = { dataUrl: out.toDataURL('image/jpeg', 0.93), width: out.width, height: out.height };
+  /* Mémorisation : l'aperçu se régénère à chaque réglage et redemanderait
+     sinon les mêmes tuiles. On plafonne pour ne pas gonfler la mémoire. */
+  if (_tileCache.size > 8) _tileCache.delete(_tileCache.keys().next().value);
+  _tileCache.set(ck, result);
+  return result;
 }
 
 function spreadOverlappingMarkers(markers, minDist) {
@@ -9505,8 +9717,14 @@ async function generateMapSVG(options) {
   const paperFormat = document.getElementById('svgPaperFormat')?.value || 'A1';
   const orient = document.getElementById('svgPaperOrient')?.value || 'landscape';
   const pf = PAPER_FORMATS[paperFormat] || PAPER_FORMATS.A1;
-  let W, H;
-  if (orient === 'landscape') { W = pf.w; H = pf.h; } else { W = pf.h; H = pf.w; }
+  /* La mise en page est écrite en unités A1. Tous les formats A ayant le même
+     rapport (1:√2), on dessine toujours dans ce repère et on laisse le viewBox
+     mettre à l'échelle. Sans ça, sur A2/A3 les hauteurs de blocs rétrécissaient
+     alors que les tailles de police restaient calibrées pour du A1. */
+  const basePF = PAPER_FORMATS.A1;
+  let W, H, OUT_W, OUT_H;
+  if (orient === 'landscape') { W = basePF.w; H = basePF.h; OUT_W = pf.w; OUT_H = pf.h; }
+  else                        { W = basePF.h; H = basePF.w; OUT_W = pf.h; OUT_H = pf.w; }
   const SC = W / 5400;
   const SC_T = Math.min(W, H) / Math.min(PAPER_FORMATS.A1.w, PAPER_FORMATS.A1.h);
   const HEADER_H = Math.round(360 * SC_T);
@@ -9516,8 +9734,10 @@ async function generateMapSVG(options) {
   const setSub = txt => { const el = document.getElementById('svgLoaderSub'); if (el) el.textContent = txt; };
   setSub('Téléchargement du fond de carte…');
 
-  let SIDEBAR_W = mode === 'atlas' ? Math.round(1800 * SC) : 0;
-  if (orient === 'portrait' && mode === 'atlas') SIDEBAR_W = Math.round(SIDEBAR_W * 0.75);
+  /* Répartition carte / index : part de la largeur de page réservée à l'index.
+     33 % correspond à l'ancienne valeur fixe de 1800 unités. */
+  const splitPct = Math.min(55, Math.max(18, parseInt(document.getElementById('svgIndexWidth')?.value || 33)));
+  const SIDEBAR_W = mode === 'atlas' ? Math.round(W * splitPct / 100) : 0;
   const SIDEBAR_GAP = SIDEBAR_W > 0 ? Math.round(60 * SC_T) : 0;
 
   const availMapL = OUTER_PAD;
@@ -9666,7 +9886,7 @@ async function generateMapSVG(options) {
   const { bgC, cardC, textC, subC, borderC, accentC, font } = theme;
   const dark = theme.bgC === '#0a0f1d' || theme.bgC === '#1e293b' || provider === 'dark';
 
-  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="${font}">`;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${OUT_W}" height="${OUT_H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" font-family="${font}">`;
   s += `<defs>
     <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.15"/></filter>
     <filter id="shM"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-opacity="0.22"/></filter>
@@ -9851,33 +10071,40 @@ async function generateMapSVG(options) {
     const SBY_T = HEADER_H + OUTER_PAD;
     const SBY_B = H - FOOTER_H - OUTER_PAD;
     let cy = SBY_T;
-    const synthH = 280;
+
+    /* Échelle du bloc synthèse : il occupe toute la largeur du bandeau, donc
+       ses textes suivent la largeur choisie au curseur. */
+    const TSS = Math.max(0.9, Math.min(1.5, SBW / (1800 * SC)));
+    const zs = n => +(n * TSS).toFixed(1);
+
+    const synthH = Math.round(280 * TSS);
     s += `<rect x="${SBX_L}" y="${cy}" width="${SBW}" height="${synthH}" rx="12" fill="${cardC}" stroke="${borderC}" stroke-width="1.5" filter="url(#shS)"/>`;
-    s += `<circle cx="${SBX_L+44}" cy="${cy+44}" r="6" fill="${accentC}"/>`;
-    s += `<text x="${SBX_L+62}" y="${cy+52}" font-size="22" font-weight="700" fill="${subC}" letter-spacing="4">SYNTHÈSE</text>`;
-    s += `<line x1="${SBX_L+30}" y1="${cy+68}" x2="${SBX_L+SBW-30}" y2="${cy+68}" stroke="${borderC}" stroke-width="1"/>`;
-    s += `<line x1="${SBX_L+30}" y1="${cy+68}" x2="${SBX_L+90}" y2="${cy+68}" stroke="${accentC}" stroke-width="2"/>`;
-    const synthY = cy + 90;
+    s += `<circle cx="${SBX_L+zs(44)}" cy="${cy+zs(44)}" r="${zs(6)}" fill="${accentC}"/>`;
+    s += `<text x="${SBX_L+zs(62)}" y="${cy+zs(52)}" font-size="${zs(22)}" font-weight="700" fill="${subC}" letter-spacing="4">SYNTHÈSE</text>`;
+    s += `<line x1="${SBX_L+zs(30)}" y1="${cy+zs(68)}" x2="${SBX_L+SBW-zs(30)}" y2="${cy+zs(68)}" stroke="${borderC}" stroke-width="1"/>`;
+    s += `<line x1="${SBX_L+zs(30)}" y1="${cy+zs(68)}" x2="${SBX_L+zs(90)}" y2="${cy+zs(68)}" stroke="${accentC}" stroke-width="2"/>`;
+    const synthY = cy + zs(90);
     const statKeys = statsOrder;
-    const statCardW = (SBW - 60 - (statKeys.length-1)*12) / statKeys.length;
-    const statCardH = synthH - 110;
+    const statGap = zs(12);
+    const statCardW = (SBW - zs(60) - (statKeys.length-1)*statGap) / statKeys.length;
+    const statCardH = synthH - zs(110);
     statKeys.forEach((key, i) => {
-      const cx_ = SBX_L + 30 + i * (statCardW + 12);
+      const cx_ = SBX_L + zs(30) + i * (statCardW + statGap);
       const col = statusColors[key];
       s += `<rect x="${cx_}" y="${synthY}" width="${statCardW}" height="${statCardH}" rx="8" fill="${col}" opacity="0.08"/>`;
       s += `<rect x="${cx_}" y="${synthY}" width="5" height="${statCardH}" fill="${col}"/>`;
-      s += `<text x="${cx_+18}" y="${synthY+34}" font-size="18" font-weight="700" fill="${col}" letter-spacing="2">${escXml(key).toUpperCase()}</text>`;
-      s += `<text x="${cx_+18}" y="${synthY+102}" font-size="56" font-weight="800" fill="${textC}" letter-spacing="-2">${stats[key].count}</text>`;
-      s += `<text x="${cx_+18}" y="${synthY+135}" font-size="18" fill="${subC}">affaires</text>`;
-      s += `<text x="${cx_+statCardW-18}" y="${synthY+135}" font-size="22" font-weight="700" fill="${textC}" text-anchor="end">${formatMnt(stats[key].total)}</text>`;
+      s += `<text x="${cx_+zs(18)}" y="${synthY+zs(34)}" font-size="${zs(18)}" font-weight="700" fill="${col}" letter-spacing="2">${escXml(key).toUpperCase()}</text>`;
+      s += `<text x="${cx_+zs(18)}" y="${synthY+zs(102)}" font-size="${zs(56)}" font-weight="800" fill="${textC}" letter-spacing="-2">${stats[key].count}</text>`;
+      s += `<text x="${cx_+zs(18)}" y="${synthY+zs(135)}" font-size="${zs(18)}" fill="${subC}">affaires</text>`;
+      s += `<text x="${cx_+statCardW-zs(18)}" y="${synthY+zs(135)}" font-size="${zs(22)}" font-weight="700" fill="${textC}" text-anchor="end">${formatMnt(stats[key].total)}</text>`;
     });
 
-    cy += synthH + 40;
-    s += `<text x="${SBX_L}" y="${cy+28}" font-size="22" font-weight="700" fill="${subC}" letter-spacing="4">INDEX DES AFFAIRES</text>`;
-    s += `<text x="${SBX_L+SBW}" y="${cy+28}" font-size="14" fill="${subC}" text-anchor="end" letter-spacing="2">CLASSEMENT PAR STATUT &amp; MONTANT</text>`;
-    s += `<line x1="${SBX_L}" y1="${cy+45}" x2="${SBX_L+SBW}" y2="${cy+45}" stroke="${accentC}" stroke-width="2"/>`;
-    s += `<line x1="${SBX_L}" y1="${cy+50}" x2="${SBX_L+80}" y2="${cy+50}" stroke="${accentC}" stroke-width="2"/>`;
-    cy += 70;
+    cy += synthH + zs(40);
+    s += `<text x="${SBX_L}" y="${cy+zs(28)}" font-size="${zs(22)}" font-weight="700" fill="${subC}" letter-spacing="4">INDEX DES AFFAIRES</text>`;
+    s += `<text x="${SBX_L+SBW}" y="${cy+zs(28)}" font-size="${zs(14)}" fill="${subC}" text-anchor="end" letter-spacing="2">CLASSEMENT PAR STATUT &amp; MONTANT</text>`;
+    s += `<line x1="${SBX_L}" y1="${cy+zs(45)}" x2="${SBX_L+SBW}" y2="${cy+zs(45)}" stroke="${accentC}" stroke-width="2"/>`;
+    s += `<line x1="${SBX_L}" y1="${cy+zs(50)}" x2="${SBX_L+zs(80)}" y2="${cy+zs(50)}" stroke="${accentC}" stroke-width="2"/>`;
+    cy += zs(70);
 
     const listH = SBY_B - cy;
     const entries = [];
@@ -9892,11 +10119,54 @@ async function generateMapSVG(options) {
     const itemsTotal = entries.filter(e => e.type === 'item').length;
     const headersTotal = entries.filter(e => e.type === 'header').length;
     const minTotalH = headersTotal * headerRowH + itemsTotal * minRowH;
-    const numCols = Math.min(3, Math.max(1, Math.ceil(minTotalH / listH)));
     const colGap = 30;
+
+    /* Nombre de colonnes.
+       On vise une largeur de colonne lisible (~560 unités) au lieu d'étirer
+       une colonne unique sur toute la largeur du bandeau : sinon la moitié
+       droite de chaque ligne reste vide et la liste s'allonge inutilement. */
+    const TARGET_COL_W = 560 * SC;
+    const forced = parseInt(document.getElementById('svgIndexCols')?.value || 0);
+    const maxByWidth = Math.max(1, Math.min(4, Math.floor((SBW + colGap) / (TARGET_COL_W + colGap))));
+    const neededByHeight = Math.max(1, Math.ceil(minTotalH / listH));
+    /* Au moins 5 entrées par colonne, sinon on fragmente pour rien. */
+    const maxByContent = Math.max(1, Math.ceil(entries.length / 5));
+    let numCols = forced > 0
+      ? Math.min(forced, 4)
+      : Math.min(maxByWidth, maxByContent, Math.max(neededByHeight, maxByWidth));
+    numCols = Math.max(1, Math.min(numCols, entries.length));
+
     const colW = (SBW - colGap * (numCols - 1)) / numCols;
-    const entriesPerCol = Math.ceil(entries.length / numCols);
-    const cols = Array.from({length: numCols}, (_, i) => entries.slice(i * entriesPerCol, (i + 1) * entriesPerCol));
+
+    /* Échelle typographique de l'index.
+       Les tailles de police étaient calibrées pour une colonne de ~560 unités.
+       Quand on élargit le bandeau ou qu'on réduit le nombre de colonnes, le
+       texte doit grossir en proportion, sinon la place gagnée reste du vide. */
+    const TS = Math.max(0.9, Math.min(1.8, colW / (560 * SC)));
+    const fz = n => +(n * TS).toFixed(1);   // taille de police mise à l'échelle
+    const px = n => n * TS;                 // distance mise à l'échelle
+    const hdrH = Math.round(headerRowH * TS);
+
+    /* Répartition équilibrée en hauteur réelle, et jamais un en-tête de
+       statut seul en bas d'une colonne. */
+    const hOf = e => e.type === 'header' ? headerRowH + 14 : minRowH;
+    const totalEntriesH = entries.reduce((acc, e) => acc + hOf(e), 0);
+    const targetColH = totalEntriesH / numCols;
+    const cols = [];
+    let cur = [], curH = 0;
+    entries.forEach((e, i) => {
+      const colsLeft = numCols - cols.length;
+      const canBreak = cur.length > 0
+        && cur[cur.length - 1].type !== 'header'
+        && colsLeft > 1
+        && (entries.length - i) >= colsLeft;
+      if (canBreak && curH + hOf(e) / 2 > targetColH) {
+        cols.push(cur); cur = []; curH = 0;
+      }
+      cur.push(e); curH += hOf(e);
+    });
+    cols.push(cur);
+    while (cols.length < numCols) cols.push([]);
 
     cols.forEach((col, ci) => {
       let ccy = cy;
@@ -9904,35 +10174,38 @@ async function generateMapSVG(options) {
       const itemsInCol = col.filter(e => e.type === 'item').length;
       const headersInCol = col.filter(e => e.type === 'header').length;
       const colAvailH = SBY_B - ccy - 20;
-      const itemH = Math.max(minRowH, Math.min(110, (colAvailH - headersInCol * headerRowH) / Math.max(1, itemsInCol)));
+      /* On autorise des lignes plus basses que minRowH quand la colonne est
+         chargée : mieux vaut resserrer que déborder sous le pied de page. */
+      const rawItemH = (colAvailH - headersInCol * (hdrH + px(14))) / Math.max(1, itemsInCol);
+      const itemH = Math.max(px(44), Math.min(px(118), rawItemH));
       col.forEach(e => {
         if (e.type === 'header') {
-          ccy += 14;
+          ccy += px(14);
           const col_ = statusColors[e.key];
-          s += `<circle cx="${cx+12}" cy="${ccy+22}" r="9" fill="${col_}"/>`;
+          s += `<circle cx="${cx+px(12)}" cy="${ccy+px(22)}" r="${fz(9)}" fill="${col_}"/>`;
           // En mode anonyme single bucket, label différent
           const headerLabel = (hideStatus && anonymousGroup === 'none') ? 'AFFAIRES' : escXml(e.key).toUpperCase();
-          s += `<text x="${cx+30}" y="${ccy+30}" font-size="22" font-weight="800" fill="${col_}" letter-spacing="3">${headerLabel}</text>`;
-          s += `<text x="${cx+colW-90}" y="${ccy+30}" font-size="16" fill="${subC}" text-anchor="end" font-weight="600">${e.count} aff.</text>`;
-          s += `<text x="${cx+colW}" y="${ccy+30}" font-size="18" fill="${col_}" text-anchor="end" font-weight="700">${formatMnt(e.total)}</text>`;
-          s += `<line x1="${cx}" y1="${ccy+46}" x2="${cx+colW}" y2="${ccy+46}" stroke="${borderC}" stroke-width="1"/>`;
-          s += `<line x1="${cx}" y1="${ccy+46}" x2="${cx+60}" y2="${ccy+46}" stroke="${col_}" stroke-width="2.5"/>`;
-          ccy += headerRowH;
+          s += `<text x="${cx+px(30)}" y="${ccy+px(30)}" font-size="${fz(22)}" font-weight="800" fill="${col_}" letter-spacing="${fz(3)}">${headerLabel}</text>`;
+          s += `<text x="${cx+colW-px(90)}" y="${ccy+px(30)}" font-size="${fz(16)}" fill="${subC}" text-anchor="end" font-weight="600">${e.count} aff.</text>`;
+          s += `<text x="${cx+colW}" y="${ccy+px(30)}" font-size="${fz(18)}" fill="${col_}" text-anchor="end" font-weight="700">${formatMnt(e.total)}</text>`;
+          s += `<line x1="${cx}" y1="${ccy+px(46)}" x2="${cx+colW}" y2="${ccy+px(46)}" stroke="${borderC}" stroke-width="1"/>`;
+          s += `<line x1="${cx}" y1="${ccy+px(46)}" x2="${cx+px(60)}" y2="${ccy+px(46)}" stroke="${col_}" stroke-width="2.5"/>`;
+          ccy += hdrH;
         } else {
           const it = e.item;
-          const cardPad = 14;
-          const cardX = cx, cardY = ccy + 4, cardW = colW, cardH = itemH - 8;
+          const cardPad = px(14);
+          const cardX = cx, cardY = ccy + px(4), cardW = colW, cardH = itemH - px(8);
           s += `<rect x="${cardX}" y="${cardY}" width="${cardW}" height="${cardH}" rx="8" fill="${dark?'rgba(255,255,255,0.025)':'rgba(0,0,0,0.018)'}"/>`;
           s += `<rect x="${cardX}" y="${cardY}" width="5" height="${cardH}" rx="2.5" fill="${e.color}"/>`;
-          const bxR = 20;
+          const bxR = px(20);
           const bx = cardX + cardPad + bxR;
           const by = cardY + cardH/2;
-          s += `<circle cx="${bx}" cy="${by}" r="${bxR+3}" fill="white"/>`;
+          s += `<circle cx="${bx}" cy="${by}" r="${bxR+px(3)}" fill="white"/>`;
           s += `<circle cx="${bx}" cy="${by}" r="${bxR}" fill="${e.color}"/>`;
-          s += `<text x="${bx}" y="${(by+7).toFixed(1)}" font-size="20" font-weight="800" fill="white" text-anchor="middle">${e.num}</text>`;
+          s += `<text x="${bx}" y="${(by+px(7)).toFixed(1)}" font-size="${fz(20)}" font-weight="800" fill="white" text-anchor="middle">${e.num}</text>`;
           const contentX = bx + bxR + cardPad;
           const contentW = cardW - (contentX - cardX) - cardPad;
-          const maxNameChars = Math.floor(contentW / 13);
+          const maxNameChars = Math.floor(contentW / (13 * TS));
           const nom = truncate(it.affaires || '—', maxNameChars);
           const moa = fields.includes('client') ? it.client : '';
           const eg = fields.includes('eg') ? it.eg : '';
@@ -9941,55 +10214,55 @@ async function generateMapSVG(options) {
           const sub = subParts.join('  ·  ');
           // ════ Layout 3 lignes — JAMAIS d'overlap ════
           // Tronquer le nom pour qu'il tienne sur toute la largeur de contenu
-          const nomMaxChars = Math.floor(contentW / 11);  // chiffre conservateur (font 22 bold ~ 12px/char)
+          const nomMaxChars = Math.floor(contentW / (11 * TS));  // conservateur : ~11 unités par caractère à l'échelle 1
           const nomFit = truncate(it.affaires || '—', nomMaxChars);
 
-          if (cardH >= 88) {
+          if (cardH >= px(88)) {
             // Mode généreux : 3 lignes propres, espacées
             // Ligne 1 : nom
-            s += `<text x="${contentX}" y="${(cardY + 28).toFixed(1)}" font-size="22" font-weight="700" fill="${textC}" letter-spacing="-0.3">${escXml(nomFit)}</text>`;
+            s += `<text x="${contentX}" y="${(cardY + px(28)).toFixed(1)}" font-size="${fz(22)}" font-weight="700" fill="${textC}" letter-spacing="-0.3">${escXml(nomFit)}</text>`;
             // Ligne 2 : montant (avec petit accent coloré)
             if (fields.includes('montant') && it.montant) {
-              const mntY = cardY + 58;
-              s += `<rect x="${contentX}" y="${(mntY-13).toFixed(1)}" width="20" height="3" fill="${e.color}" rx="1.5"/>`;
-              s += `<text x="${(contentX+30).toFixed(1)}" y="${(mntY).toFixed(1)}" font-size="20" font-weight="800" fill="${e.color}" letter-spacing="-0.5">${escXml(it.montant)}</text>`;
+              const mntY = cardY + px(58);
+              s += `<rect x="${contentX}" y="${(mntY-px(13)).toFixed(1)}" width="${px(20)}" height="${px(3)}" fill="${e.color}" rx="1.5"/>`;
+              s += `<text x="${(contentX+px(30)).toFixed(1)}" y="${(mntY).toFixed(1)}" font-size="${fz(20)}" font-weight="800" fill="${e.color}" letter-spacing="-0.5">${escXml(it.montant)}</text>`;
             }
             // Ligne 3 : sub (MOA, EG...)
             if (sub) {
-              s += `<text x="${contentX}" y="${(cardY + cardH - 14).toFixed(1)}" font-size="14" fill="${subC}" letter-spacing="0.5">${escXml(truncate(sub, Math.floor(contentW/8)))}</text>`;
+              s += `<text x="${contentX}" y="${(cardY + cardH - px(14)).toFixed(1)}" font-size="${fz(14)}" fill="${subC}" letter-spacing="0.5">${escXml(truncate(sub, Math.floor(contentW/(8*TS))))}</text>`;
             }
-          } else if (cardH >= 60) {
+          } else if (cardH >= px(60)) {
             // Mode moyen : 2 lignes - nom + montant
             // Ligne 1 : nom
-            s += `<text x="${contentX}" y="${(cardY + 24).toFixed(1)}" font-size="20" font-weight="700" fill="${textC}">${escXml(nomFit)}</text>`;
+            s += `<text x="${contentX}" y="${(cardY + px(24)).toFixed(1)}" font-size="${fz(20)}" font-weight="700" fill="${textC}">${escXml(nomFit)}</text>`;
             // Ligne 2 : montant (avec accent) puis sub-info à côté en gris
             if (fields.includes('montant') && it.montant) {
-              const mntY = cardY + 48;
-              s += `<rect x="${contentX}" y="${(mntY-12).toFixed(1)}" width="18" height="3" fill="${e.color}" rx="1.5"/>`;
-              s += `<text x="${(contentX+28).toFixed(1)}" y="${(mntY).toFixed(1)}" font-size="18" font-weight="800" fill="${e.color}">${escXml(it.montant)}</text>`;
+              const mntY = cardY + px(48);
+              s += `<rect x="${contentX}" y="${(mntY-px(12)).toFixed(1)}" width="${px(18)}" height="${px(3)}" fill="${e.color}" rx="1.5"/>`;
+              s += `<text x="${(contentX+px(28)).toFixed(1)}" y="${(mntY).toFixed(1)}" font-size="${fz(18)}" font-weight="800" fill="${e.color}">${escXml(it.montant)}</text>`;
               // sub-info après le montant si y'a de la place et si on a un sub
               if (sub) {
                 // Estimer position fin du montant (conservateur)
-                const mntApproxW = String(it.montant).length * 11 + 30;
-                if (mntApproxW + 200 < contentW) {
-                  const subX = contentX + mntApproxW + 14;
-                  const subMaxChars = Math.floor((contentW - mntApproxW - 14) / 8);
-                  s += `<text x="${subX.toFixed(1)}" y="${(mntY).toFixed(1)}" font-size="13" fill="${subC}">· ${escXml(truncate(sub, subMaxChars))}</text>`;
+                const mntApproxW = String(it.montant).length * px(11) + px(30);
+                if (mntApproxW + px(200) < contentW) {
+                  const subX = contentX + mntApproxW + px(14);
+                  const subMaxChars = Math.floor((contentW - mntApproxW - px(14)) / (8*TS));
+                  s += `<text x="${subX.toFixed(1)}" y="${(mntY).toFixed(1)}" font-size="${fz(13)}" fill="${subC}">· ${escXml(truncate(sub, subMaxChars))}</text>`;
                 }
               }
             } else if (sub) {
-              s += `<text x="${contentX}" y="${(cardY + 48).toFixed(1)}" font-size="14" fill="${subC}">${escXml(truncate(sub, Math.floor(contentW/8)))}</text>`;
+              s += `<text x="${contentX}" y="${(cardY + px(48)).toFixed(1)}" font-size="${fz(14)}" fill="${subC}">${escXml(truncate(sub, Math.floor(contentW/(8*TS))))}</text>`;
             }
           } else {
             // Mode compact : 1 seule ligne — nom à gauche, montant aligné droite STRICT
-            const ty = cardY + cardH/2 + 6;
-            // Réserver 130px à droite pour le montant
-            const compactNameMaxChars = Math.floor((contentW - 130) / 11);
+            const ty = cardY + cardH/2 + px(6);
+            // Réserver de la place à droite pour le montant
+            const compactNameMaxChars = Math.floor((contentW - px(130)) / (11*TS));
             const compactNom = truncate(it.affaires || '—', compactNameMaxChars);
-            s += `<text x="${contentX}" y="${ty.toFixed(1)}" font-size="18" font-weight="700" fill="${textC}">${escXml(compactNom)}</text>`;
+            s += `<text x="${contentX}" y="${ty.toFixed(1)}" font-size="${fz(18)}" font-weight="700" fill="${textC}">${escXml(compactNom)}</text>`;
             if (fields.includes('montant') && it.montant) {
               // Aligné à droite avec text-anchor="end" — JAMAIS d'overlap possible
-              s += `<text x="${(cx + colW - 8).toFixed(1)}" y="${ty.toFixed(1)}" font-size="18" font-weight="700" fill="${e.color}" text-anchor="end">${escXml(it.montant)}</text>`;
+              s += `<text x="${(cx + colW - px(8)).toFixed(1)}" y="${ty.toFixed(1)}" font-size="${fz(18)}" font-weight="700" fill="${e.color}" text-anchor="end">${escXml(it.montant)}</text>`;
             }
           }
           ccy += itemH;
