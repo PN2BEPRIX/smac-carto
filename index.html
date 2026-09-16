@@ -1195,6 +1195,34 @@
     }
     .legend-item { justify-content: flex-start; }
 
+    /* Infobulle de survol des marqueurs */
+    .affaire-tooltip.leaflet-tooltip {
+      background: rgba(28, 25, 23, 0.95);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.35;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+      white-space: nowrap;
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .affaire-tooltip .tip-sub {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 400;
+      opacity: 0.78;
+      margin-top: 2px;
+    }
+    .affaire-tooltip.leaflet-tooltip-top::before { border-top-color: rgba(28, 25, 23, 0.95); }
+    .affaire-tooltip.leaflet-tooltip-bottom::before { border-bottom-color: rgba(28, 25, 23, 0.95); }
+    .affaire-tooltip.leaflet-tooltip-left::before { border-left-color: rgba(28, 25, 23, 0.95); }
+    .affaire-tooltip.leaflet-tooltip-right::before { border-right-color: rgba(28, 25, 23, 0.95); }
+
     .advanced-actions {
       display: flex;
       gap: 6px;
@@ -6499,6 +6527,21 @@ function renderMapLegend() {
         marker.itemData = item; // Store item data for itinerary
         
         marker.bindPopup(() => buildAffairePopup(item), { maxWidth: 340, minWidth: 240 });
+
+        /* Infobulle au survol : la dénomination de l'affaire sans avoir à cliquer.
+           Écartée sur écran tactile, où Leaflet ouvrirait l'infobulle au clic en
+           même temps que la fiche, les deux se superposant. */
+        if (window.matchMedia('(hover: hover)').matches) {
+          const sousTitre = [
+            item.client || '',
+            clientModeActive ? '' : (item.montant ? displayMontant(item.montant) : '')
+          ].filter(Boolean).join(' · ');
+          marker.bindTooltip(
+            `<b>${escapeHTML(item.affaires || '—')}</b>` +
+            (sousTitre ? `<span class="tip-sub">${escapeHTML(sousTitre)}</span>` : ''),
+            { direction: 'top', offset: [0, -14], opacity: 1, className: 'affaire-tooltip' }
+          );
+        }
         
         // Clic marqueur → scroll vers l'affaire dans la liste avec badge pulsant
         marker.on('click', () => {
@@ -7403,6 +7446,13 @@ function renderMapLegend() {
           }),
           zIndexOffset: site.type === 'Siège' ? 1300 : 1200
         });
+
+        if (window.matchMedia('(hover: hover)').matches) {
+          marker.bindTooltip(
+            `<b>${site.name}</b><span class="tip-sub">${site.type}</span>`,
+            { direction: 'top', offset: [0, -14], opacity: 1, className: 'affaire-tooltip' }
+          );
+        }
         
         marker.bindPopup(`
           <div class="smac-popup">
