@@ -3866,6 +3866,246 @@
 <script src="https://cdn.jsdelivr.net/npm/svg2pdf.js@2.2.3/dist/svg2pdf.umd.min.js" async defer></script>
 </head>
 <body class="">
+
+<!-- Écran blanc de démarrage : couvre l'écran d'accueil le temps que la page
+     s'affiche, puis s'efface. Le bouton « Accéder à la carte » gère ensuite
+     lui-même son état de chargement, donc pas de double attente. -->
+<div id="bootScreen">
+  <style>
+    #bootScreen {
+      position: fixed; inset: 0; z-index: 99999;
+      background:
+        radial-gradient(1100px 620px at 50% -10%, #fff 0%, #fbfaf9 45%, #f4f2f0 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: opacity .6s ease, transform .6s ease;
+      overflow: hidden;
+    }
+    /* Trame discrète, écho de la carte */
+    #bootScreen::before {
+      content: ''; position: absolute; inset: -2px;
+      background-image:
+        linear-gradient(rgba(28,25,23,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(28,25,23,.045) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: radial-gradient(circle at 50% 45%, #000 0%, transparent 72%);
+      -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 0%, transparent 72%);
+      pointer-events: none;
+    }
+    #bootScreen.done { opacity: 0; transform: scale(1.02); pointer-events: none; }
+
+    #bootScreen .boot-inner {
+      position: relative; display: flex; flex-direction: column; align-items: center;
+      animation: bootIn .7s cubic-bezier(.2,.7,.3,1) both;
+    }
+    @keyframes bootIn { from { opacity: 0; transform: translateY(10px); } }
+
+    /* Marqueur cartographique animé */
+    #bootScreen .boot-pin { position: relative; width: 56px; height: 56px; margin-bottom: 20px; }
+    #bootScreen .boot-pin i {
+      position: absolute; inset: 0; margin: auto; width: 15px; height: 15px;
+      background: #e10600; border-radius: 50%;
+      box-shadow: 0 0 0 5px #fff, 0 3px 10px rgba(225,6,0,.35);
+    }
+    #bootScreen .boot-pin span {
+      position: absolute; inset: 0; margin: auto; width: 15px; height: 15px;
+      border-radius: 50%; border: 2px solid rgba(225,6,0,.55);
+      animation: bootPing 2s cubic-bezier(.2,.6,.3,1) infinite;
+    }
+    #bootScreen .boot-pin span:nth-child(2) { animation-delay: .65s; }
+    #bootScreen .boot-pin span:nth-child(3) { animation-delay: 1.3s; }
+    @keyframes bootPing {
+      0%   { transform: scale(1); opacity: .75; }
+      80%  { transform: scale(3.4); opacity: 0; }
+      100% { transform: scale(3.4); opacity: 0; }
+    }
+
+    #bootScreen .boot-logo {
+      font-size: 34px; font-weight: 800; letter-spacing: -2px; color: #1c1917; line-height: 1;
+    }
+    #bootScreen .boot-logo span { color: #e10600; }
+    #bootScreen .boot-sub {
+      font-size: 10.5px; color: #a8a29e; letter-spacing: 3.2px; text-transform: uppercase;
+      margin-top: 9px;
+    }
+
+    #bootScreen .boot-track {
+      width: 188px; height: 2px; border-radius: 99px; background: rgba(28,25,23,.09);
+      overflow: hidden; margin-top: 30px; position: relative;
+    }
+    #bootScreen .boot-fill {
+      height: 100%; width: 10%; border-radius: 99px;
+      background: linear-gradient(90deg, #e10600, #ff4d47);
+      transition: width .55s cubic-bezier(.4,0,.2,1);
+    }
+    /* Reflet qui balaie la barre */
+    #bootScreen .boot-track::after {
+      content: ''; position: absolute; top: 0; left: -40%; width: 40%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.85), transparent);
+      animation: bootSweep 1.8s ease-in-out infinite;
+    }
+    @keyframes bootSweep { to { left: 110%; } }
+
+    #bootScreen .boot-msg {
+      font-size: 11.5px; color: #78716c; min-height: 15px; margin-top: 14px;
+      letter-spacing: .2px; transition: opacity .25s ease;
+    }
+    #bootScreen .boot-msg.fading { opacity: 0; }
+
+    /* Jalons */
+    #bootScreen .boot-steps { display: flex; gap: 7px; margin-top: 16px; }
+    #bootScreen .boot-steps i {
+      width: 5px; height: 5px; border-radius: 50%; background: rgba(28,25,23,.14);
+      transition: background .35s ease, transform .35s ease;
+    }
+    #bootScreen .boot-steps i.on { background: #e10600; transform: scale(1.25); }
+
+    @media (prefers-reduced-motion: reduce) {
+      #bootScreen .boot-pin span,
+      #bootScreen .boot-track::after { animation: none; }
+      #bootScreen .boot-inner { animation: none; }
+    }
+  </style>
+  <div class="boot-inner">
+    <div class="boot-pin"><span></span><span></span><span></span><i></i></div>
+    <div class="boot-logo">S<span>M</span>AC</div>
+    <div class="boot-sub">Cartographie des affaires</div>
+    <div class="boot-track"><div class="boot-fill" id="bootFill"></div></div>
+    <div class="boot-msg" id="bootMsg">Démarrage…</div>
+    <div class="boot-steps" id="bootSteps"><i></i><i></i><i></i><i></i></div>
+  </div>
+</div>
+
+<style>
+  /* État de chargement du bouton d'entrée */
+  .wlc-enter-btn.is-loading { background: #7a1410; cursor: progress; }
+  .wlc-enter-btn .wlc-spin {
+    width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.35);
+    border-top-color: #fff; border-radius: 50%; display: none;
+    animation: wlcSpin .7s linear infinite;
+  }
+  .wlc-enter-btn.is-loading .wlc-spin { display: inline-block; }
+  .wlc-enter-btn.is-loading .wlc-enter-arrow { display: none; }
+  @keyframes wlcSpin { to { transform: rotate(360deg); } }
+  .wlc-status {
+    margin-top: 14px; font-size: 12px; color: rgba(255,255,255,.62);
+    letter-spacing: .3px; min-height: 16px; max-width: 320px; line-height: 1.5;
+  }
+  .wlc-status-track {
+    margin-top: 8px; width: 220px; height: 3px; border-radius: 99px;
+    background: rgba(255,255,255,.14); overflow: hidden;
+  }
+  .wlc-status-fill {
+    height: 100%; width: 8%; border-radius: 99px; background: #e10600;
+    transition: width .4s ease;
+  }
+  .wlc-ready .wlc-status-track { display: none; }
+</style>
+<script>
+  /* Le bouton « Accéder à la carte » existe dans le HTML dès le départ, mais son
+     gestionnaire n'était branché qu'après le chargement des données : cliquer
+     avant ne produisait rien. On capte donc le clic ici, à la toute première
+     ligne exécutée, et on mémorise l'intention si l'application n'est pas prête. */
+  window.__appReady = false;
+  window.__wantsEnter = false;
+
+  function bootStatus(msg, pct) {
+    /* « Prêt » est l'état final. Les garde-fous (délai, erreur) peuvent déclarer
+       l'application prête AVANT la fin de l'initialisation ; sans ce verrou, un
+       « Finalisation… » tardif viendrait s'afficher après « Prêt » et y rester. */
+    if (window.__appReady && msg && msg !== 'Prêt') return;
+
+    /* Le même message alimente l'écran de démarrage puis, s'il a déjà été
+       effacé, la ligne d'état de secours sous le bouton d'entrée. */
+    [['wlcStatus', 'wlcStatusFill'], ['bootMsg', 'bootFill']].forEach(([mId, fId]) => {
+      const m = document.getElementById(mId);
+      const f = document.getElementById(fId);
+      if (m && msg && m.textContent !== msg) {
+        /* Court fondu : le texte ne saute pas d'une étape à l'autre. */
+        m.classList.add('fading');
+        setTimeout(() => { m.textContent = msg; m.classList.remove('fading'); }, 180);
+      }
+      if (f && pct) f.style.width = pct + '%';
+    });
+    const steps = document.getElementById('bootSteps');
+    if (steps && pct) {
+      const atteints = pct >= 95 ? 4 : pct >= 85 ? 3 : pct >= 50 ? 2 : 1;
+      [...steps.children].forEach((d, i) => d.classList.toggle('on', i < atteints));
+    }
+  }
+
+  /* L'écran blanc est le seul indicateur de chargement : il reste affiché
+     jusqu'à ce que l'application soit prête, puis s'efface sur un écran
+     d'accueil déjà fonctionnel. Une seule attente, pas deux. */
+  function hideBootScreen() {
+    const el = document.getElementById('bootScreen');
+    if (!el || el.classList.contains('done')) return;
+    el.classList.add('done');
+    /* Doit dépasser la durée de la transition CSS (600 ms), sinon l'élément
+       disparaît d'un coup au lieu de se fondre. */
+    setTimeout(() => el.remove(), 700);
+  }
+
+  function enterApp() {
+    const w = document.getElementById('welcomeScreen');
+    if (!w || w.classList.contains('leaving')) return;
+    w.classList.add('leaving');
+    setTimeout(() => w.classList.add('hidden'), 780);
+  }
+
+  /* L'initialisation se termine dès que l'objet carte existe, mais les tuiles
+     arrivent ensuite par le réseau : sans attendre leur affichage, on tombe sur
+     le fond gris de Leaflet. On exige donc les deux conditions. */
+  window.__initDone = false;
+  window.__tilesDone = false;
+
+  function tryMarkReady() {
+    if (window.__initDone && window.__tilesDone) markAppReady();
+  }
+
+  function markAppReady() {
+    if (window.__appReady) return;
+    window.__appReady = true;
+    const btn = document.getElementById('enterAppBtn');
+    const w = document.getElementById('welcomeScreen');
+    btn?.classList.remove('is-loading');
+    w?.classList.add('wlc-ready');
+    bootStatus('Prêt', 100);
+    hideBootScreen();
+    /* La ligne d'état sous le bouton ne sert qu'au chargement : on la vide une
+       fois le fondu du message terminé, sinon « Prêt » y resterait affiché. */
+    setTimeout(() => {
+      const ws = document.getElementById('wlcStatus');
+      if (ws) ws.textContent = '';
+    }, 260);
+    /* L'utilisateur avait déjà cliqué : on entre sans qu'il ait à recliquer. */
+    if (window.__wantsEnter) enterApp();
+  }
+
+  /* Écoute déléguée en phase de capture : fonctionne même si le bouton n'est
+     pas encore analysé par le navigateur au moment où ce script s'exécute. */
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest && e.target.closest('#enterAppBtn');
+    if (!btn) return;
+    e.preventDefault();
+    if (window.__appReady) { enterApp(); return; }
+    window.__wantsEnter = true;
+    bootStatus('Chargement en cours — la carte s\'ouvrira automatiquement.');
+  }, true);
+
+  /* Filets de sécurité : l'écran d'accueil ne doit jamais rester bloqué, même
+     si l'initialisation échoue (réseau coupé, base injoignable…). */
+  setTimeout(() => {
+    if (!window.__appReady) bootStatus('Le chargement est plus long que d\'habitude…');
+  }, 6000);
+  /* Si les tuiles ne répondent pas (réseau, CARTO indisponible), on n'attend
+     pas indéfiniment : la carte se remplira au fur et à mesure. */
+  setTimeout(() => { window.__tilesDone = true; tryMarkReady(); }, 9000);
+  setTimeout(markAppReady, 20000);
+  window.addEventListener('error', () => setTimeout(markAppReady, 1200));
+  window.addEventListener('unhandledrejection', () => setTimeout(markAppReady, 1200));
+</script>
+
   <button class="presentation-exit" id="presentationExitBtn">✕ Quitter la présentation <span style="opacity:0.55;font-weight:400;">ESC</span></button>
   <div class="presentation-watermark">SMAC<span>CARTOGRAPHIE PN2</span></div>
 
@@ -3889,8 +4129,12 @@
       <div class="wlc-tagline">PN2</div>
       <button class="wlc-enter-btn" id="enterAppBtn">
         Accéder à la carte
+        <span class="wlc-spin"></span>
         <svg class="wlc-enter-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
       </button>
+      <!-- Secours : visibles seulement si l'écran blanc a été levé avant la fin
+           du chargement (erreur réseau, déblocage automatique). -->
+      <div class="wlc-status" id="wlcStatus"></div>
 
     </div>
 
@@ -7151,6 +7395,8 @@ function renderMapLegend() {
       // Track visit
       trackVisit();
       
+      bootStatus('Chargement des ressources…', 15);
+
       // Load CSS
       await Promise.all([
         injectCSS(CDN.leafletCSS),
@@ -7161,6 +7407,7 @@ function renderMapLegend() {
       // Load JS
       await injectJS(CDN.leafletJS);
       await injectJS(CDN.clusterJS);
+      bootStatus('Connexion à la base…', 35);
 
       // Load tabs config from cloud
       const cloudTabs = await loadTabsConfig();
@@ -7168,6 +7415,8 @@ function renderMapLegend() {
         tabs = cloudTabs;
         currentTab = tabs[0]?.id || 'dc';
       }
+
+      bootStatus('Récupération des affaires…', 55);
 
       // Load data for all tabs in parallel
       await Promise.all(tabs.map(async tab => {
@@ -7178,6 +7427,7 @@ function renderMapLegend() {
         dataByTab[tab.id] = migrateData(baseData);
       }));
 
+      bootStatus('Affichage de la carte…', 80);
       renderTabs();
       
       // Generate particles animation
@@ -7194,12 +7444,10 @@ function renderMapLegend() {
         }
       }
       
-      // Welcome screen: toujours affichée, disparaît au clic
+      /* Le clic sur « Accéder à la carte » est traité par le script déclaré en
+         haut du document : il est actif avant même le chargement des données et
+         mémorise un clic anticipé. Rien à brancher ici. */
       const welcomeScreen = document.getElementById('welcomeScreen');
-      document.getElementById('enterAppBtn')?.addEventListener('click', () => {
-        welcomeScreen?.classList.add('leaving');
-        setTimeout(() => welcomeScreen?.classList.add('hidden'), 780);
-      });
 
       // Initialize map — clear any pre-rendered Leaflet DOM (saved-from-browser artifact)
       const mapEl = document.getElementById('map');
@@ -7220,6 +7468,12 @@ function renderMapLegend() {
       
       // Add default layer
       planLayer.addTo(map);
+
+      /* Leaflet émet « load » quand toutes les tuiles visibles sont chargées.
+         C'est le vrai moment où la carte cesse d'être un fond gris. */
+      bootStatus('Chargement du fond de carte…', 88);
+      planLayer.once('load', () => { window.__tilesDone = true; tryMarkReady(); });
+
       let currentLayer = 'plan';
 
       markerCluster = L.markerClusterGroup({
@@ -8254,6 +8508,12 @@ function renderMapLegend() {
       // Preload export libs
       injectJS(CDN.sheetJS);
       injectJS(CDN.jsPDF).then(() => injectJS(CDN.autoTable));
+
+      /* Boutons branchés : première condition remplie. L'entrée ne se libère
+         qu'une fois les tuiles affichées (voir tryMarkReady). */
+      bootStatus('Finalisation…', 95);
+      window.__initDone = true;
+      tryMarkReady();
     });
   </script>
 
